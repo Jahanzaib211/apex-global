@@ -1,0 +1,69 @@
+name: Deploy · Staging
+
+# Staging runs on our own hardware. Every merge to main lands here first;
+# nothing reaches production that has not been seen working on staging.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — required secrets present
+        run: |
+          for v in STAGING_SSH_HOST STAGING_SSH_USER STAGING_SSH_KEY; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::Missing secret $v. Configure it before staging deploys will run."
+              exit 1
+            fi
+          done
+        env:
+          STAGING_SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+          STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          STAGING_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Set up SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s' "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.STAGING_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Pull, migrate, restart
+        run: |
+          ssh -o BatchMode=yes "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" bash -se <<'REMOTE'
+            set -euo pipefail
+            cd "${APEX_STAGING_PATH:-$HOME/apex-global}"
+            git fetch --all --prune
+            git reset --hard origin/main
+            pnpm install --frozen-lockfile
+            pnpm db:generate
+            pnpm db:migrate
+            pnpm build
+            pm2 reload ecosystem.config.cjs --update-env
+          REMOTE
+
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${{ vars.STAGING_URL }}" || true)
+            if [ "$code" = "200" ]; then echo "Staging healthy."; exit 0; fi
+            echo "Attempt $i: got $code, retrying..."; sleep 10
+          done
+          echo "::error::Staging did not return 200 after deploy."
+          exit 1

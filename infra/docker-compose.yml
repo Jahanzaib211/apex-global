@@ -1,0 +1,101 @@
+# Apex Global Tech Solution — local & staging service stack.
+# Every port is bound to 127.0.0.1: nothing is exposed to the LAN.
+# Port block 43xx/54xx/63xx/90xx/77xx was chosen to avoid the services
+# already running on this host.
+
+name: apex
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: apex-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-apex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-apex}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5437:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-apex} -d ${POSTGRES_DB:-apex}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  redis:
+    image: redis:7-alpine
+    container_name: apex-redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6381:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 640M
+
+  minio:
+    image: minio/minio:latest
+    container_name: apex-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-apex_minio}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?S3_SECRET_KEY is required}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "127.0.0.1:9020:9000"
+      - "127.0.0.1:9021:9001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    container_name: apex-meilisearch
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?MEILI_MASTER_KEY is required}
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    ports:
+      - "127.0.0.1:7701:7700"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:7700/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  meili_data:

@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./base.css";
+
+/* Tailwind v4 needs to be told which files outside this package to scan. */
+@source "../../../../apps/web/src/**/*.{ts,tsx}";
+@source "../../../../apps/console/src/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";

@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 8
+    groups:
+      # One PR per concern rather than twenty individual bumps.
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom", "next"]
+      tooling:
+        patterns: ["eslint*", "prettier*", "typescript", "turbo", "vitest", "@vitest/*"]
+      prisma:
+        patterns: ["prisma", "@prisma/*"]
+      three:
+        patterns: ["three", "@types/three", "@react-three/*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "chore(ci)"
+
+  - package-ecosystem: docker
+    directory: "/infra"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "chore(infra)"

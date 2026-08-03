@@ -1,0 +1,37 @@
+{
+  "name": "apex-global",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Apex Global Tech Solution — global SaaS and technology platform",
+  "type": "module",
+  "packageManager": "pnpm@10.16.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "playwright test",
+    "format": "prettier --write \"**/*.{ts,tsx,css,md,json}\"",
+    "clean": "turbo clean && rm -rf node_modules",
+    "db:generate": "pnpm --filter @apex/db generate",
+    "db:migrate": "pnpm --filter @apex/db migrate",
+    "db:push": "pnpm --filter @apex/db push",
+    "db:seed": "pnpm --filter @apex/db seed",
+    "db:studio": "pnpm --filter @apex/db studio",
+    "services:up": "docker compose -f infra/docker-compose.yml up -d",
+    "services:down": "docker compose -f infra/docker-compose.yml down",
+    "smoke": "node scripts/smoke-test.mjs",
+    "audit:credibility": "node scripts/credibility-audit.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.3.3",
+    "typescript": "^5.8.2"
+  }
+}

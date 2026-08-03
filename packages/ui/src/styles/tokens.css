@@ -1,0 +1,210 @@
+/* ============================================================
+   Apex Global Tech Solution — design tokens
+   Base hues sampled from brand/palette.jpeg. See docs/BRAND.md.
+   navy #34385B · slate #5C5F64 · amber #FAB319 · off-white #F6F8F7
+   ============================================================ */
+
+@theme {
+  /* ── Navy: primary. Carries the page. ───────────────────── */
+  --color-navy-50: #f2f3f6;
+  --color-navy-100: #e3e5ec;
+  --color-navy-200: #c4c8d6;
+  --color-navy-300: #9da3bb;
+  --color-navy-400: #6b7397;
+  --color-navy-500: #34385b;
+  --color-navy-600: #2d3050;
+  --color-navy-700: #262943;
+  --color-navy-800: #1e2036;
+  --color-navy-900: #171929;
+  --color-navy-950: #0f101b;
+
+  /* ── Slate: secondary. Muted text, borders, diagram strokes. */
+  --color-slate-50: #f5f6f6;
+  --color-slate-100: #e9eaeb;
+  --color-slate-200: #d2d4d6;
+  --color-slate-300: #b4b7ba;
+  --color-slate-400: #8b8e93;
+  --color-slate-500: #5c5f64;
+  --color-slate-600: #4e5155;
+  --color-slate-700: #3f4246;
+  --color-slate-800: #313336;
+  --color-slate-900: #232527;
+  --color-slate-950: #161718;
+
+  /* ── Amber: accent ONLY. One per view. Never text on light. ─ */
+  --color-amber-50: #fef8e7;
+  --color-amber-100: #fdefc4;
+  --color-amber-200: #fce28c;
+  --color-amber-300: #fbd054;
+  --color-amber-400: #fac02f;
+  --color-amber-500: #fab319;
+  --color-amber-600: #e09a0b;
+  --color-amber-700: #b87a0a;
+  --color-amber-800: #8f5e0c;
+  --color-amber-900: #6b470d;
+  --color-amber-950: #3e2906;
+
+  /* ── Canvas: off-white surfaces. ────────────────────────── */
+  --color-canvas-0: #ffffff;
+  --color-canvas-50: #fbfcfc;
+  --color-canvas-100: #f6f8f7;
+  --color-canvas-200: #ecefee;
+  --color-canvas-300: #dfe3e2;
+
+  /* ── Semantic states. Chosen to sit beside the brand palette. */
+  --color-success-500: #1f8a5f;
+  --color-success-100: #dcf3e8;
+  --color-warning-500: #b87a0a;
+  --color-warning-100: #fdefc4;
+  --color-danger-500: #b4342f;
+  --color-danger-100: #f8e3e2;
+  --color-info-500: #2f5fb4;
+  --color-info-100: #e2eaf8;
+
+  /* ── Type ───────────────────────────────────────────────── */
+  --font-display: "Apex Display", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Apex Text", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.625rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.875rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 2.125rem;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 2.5rem;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 3.125rem;
+  --text-5xl: 3.75rem;
+  --text-5xl--line-height: 3.875rem;
+  --text-6xl: 4.5rem;
+  --text-6xl--line-height: 4.625rem;
+
+  /* ── Elevation. Restrained: navy-tinted, never grey mush. ── */
+  --shadow-xs: 0 1px 2px 0 rgb(15 16 27 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(15 16 27 / 0.07), 0 1px 2px -1px rgb(15 16 27 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(15 16 27 / 0.08), 0 2px 6px -2px rgb(15 16 27 / 0.05);
+  --shadow-lg: 0 12px 32px -8px rgb(15 16 27 / 0.12), 0 4px 12px -4px rgb(15 16 27 / 0.06);
+  --shadow-glow: 0 0 0 1px rgb(250 179 25 / 0.25), 0 8px 24px -8px rgb(250 179 25 / 0.35);
+
+  /* ── Radii ──────────────────────────────────────────────── */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* ── Motion. Short, purposeful, never decorative. ───────── */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --container-page: 80rem;
+  --container-prose: 44rem;
+}
+
+/* ============================================================
+   Semantic layer — what components actually reference.
+   Swapping light/dark only changes these, never the ramps.
+   ============================================================ */
+
+:root {
+  --bg-page: var(--color-canvas-100);
+  --bg-raised: var(--color-canvas-0);
+  --bg-sunken: var(--color-canvas-200);
+  --bg-inverse: var(--color-navy-900);
+  --bg-accent-subtle: var(--color-amber-50);
+
+  --ink-primary: var(--color-navy-900);
+  --ink-secondary: var(--color-slate-600);
+  --ink-muted: var(--color-slate-500);
+  --ink-inverse: var(--color-canvas-100);
+  --ink-inverse-muted: var(--color-navy-200);
+  --ink-on-accent: var(--color-navy-900);
+
+  --border-subtle: var(--color-canvas-300);
+  --border-default: var(--color-slate-200);
+  --border-strong: var(--color-slate-400);
+  --border-inverse: color-mix(in oklab, var(--color-navy-200) 22%, transparent);
+
+  --accent: var(--color-amber-500);
+  --accent-hover: var(--color-amber-600);
+  --focus-ring: var(--color-amber-500);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: var(--color-navy-950);
+    --bg-raised: var(--color-navy-900);
+    --bg-sunken: #0a0b12;
+    --bg-inverse: var(--color-canvas-100);
+    --bg-accent-subtle: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+
+    --ink-primary: var(--color-canvas-100);
+    --ink-secondary: var(--color-navy-200);
+    --ink-muted: var(--color-slate-400);
+    --ink-inverse: var(--color-navy-900);
+    --ink-inverse-muted: var(--color-slate-600);
+    --ink-on-accent: var(--color-navy-900);
+
+    --border-subtle: color-mix(in oklab, var(--color-navy-200) 12%, transparent);
+    --border-default: color-mix(in oklab, var(--color-navy-200) 20%, transparent);
+    --border-strong: var(--color-slate-600);
+    --border-inverse: var(--color-canvas-300);
+
+    color-scheme: dark;
+  }
+}
+
+/* Explicit overrides win in both directions — a theme toggle stamps
+   data-theme on the root and must beat the media query above. */
+:root[data-theme="light"] {
+  --bg-page: var(--color-canvas-100);
+  --bg-raised: var(--color-canvas-0);
+  --bg-sunken: var(--color-canvas-200);
+  --bg-inverse: var(--color-navy-900);
+  --bg-accent-subtle: var(--color-amber-50);
+  --ink-primary: var(--color-navy-900);
+  --ink-secondary: var(--color-slate-600);
+  --ink-muted: var(--color-slate-500);
+  --ink-inverse: var(--color-canvas-100);
+  --ink-inverse-muted: var(--color-navy-200);
+  --border-subtle: var(--color-canvas-300);
+  --border-default: var(--color-slate-200);
+  --border-strong: var(--color-slate-400);
+  --border-inverse: color-mix(in oklab, var(--color-navy-200) 22%, transparent);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg-page: var(--color-navy-950);
+  --bg-raised: var(--color-navy-900);
+  --bg-sunken: #0a0b12;
+  --bg-inverse: var(--color-canvas-100);
+  --bg-accent-subtle: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+  --ink-primary: var(--color-canvas-100);
+  --ink-secondary: var(--color-navy-200);
+  --ink-muted: var(--color-slate-400);
+  --ink-inverse: var(--color-navy-900);
+  --ink-inverse-muted: var(--color-slate-600);
+  --border-subtle: color-mix(in oklab, var(--color-navy-200) 12%, transparent);
+  --border-default: color-mix(in oklab, var(--color-navy-200) 20%, transparent);
+  --border-strong: var(--color-slate-600);
+  --border-inverse: var(--color-canvas-300);
+  color-scheme: dark;
+}

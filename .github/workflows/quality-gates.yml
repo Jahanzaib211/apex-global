@@ -1,0 +1,114 @@
+name: Quality Gates
+
+# The gates that protect the brand rather than the code:
+# what we publish must be defensible, and the site must stay fast.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: gates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  credibility:
+    name: Credibility audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # Fails on: missing `origin` on a published proof/product entry, a named
+      # client without recorded consent, banned superlatives, unsourced metrics,
+      # or leaked demo credentials. See docs/CREDIBILITY.md.
+      - name: Audit publishable content
+        run: pnpm audit:credibility
+
+  brand-leak:
+    name: Brand leak audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Apex is the only brand this repo ships. Dispatch, BPO and call-centre
+      # positioning were removed by decision and must not return.
+      - name: Forbidden positioning in shipped content
+        run: |
+          set -uo pipefail
+          # Phrases, not bare words: "dispatch" alone is legitimate in code
+          # (useReducer, dispatchEvent), so only the positioning usage is banned.
+          PATTERN='alilabs|truck dispatch|dispatch service|load board|limousine|\bBPO\b|business process outsourc|call cent(er|re)|outbound calling'
+          MATCHES=$(grep -rniE "$PATTERN" \
+            --include='*.ts' --include='*.tsx' --include='*.css' \
+            --include='*.json' --include='*.prisma' --include='*.mdx' \
+            apps packages modules 2>/dev/null \
+            | grep -viE 'credibility|forbidden|banned|FORBIDDEN_|audit' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "::error::Forbidden brand/positioning terms found in shipped code:"
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "Clean — no forbidden positioning terms in shipped code."
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lighthouse:
+    name: Performance budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: apex
+          POSTGRES_PASSWORD: apex_ci
+          POSTGRES_DB: apex_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U apex -d apex_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://apex:apex_ci@localhost:5432/apex_test?schema=public
+      AUTH_SECRET: ci_auth_secret_not_used_in_production_0000
+      ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
+      NEXT_PUBLIC_SITE_URL: http://localhost:4300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate && pnpm db:push && pnpm db:seed
+      - run: pnpm --filter @apex/web build
+
+      # Budgets live in .lighthouserc.json: mobile LCP <= 2.0s,
+      # performance >= 95, CLS <= 0.05, landing-page JS <= 180KB.
+      # A visual effect that breaks the budget gets removed, not waived.
+      - name: Lighthouse CI
+        run: |
+          pnpm dlx @lhci/cli@0.14.x autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
