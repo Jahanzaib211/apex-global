@@ -71,7 +71,7 @@ function stubPrisma(overrides: Record<string, unknown[]> = {}) {
     solution: { findMany: from("solution") },
     insight: { findMany: empty },
     landingPage: { findMany: empty },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
   } as any;
 }
 

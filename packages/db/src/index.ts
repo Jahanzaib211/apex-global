@@ -3,7 +3,7 @@ import { PrismaClient } from "../generated/client/index.js";
 export * from "../generated/client/index.js";
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __apexPrisma: PrismaClient | undefined;
 }
 
