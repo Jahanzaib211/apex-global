@@ -25,6 +25,16 @@ export const settings = [
     value: "31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan",
   },
   { key: "org.linkedin", group: "social", label: "LinkedIn", value: "" },
+
+  // Leadership. Deliberately seeded empty rather than with invented copy: a
+  // fabricated biography is exactly the kind of detail that unravels in a
+  // first conversation. The About page shows an explicit placeholder until
+  // these are filled in from the console.
+  { key: "leadership.ceo.name", group: "leadership", label: "CEO name", value: "Shaikh Ahmed" },
+  { key: "leadership.ceo.title", group: "leadership", label: "CEO title", value: "Chief Executive Officer" },
+  { key: "leadership.ceo.bio", group: "leadership", label: "CEO biography", value: "" },
+  { key: "leadership.ceo.photo", group: "leadership", label: "CEO photograph URL", value: "" },
+  { key: "leadership.ceo.linkedin", group: "leadership", label: "CEO LinkedIn", value: "" },
   {
     key: "seo.defaultTitle",
     group: "seo",
