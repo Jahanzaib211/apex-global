@@ -4,7 +4,7 @@
   "private": true,
   "description": "Apex Global Tech Solution — global SaaS and technology platform",
   "type": "module",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=20"
   },
@@ -29,9 +29,17 @@
     "audit:credibility": "node scripts/credibility-audit.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.49.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
     "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "turbo": "^2.3.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "typescript-eslint": "8.65.0",
+    "vitest": "^2.1.8"
   }
 }
