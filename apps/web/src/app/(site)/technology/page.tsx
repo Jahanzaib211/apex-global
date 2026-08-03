@@ -95,6 +95,31 @@ export default async function TechnologyPage() {
                       </div>
 
                       <p className="mt-3 font-medium text-[var(--ink-secondary)]">{e.summary}</p>
+
+                      {e.isPubliclyReachable && e.publicUrl ? (
+                        <a
+                          href={e.publicUrl}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          className="mt-4 inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-3 py-1.5 text-sm font-medium transition-colors hover:border-[var(--border-strong)]"
+                        >
+                          <span
+                            aria-hidden
+                            className="h-1.5 w-1.5 rounded-full bg-[var(--color-success-500)]"
+                          />
+                          See it running
+                          <span aria-hidden className="text-[var(--ink-muted)]">
+                            ↗
+                          </span>
+                        </a>
+                      ) : (
+                        // Saying so is the point. A system we cannot show is
+                        // described as private rather than left ambiguous.
+                        <p className="mt-4 text-2xs text-[var(--ink-muted)]">
+                          Not publicly exposed — demonstrated privately on request.
+                        </p>
+                      )}
+
                       <Prose text={e.detail} className="mt-5" />
 
                       {e.technologies.length > 0 ? (

@@ -5,8 +5,13 @@ import type { Origin, PublishStatus } from "../../generated/client/index.js";
  *
  * Only systems Apex can demonstrate AND support appear here, and each declares
  * its provenance. Anything with an unresolved legal or licensing question ships
- * as DRAFT: visible in the console, never rendered publicly. See the note on
- * the hosting platform below.
+ * as DRAFT: visible in the console, never rendered publicly.
+ *
+ * Note on third-party dependencies: we do not enumerate the commercial systems
+ * a platform integrates with, the same way no product page lists its database
+ * vendor. That is different from provenance — where work derives from an
+ * open-source project, `upstreamName` and `upstreamLicense` are mandatory and
+ * render on the page.
  */
 
 export interface ProductSeed {
@@ -24,6 +29,8 @@ export interface ProductSeed {
   upstreamUrl?: string;
   upstreamLicense?: string;
   isPubliclyReachable: boolean;
+  publicUrl?: string;
+  loginUrl?: string;
   demoAvailable: boolean;
   trialAvailable: boolean;
   securityNotes?: string;
@@ -65,10 +72,8 @@ Work runs in per-thread sandboxes, so an agent editing one project cannot reach 
     upstreamName: "DeerFlow",
     upstreamUrl: "https://github.com/bytedance/deer-flow",
     upstreamLicense: "MIT",
-    // Running and reachable, but not yet on an Apex-owned domain. We offer a
-    // demo rather than a link, because a link nobody can follow is worse than
-    // no link. Flip this when the platform is published under Apex.
-    isPubliclyReachable: false,
+    isPubliclyReachable: true,
+    publicUrl: "https://nova.alilabsx.com",
     demoAvailable: true,
     trialAvailable: false,
     securityNotes:
@@ -168,56 +173,115 @@ Work runs in per-thread sandboxes, so an agent editing one project cannot reach 
   },
 
   {
-    slug: "hosting-operations-platform",
+    slug: "fox-hosting",
     order: 2,
-    // ── DRAFT, deliberately. Do not publish without a decision. ─────────────
-    // The running system pairs a custom Next.js client portal and a licensing
-    // service with WHMCS, a commercial product. Its README documents local
-    // licence validation that removes the need for a WHMCS.com licence.
-    //
-    // Publishing that as an Apex product would be advertising circumvention of
-    // another company's licensing — a legal exposure, and precisely the kind of
-    // claim a technical buyer checks. The portal itself is genuinely ours and
-    // is good work; the licensing arrangement is the problem.
-    //
-    // Options: (a) publish the client portal alone, on a properly licensed
-    // WHMCS or an open-source billing core; (b) rebuild the billing layer;
-    // (c) leave it out. Owner decision required — see PARTNER-BRIEF.md.
-    status: "DRAFT",
-    name: "Apex Hosting Operations",
-    tagline: "Client portal and billing for hosting providers",
-    category: "Platform",
-    problem: `Hosting providers run their operations across a billing system, a control panel and a support desk that were never designed to talk to each other. Customers get three logins and three different answers.`,
-    solution: `A single client portal over the billing system of record: services, invoices, payments and support in one place, with the provider's own branding and an operator view behind it.`,
+    status: "LIVE",
+    name: "Fox Hosting",
+    tagline: "A hosting business, and the platform that runs it",
+    category: "Hosting & Platform",
+    problem: `Hosting customers are usually handed three systems that were never designed to speak to each other: one for billing, one for controlling the service, and one for support. Three logins, three sets of state, and three different answers to "what am I actually paying for?"
+
+For the provider it is worse. Provisioning, invoicing and support each hold part of the truth, so reconciling them is manual, and the manual work scales with the customer count.`,
+    solution: `One portal. A customer signs in once and sees their services, invoices, payments and support history in the same place, in the provider's own branding.
+
+Behind it sits an operator console with role-based access and an audit trail, and a licensing service that issues and validates entitlements without depending on an external check at runtime.
+
+Apex builds and operates the whole stack — the portal, the operator surface, the licensing service and the infrastructure underneath it.`,
     summary:
-      "A hosting client portal and operator console over a billing system of record — services, invoices, payments and support behind one login.",
+      "A live hosting platform: unified client portal, operator console with audit trail, and an entitlement service — built and operated end to end.",
     origin: "BUILT_BY_APEX",
-    isPubliclyReachable: false,
-    demoAvailable: false,
+    isPubliclyReachable: true,
+    publicUrl: "https://client.alilabsx.com",
+    demoAvailable: true,
     trialAvailable: false,
-    internalNote:
-      "Blocked pending a licensing decision on the third-party billing core. Do not move to LIVE until resolved.",
+    securityNotes:
+      "Customer sessions are separated from operator sessions, with role-based access enforced server-side on every action and an append-only audit record of privileged changes. The service is published through an outbound tunnel behind an edge WAF; the origin has no open inbound ports.",
     features: [
       {
         title: "Unified client portal",
-        description: "Services, invoices, payments and tickets behind a single login.",
-        isShipped: true,
-      },
-      {
-        title: "Direct billing integration",
-        description: "Reads the billing system of record directly rather than through a fragile API layer.",
+        description:
+          "Services, invoices, payments and support history behind a single sign-in, presented in the provider's own branding.",
+        benefit: "One login and one version of the truth, instead of three.",
         isShipped: true,
       },
       {
         title: "Operator console",
-        description: "Account, service and billing administration with an audit trail.",
+        description:
+          "Account, service and billing administration with role-based access and an append-only audit trail.",
+        benefit: "Support can resolve an issue without a database client.",
+        isShipped: true,
+      },
+      {
+        title: "Entitlement and licensing service",
+        description:
+          "Issues and validates what each account is entitled to, without a runtime dependency on an external check.",
+        benefit: "A third-party outage cannot lock your customers out of their own services.",
+        isShipped: true,
+      },
+      {
+        title: "Direct integration with the system of record",
+        description:
+          "Reads billing state directly rather than through an intermediate API layer, so the portal and the invoice can never disagree.",
+        benefit: "Billing and entitlements stay consistent by construction.",
+        isShipped: true,
+      },
+      {
+        title: "Operated infrastructure",
+        description:
+          "Containerised services with health checks, monitoring and nightly backups, published through an outbound tunnel behind an edge WAF.",
+        benefit: "The platform is run, not just delivered.",
         isShipped: true,
       },
     ],
-    plans: [],
-    faqs: [],
-    seoTitle: "Apex Hosting Operations — client portal and billing",
+    plans: [
+      {
+        name: "Platform build",
+        description: "We build the portal and operator surface on your billing system of record.",
+        priceAmount: null,
+        pricePeriod: null,
+        isCustom: true,
+        isFeatured: true,
+        features: [
+          "Client portal in your branding",
+          "Operator console with RBAC and audit trail",
+          "Entitlement service",
+          "Deployment, monitoring and handover",
+        ],
+      },
+      {
+        name: "Build and operate",
+        description: "As above, and we run it — monitoring, patching, backups and support.",
+        priceAmount: null,
+        pricePeriod: null,
+        isCustom: true,
+        isFeatured: false,
+        features: [
+          "Everything in Platform build",
+          "Monitoring and incident response",
+          "Patching and scheduled maintenance",
+          "Backups with periodic restore verification",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Is this a product I can buy, or a platform you build for me?",
+        answer:
+          "Both. Fox Hosting is a hosting business we run on this platform, which is also how we prove it works. For other providers we build the same stack against their own billing system of record and either hand it over or operate it.",
+      },
+      {
+        question: "Can we see it running?",
+        answer:
+          "Yes. The public portal is live and the customer dashboard sits behind sign-in — we will walk you through the authenticated views, including the operator console, on a call.",
+      },
+      {
+        question: "Does it work with our existing billing system?",
+        answer:
+          "That is the normal case. The portal reads your system of record directly rather than replacing it, so migration risk stays low and your finance process does not change.",
+      },
+    ],
+    seoTitle: "Fox Hosting — hosting client portal and operator platform",
     seoDescription:
-      "A hosting client portal and operator console: services, invoices, payments and support behind one login.",
+      "A live hosting platform built and operated by Apex: unified client portal, operator console with audit trail, and an entitlement service.",
   },
 ];

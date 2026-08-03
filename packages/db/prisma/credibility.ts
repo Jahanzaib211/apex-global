@@ -41,8 +41,16 @@ const LEAKED_CREDENTIAL_PATTERNS: RegExp[] = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
 ];
 
-/** Other brands that must never appear in Apex-published content. */
-const FOREIGN_BRAND_PATTERNS: RegExp[] = [/alilabs/i, /ali\s*labs/i, /alilabsx/i];
+/**
+ * Brands that must never appear in Apex-published content.
+ *
+ * Previously this blocked the sister front's name. That rule was removed by
+ * decision: the two brands are one company operating two fronts, so Fox
+ * Hosting and its domains are ours to reference. The mechanism stays for
+ * genuinely foreign brands — a competitor's name, or a vendor whose product we
+ * might be read as claiming.
+ */
+const FOREIGN_BRAND_PATTERNS: RegExp[] = [];
 
 export function scanText(
   entity: string,

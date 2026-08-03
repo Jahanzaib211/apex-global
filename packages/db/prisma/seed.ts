@@ -163,6 +163,7 @@ async function seedTechProof() {
         upstreamUrl: t.upstreamUrl ?? null,
         upstreamLicense: t.upstreamLicense ?? null,
         isPubliclyReachable: t.isPubliclyReachable,
+        publicUrl: t.publicUrl ?? null,
         technologies: [...t.technologies],
       },
       update: {
@@ -176,6 +177,7 @@ async function seedTechProof() {
         upstreamUrl: t.upstreamUrl ?? null,
         upstreamLicense: t.upstreamLicense ?? null,
         isPubliclyReachable: t.isPubliclyReachable,
+        publicUrl: t.publicUrl ?? null,
         technologies: [...t.technologies],
       },
     });
@@ -217,6 +219,8 @@ async function seedProducts() {
         upstreamUrl: p.upstreamUrl ?? null,
         upstreamLicense: p.upstreamLicense ?? null,
         isPubliclyReachable: p.isPubliclyReachable,
+        publicUrl: p.publicUrl ?? null,
+        loginUrl: p.loginUrl ?? null,
         demoAvailable: p.demoAvailable,
         trialAvailable: p.trialAvailable,
         securityNotes: p.securityNotes ?? null,
@@ -239,6 +243,8 @@ async function seedProducts() {
         // on create — otherwise correcting an over-claim in the content file
         // silently fails to reach a database that already has a row.
         isPubliclyReachable: p.isPubliclyReachable,
+        publicUrl: p.publicUrl ?? null,
+        loginUrl: p.loginUrl ?? null,
         demoAvailable: p.demoAvailable,
         trialAvailable: p.trialAvailable,
         securityNotes: p.securityNotes ?? null,

@@ -84,6 +84,8 @@ export const getProducts = cache(async () =>
       upstreamLicense: true,
       demoAvailable: true,
       trialAvailable: true,
+      isPubliclyReachable: true,
+      publicUrl: true,
     },
   }),
 );

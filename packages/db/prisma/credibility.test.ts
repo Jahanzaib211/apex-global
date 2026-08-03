@@ -32,8 +32,13 @@ describe("scanText", () => {
     expect(rules(scanText("X", "body", "-----BEGIN RSA PRIVATE KEY-----"))).toContain("credential-leak");
   });
 
-  it("catches references to other brands", () => {
-    expect(rules(scanText("X", "body", "Delivered with AliLabs."))).toContain("foreign-brand");
+  it("permits the sister front's brand and domains", () => {
+    // Apex and Fox Hosting are two fronts of one company, so naming Fox
+    // Hosting or linking to its live services is not a foreign-brand leak.
+    // The rule that used to block this was removed by decision; the mechanism
+    // remains for genuinely unrelated brands.
+    const copy = "Fox Hosting runs on this platform — see it live at client.alilabsx.com.";
+    expect(rules(scanText("X", "body", copy))).not.toContain("foreign-brand");
   });
 
   it("permits precise, defensible capability language", () => {

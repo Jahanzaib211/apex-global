@@ -86,10 +86,16 @@ export function ArchitectureDiagram() {
           const ay = a.y + NODE_H / 2;
           const bx = b.x;
           const by = b.y + NODE_H / 2;
-          const isVertical = Math.abs(ax - bx) < 40;
+
+          // Compare centres, not edges: two stacked nodes of the same width
+          // share a centre but their right/left edges are a full width apart,
+          // which was drawing a sideways curve where a straight drop belongs.
+          const acx = a.x + (a.w ?? DEFAULT_W) / 2;
+          const bcx = b.x + (b.w ?? DEFAULT_W) / 2;
+          const isVertical = Math.abs(acx - bcx) < 40;
 
           const d = isVertical
-            ? `M${a.x + (a.w ?? DEFAULT_W) / 2} ${a.y + NODE_H} L${b.x + (b.w ?? DEFAULT_W) / 2} ${b.y}`
+            ? `M${acx} ${a.y + NODE_H} L${bcx} ${b.y}`
             : `M${ax} ${ay} C${ax + 34} ${ay}, ${bx - 34} ${by}, ${bx} ${by}`;
 
           return (

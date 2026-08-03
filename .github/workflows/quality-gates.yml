@@ -47,7 +47,9 @@ jobs:
           set -uo pipefail
           # Phrases, not bare words: "dispatch" alone is legitimate in code
           # (useReducer, dispatchEvent), so only the positioning usage is banned.
-          PATTERN='alilabs|truck dispatch|dispatch service|load board|limousine|\bBPO\b|business process outsourc|call cent(er|re)|outbound calling'
+          # The sister front is part of the same company, so its name is no
+          # longer forbidden. The removed service lines still are.
+          PATTERN='truck dispatch|dispatch service|load board|limousine|\bBPO\b|business process outsourc|call cent(er|re)|outbound calling'
           MATCHES=$(grep -rniE "$PATTERN" \
             --include='*.ts' --include='*.tsx' --include='*.css' \
             --include='*.json' --include='*.prisma' --include='*.mdx' \

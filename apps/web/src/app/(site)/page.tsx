@@ -126,13 +126,30 @@ export default async function HomePage() {
                 upstreamLicense={p.upstreamLicense}
               />
 
-              <div className="mt-auto flex items-center gap-4 pt-2">
+              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-2">
                 <Link
                   href={`/saas/${p.slug}`}
                   className="text-sm font-medium text-[var(--ink-primary)] underline-offset-4 hover:underline"
                 >
                   Explore {p.name} →
                 </Link>
+                {/* Only rendered when the record says it is reachable AND has a
+                    URL — the credibility audit enforces that pairing, so this
+                    link can never point at nothing. */}
+                {p.isPubliclyReachable && p.publicUrl ? (
+                  <a
+                    href={p.publicUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-amber-700)] underline-offset-4 hover:underline"
+                  >
+                    <span
+                      aria-hidden
+                      className="h-1.5 w-1.5 rounded-full bg-[var(--color-success-500)]"
+                    />
+                    See it live
+                  </a>
+                ) : null}
                 {p.demoAvailable ? (
                   <span className="text-2xs text-[var(--ink-muted)]">Demo available</span>
                 ) : null}

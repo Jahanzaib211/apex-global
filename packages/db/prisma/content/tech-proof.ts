@@ -24,6 +24,7 @@ export interface TechProofSeed {
   upstreamUrl?: string;
   upstreamLicense?: string;
   isPubliclyReachable: boolean;
+  publicUrl?: string;
   technologies: string[];
   evidence: Array<{ label: string; value: string; source: string }>;
 }
@@ -101,10 +102,8 @@ The upstream project's licence and copyright notices are preserved, and it is cr
     upstreamName: "DeerFlow",
     upstreamUrl: "https://github.com/bytedance/deer-flow",
     upstreamLicense: "MIT",
-    // The deployment is publicly reachable, but not yet at an Apex-owned
-    // address. Until it is, we do not advertise a link a buyer cannot follow —
-    // flip this once the platform is published on an Apex domain.
-    isPubliclyReachable: false,
+    isPubliclyReachable: true,
+    publicUrl: "https://nova.alilabsx.com",
     technologies: ["Python", "TypeScript", "Next.js", "Docker", "headless Chromium"],
     evidence: [
       {
@@ -130,8 +129,45 @@ The upstream project's licence and copyright notices are preserved, and it is cr
     ],
   },
   {
-    slug: "secure-operator-console",
+    slug: "hosting-platform",
     order: 4,
+    status: "LIVE",
+    title: "A hosting business we run on our own platform",
+    category: "platform",
+    summary:
+      "Fox Hosting is a live hosting service operating on software we built: client portal, operator console and an entitlement service, with the infrastructure underneath run by the same team.",
+    detail: `Most suppliers demonstrate a platform. This one has customers on it.
+
+Fox Hosting runs on a client portal and operator console we designed and wrote, with an entitlement service that issues and validates what each account can use without depending on an external check at runtime — so a third-party outage cannot lock a customer out of their own service.
+
+The portal reads the billing system of record directly rather than through an intermediate API layer, which is why the invoice a customer sees and the services they can actually use cannot drift apart.
+
+We operate the whole stack: containerised services with health checks, monitoring, nightly backups, and publication through an outbound tunnel behind an edge WAF rather than an open port.`,
+    origin: "BUILT_BY_APEX",
+    isPubliclyReachable: true,
+    publicUrl: "https://client.alilabsx.com",
+    technologies: ["Next.js", "TypeScript", "MySQL", "Docker", "outbound tunnel", "edge WAF"],
+    evidence: [
+      {
+        label: "Availability check",
+        value: "HTTP 200 in 1.18s",
+        source: "Direct request to the production endpoint, 3 August 2026",
+      },
+      {
+        label: "Services in operation",
+        value: "Portal, entitlement service and datastore, each health-checked",
+        source: "Container inventory of the running deployment, 3 August 2026",
+      },
+      {
+        label: "Inbound exposure",
+        value: "No open inbound ports on the origin",
+        source: "Network configuration review, 3 August 2026",
+      },
+    ],
+  },
+  {
+    slug: "secure-operator-console",
+    order: 5,
     status: "LIVE",
     title: "Secure administration with full audit trail",
     category: "platform",
@@ -160,7 +196,7 @@ This is the pattern we implement in client systems, and it is the pattern the Ap
   },
   {
     slug: "multi-service-platform",
-    order: 5,
+    order: 6,
     status: "LIVE",
     title: "Multi-service platform architecture",
     category: "platform",
@@ -193,7 +229,7 @@ The monorepo keeps the database schema, generated types and shared packages in o
   },
   {
     slug: "security-operations",
-    order: 6,
+    order: 7,
     status: "LIVE",
     title: "Security operations environment",
     category: "security",
@@ -232,7 +268,7 @@ Our own hardening is part of it — for example, the reconnaissance platform run
   },
   {
     slug: "backup-and-recovery",
-    order: 7,
+    order: 8,
     status: "LIVE",
     title: "Backups, and restoring them",
     category: "infrastructure",
@@ -261,7 +297,7 @@ Recovery procedures are written as runbooks rather than held in someone's head, 
   },
   {
     slug: "network-access",
-    order: 8,
+    order: 9,
     status: "LIVE",
     title: "Zero open inbound ports",
     category: "security",
@@ -290,7 +326,7 @@ The practical result is that the attack surface is the application, not the netw
   },
   {
     slug: "engineering-practice",
-    order: 9,
+    order: 10,
     status: "LIVE",
     title: "How we work",
     category: "engineering",
