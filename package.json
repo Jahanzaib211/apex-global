@@ -32,6 +32,6 @@
     "@playwright/test": "^1.49.0",
     "prettier": "^3.5.3",
     "turbo": "^2.3.3",
-    "typescript": "^5.8.2"
+    "typescript": "^7.0.2"
   }
 }
