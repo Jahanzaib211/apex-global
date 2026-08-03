@@ -1,0 +1,349 @@
+// ── module: cms ─────────────────────────────────────────────────────────────
+// Everything the public site renders. Content is data: a new solution page or
+// SaaS product is a record, not a deploy.
+
+enum PublishStatus {
+  DRAFT
+  LIVE
+  INTERNAL // demonstrable privately, never rendered publicly
+  ARCHIVED
+}
+
+// The provenance rule from docs/CREDIBILITY.md, expressed in the type system.
+// There is no "unspecified" member on purpose: a proof entry cannot exist
+// without declaring what it is.
+enum Origin {
+  BUILT_BY_APEX
+  OPERATED_BY_APEX
+  THIRD_PARTY_OSS
+}
+
+model Solution {
+  id       String        @id @default(cuid())
+  slug     String        @unique
+  status   PublishStatus @default(DRAFT)
+  order    Int           @default(0)
+
+  name     String
+  tagline  String
+  summary  String  @db.Text
+  body     String? @db.Text
+  icon     String?
+
+  // "We design, build and operate scalable software platforms" —
+  // capability statements, not a list of services.
+  capabilities String[]
+  outcomes     String[]
+
+  industries  Industry[]  @relation("IndustrySolutions")
+  caseStudies CaseStudy[] @relation("CaseStudySolutions")
+  faqs        Faq[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("solutions")
+}
+
+model Industry {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name      String
+  tagline   String
+  challenge String @db.Text // industry challenge
+  approach  String @db.Text // technology solution
+  outcome   String @db.Text // business outcome
+
+  solutions   Solution[]  @relation("IndustrySolutions")
+  caseStudies CaseStudy[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("industries")
+}
+
+model CaseStudy {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title   String
+  summary String @db.Text
+
+  // Challenge -> Strategy -> Technology -> Implementation -> Result
+  challenge      String @db.Text
+  strategy       String @db.Text
+  technology     String @db.Text
+  implementation String @db.Text
+  result         String @db.Text
+  lessons        String? @db.Text
+
+  // A named client requires recorded written permission. Without consent the
+  // study still publishes — anonymised via `anonymousLabel`.
+  clientName        String?
+  clientConsent     Boolean   @default(false)
+  consentRecordedAt DateTime?
+  consentReference  String?
+  anonymousLabel    String // "a European logistics operator"
+
+  technologies String[]
+  metrics      CaseStudyMetric[]
+
+  industry   Industry? @relation(fields: [industryId], references: [id], onDelete: SetNull)
+  industryId String?
+
+  solutions Solution[] @relation("CaseStudySolutions")
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("case_studies")
+}
+
+model CaseStudyMetric {
+  id          String    @id @default(cuid())
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+
+  label String
+  value String
+  // Where the number came from and when it was measured. Required — a metric
+  // that cannot be traced does not get published.
+  source String
+
+  order Int @default(0)
+
+  @@index([caseStudyId])
+  @@map("case_study_metrics")
+}
+
+// Powers the Technology & Engineering page: the platforms and infrastructure
+// Apex can actually show a technical buyer.
+model TechProofEntry {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  title    String
+  category String // "platform" | "infrastructure" | "security" | "engineering"
+  summary  String @db.Text
+  detail   String @db.Text
+
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // A publicly reachable URL if there is one. Absent means we describe it as a
+  // private demonstration rather than implying anyone can go and look.
+  publicUrl     String?
+  isPubliclyReachable Boolean @default(false)
+
+  technologies String[]
+  evidence     TechProofEvidence[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, category, order])
+  @@map("tech_proof_entries")
+}
+
+model TechProofEvidence {
+  id      String         @id @default(cuid())
+  entryId String
+  entry   TechProofEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  label       String
+  value       String
+  source      String // how this was measured or verified
+  measuredAt  DateTime?
+
+  order Int @default(0)
+
+  @@index([entryId])
+  @@map("tech_proof_evidence")
+}
+
+model Insight {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title    String
+  excerpt  String  @db.Text
+  body     String  @db.Text
+  category String
+  readingMinutes Int @default(5)
+
+  authorName  String
+  authorRole  String?
+  coverImageUrl String?
+  coverImageAlt String?
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("insights")
+}
+
+model Testimonial {
+  id     String        @id @default(cuid())
+  status PublishStatus @default(DRAFT)
+
+  quote      String @db.Text
+  authorName String
+  authorRole String
+  company    String
+
+  // Same consent rule as case studies. Testimonials are never invented, and a
+  // real one still needs permission before the name appears.
+  consent           Boolean   @default(false)
+  consentRecordedAt DateTime?
+  consentReference  String?
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model JobPosting {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title       String
+  team        String
+  location    String
+  workMode    String // "remote" | "hybrid" | "on-site"
+  employment  String // "full-time" | "contract"
+  summary     String @db.Text
+  description String @db.Text
+
+  responsibilities String[]
+  requirements     String[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  closesAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+  @@map("job_postings")
+}
+
+model Faq {
+  id       String  @id @default(cuid())
+  question String
+  answer   String  @db.Text
+  order    Int     @default(0)
+  scope    String  @default("general") // "general" | "solution" | "product"
+
+  solution   Solution? @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  solutionId String?
+
+  product   SaasProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String?
+
+  status PublishStatus @default(LIVE)
+
+  @@index([scope, order])
+  @@map("faqs")
+}
+
+// Ad landing pages. Deliberately excluded from the sitemap and marked
+// noindex — they duplicate solution content and exist only for paid traffic.
+model LandingPage {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  headline    String
+  subheadline String  @db.Text
+  body        String? @db.Text
+  ctaLabel    String  @default("Talk to our technology team")
+
+  bullets      String[]
+  campaignName String?
+
+  // Which solution or product this campaign is selling — sets the lead's
+  // interest without asking the visitor to pick from a list.
+  solutionSlug String?
+  productSlug  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("landing_pages")
+}
+
+model Page {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title String
+  body  String @db.Text
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("pages")
+}
+
+// Authored per page. Never auto-generated from the first paragraph — that is
+// how sites end up with 40 identical descriptions.
+model Seo {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  ogImageUrl  String?
+  noindex     Boolean @default(false)
+  canonical   String?
+
+  solution   Solution?
+  industry   Industry?
+  caseStudy  CaseStudy?
+  insight    Insight?
+  jobPosting JobPosting?
+  page       Page?
+  product    SaasProduct?
+
+  @@map("seo")
+}

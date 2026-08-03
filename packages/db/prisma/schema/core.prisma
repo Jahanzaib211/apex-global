@@ -1,0 +1,199 @@
+// ── module: core ────────────────────────────────────────────────────────────
+// Identity, access control, audit, settings and the encrypted secrets vault.
+// Every other module depends on this one.
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String?
+  image         String?
+  emailVerified DateTime?
+
+  // TOTP. `totpSecret` is encrypted at rest with ENCRYPTION_KEY, never returned
+  // to a client, and only decrypted inside the verification path.
+  totpSecret     String?
+  totpEnabledAt  DateTime?
+  lastLoginAt    DateTime?
+  failedLogins   Int       @default(0)
+  lockedUntil    DateTime?
+
+  isActive Boolean @default(true)
+
+  roles         UserRole[]
+  sessions      Session[]
+  auditEntries  AuditLog[]
+  assignedLeads Lead[]        @relation("LeadOwner")
+  activities    LeadActivity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  key         String  @unique // "admin" | "editor" | "sales" | "viewer"
+  name        String
+  description String?
+  isSystem    Boolean @default(false) // system roles cannot be deleted
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  grantedAt DateTime @default(now())
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// Permission keys are contributed by modules via defineModule(), then
+// reconciled into this table on boot. The catalogue is data, not a hardcoded
+// enum, so a new module never requires a migration to become authorisable.
+model Permission {
+  id       String  @id @default(cuid())
+  key      String  @unique // "cms:write", "crm:read", ...
+  moduleId String
+  label    String
+
+  roles RolePermission[]
+
+  @@index([moduleId])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  ipAddress    String?
+  userAgent    String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Append-only. Every privileged action writes one row; nothing deletes them.
+model AuditLog {
+  id       String @id @default(cuid())
+  actorId  String?
+  actor    User?  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  action     String // "lead.status_changed", "product.published", ...
+  entityType String
+  entityId   String?
+  summary    String
+
+  // Before/after values for the changed fields only — never whole records,
+  // and never anything from the secrets vault.
+  changes Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique // "org.phone", "seo.defaultTitle", ...
+  value     Json
+  group     String   @default("general")
+  label     String
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@map("settings")
+}
+
+// Third-party credentials (AI providers, SMTP, ad platforms).
+// `secretCiphertext` is AES-256-GCM. The plaintext is never selected into an
+// API response — the console shows only `lastFour` and the test-connection
+// result.
+model Integration {
+  id       String @id @default(cuid())
+  provider String @unique // "minimax", "ollama", "meta-capi", "google-ads", "smtp"
+  label    String
+
+  isEnabled Boolean @default(false)
+
+  secretCiphertext String?
+  secretIv         String?
+  secretTag        String?
+  lastFour         String?
+
+  config Json @default("{}")
+
+  lastTestedAt DateTime?
+  lastTestOk   Boolean?
+  lastTestNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("integrations")
+}
+
+model FeatureFlag {
+  id          String  @id @default(cuid())
+  key         String  @unique
+  description String
+  isEnabled   Boolean @default(false)
+  rollout     Int     @default(0) // 0-100
+
+  updatedAt DateTime @updatedAt
+
+  @@map("feature_flags")
+}
+
+model MediaAsset {
+  id           String  @id @default(cuid())
+  key          String  @unique // S3 object key
+  url          String
+  filename     String
+  mimeType     String
+  bytes        Int
+  width        Int?
+  height       Int?
+  // Required for anything rendered on the public site. Empty alt is allowed
+  // only for decorative images, and must be an explicit empty string.
+  alt          String
+  isDecorative Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("media_assets")
+}

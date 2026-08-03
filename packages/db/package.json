@@ -1,0 +1,40 @@
+{
+  "name": "@apex/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./enums": "./src/enums.ts"
+  },
+  "prisma": {
+    "schema": "prisma/schema",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "scripts": {
+    "//env": "The workspace keeps one .env at the repo root; Prisma only looks in its own package dir, so every DB command is wrapped.",
+    "generate": "prisma generate",
+    "migrate": "dotenv -e ../../.env -- prisma migrate deploy",
+    "migrate:dev": "dotenv -e ../../.env -- prisma migrate dev",
+    "push": "dotenv -e ../../.env -- prisma db push --skip-generate",
+    "seed": "dotenv -e ../../.env -- prisma db seed",
+    "audit": "dotenv -e ../../.env -- tsx prisma/audit.ts",
+    "studio": "dotenv -e ../../.env -- prisma studio",
+    "lint": "eslint src prisma",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo node_modules generated"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.1"
+  },
+  "devDependencies": {
+    "@apex/config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.2.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.2",
+    "vitest": "^2.1.8"
+  }
+}

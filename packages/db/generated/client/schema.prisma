@@ -1,0 +1,933 @@
+// ── module: cms ─────────────────────────────────────────────────────────────
+// Everything the public site renders. Content is data: a new solution page or
+// SaaS product is a record, not a deploy.
+
+enum PublishStatus {
+  DRAFT
+  LIVE
+  INTERNAL // demonstrable privately, never rendered publicly
+  ARCHIVED
+}
+
+// The provenance rule from docs/CREDIBILITY.md, expressed in the type system.
+// There is no "unspecified" member on purpose: a proof entry cannot exist
+// without declaring what it is.
+enum Origin {
+  BUILT_BY_APEX
+  OPERATED_BY_APEX
+  THIRD_PARTY_OSS
+}
+
+model Solution {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name    String
+  tagline String
+  summary String  @db.Text
+  body    String? @db.Text
+  icon    String?
+
+  // "We design, build and operate scalable software platforms" —
+  // capability statements, not a list of services.
+  capabilities String[]
+  outcomes     String[]
+
+  industries  Industry[]  @relation("IndustrySolutions")
+  caseStudies CaseStudy[] @relation("CaseStudySolutions")
+  faqs        Faq[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("solutions")
+}
+
+model Industry {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name      String
+  tagline   String
+  challenge String @db.Text // industry challenge
+  approach  String @db.Text // technology solution
+  outcome   String @db.Text // business outcome
+
+  solutions   Solution[]  @relation("IndustrySolutions")
+  caseStudies CaseStudy[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("industries")
+}
+
+model CaseStudy {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title   String
+  summary String @db.Text
+
+  // Challenge -> Strategy -> Technology -> Implementation -> Result
+  challenge      String  @db.Text
+  strategy       String  @db.Text
+  technology     String  @db.Text
+  implementation String  @db.Text
+  result         String  @db.Text
+  lessons        String? @db.Text
+
+  // A named client requires recorded written permission. Without consent the
+  // study still publishes — anonymised via `anonymousLabel`.
+  clientName        String?
+  clientConsent     Boolean   @default(false)
+  consentRecordedAt DateTime?
+  consentReference  String?
+  anonymousLabel    String // "a European logistics operator"
+
+  technologies String[]
+  metrics      CaseStudyMetric[]
+
+  industry   Industry? @relation(fields: [industryId], references: [id], onDelete: SetNull)
+  industryId String?
+
+  solutions Solution[] @relation("CaseStudySolutions")
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("case_studies")
+}
+
+model CaseStudyMetric {
+  id          String    @id @default(cuid())
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+
+  label  String
+  value  String
+  // Where the number came from and when it was measured. Required — a metric
+  // that cannot be traced does not get published.
+  source String
+
+  order Int @default(0)
+
+  @@index([caseStudyId])
+  @@map("case_study_metrics")
+}
+
+// Powers the Technology & Engineering page: the platforms and infrastructure
+// Apex can actually show a technical buyer.
+model TechProofEntry {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  title    String
+  category String // "platform" | "infrastructure" | "security" | "engineering"
+  summary  String @db.Text
+  detail   String @db.Text
+
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // A publicly reachable URL if there is one. Absent means we describe it as a
+  // private demonstration rather than implying anyone can go and look.
+  publicUrl           String?
+  isPubliclyReachable Boolean @default(false)
+
+  technologies String[]
+  evidence     TechProofEvidence[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, category, order])
+  @@map("tech_proof_entries")
+}
+
+model TechProofEvidence {
+  id      String         @id @default(cuid())
+  entryId String
+  entry   TechProofEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  label      String
+  value      String
+  source     String // how this was measured or verified
+  measuredAt DateTime?
+
+  order Int @default(0)
+
+  @@index([entryId])
+  @@map("tech_proof_evidence")
+}
+
+model Insight {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title          String
+  excerpt        String @db.Text
+  body           String @db.Text
+  category       String
+  readingMinutes Int    @default(5)
+
+  authorName    String
+  authorRole    String?
+  coverImageUrl String?
+  coverImageAlt String?
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("insights")
+}
+
+model Testimonial {
+  id     String        @id @default(cuid())
+  status PublishStatus @default(DRAFT)
+
+  quote      String @db.Text
+  authorName String
+  authorRole String
+  company    String
+
+  // Same consent rule as case studies. Testimonials are never invented, and a
+  // real one still needs permission before the name appears.
+  consent           Boolean   @default(false)
+  consentRecordedAt DateTime?
+  consentReference  String?
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model JobPosting {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title       String
+  team        String
+  location    String
+  workMode    String // "remote" | "hybrid" | "on-site"
+  employment  String // "full-time" | "contract"
+  summary     String @db.Text
+  description String @db.Text
+
+  responsibilities String[]
+  requirements     String[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  closesAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+  @@map("job_postings")
+}
+
+model Faq {
+  id       String @id @default(cuid())
+  question String
+  answer   String @db.Text
+  order    Int    @default(0)
+  scope    String @default("general") // "general" | "solution" | "product"
+
+  solution   Solution? @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  solutionId String?
+
+  product   SaasProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String?
+
+  status PublishStatus @default(LIVE)
+
+  @@index([scope, order])
+  @@map("faqs")
+}
+
+// Ad landing pages. Deliberately excluded from the sitemap and marked
+// noindex — they duplicate solution content and exist only for paid traffic.
+model LandingPage {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  headline    String
+  subheadline String  @db.Text
+  body        String? @db.Text
+  ctaLabel    String  @default("Talk to our technology team")
+
+  bullets      String[]
+  campaignName String?
+
+  // Which solution or product this campaign is selling — sets the lead's
+  // interest without asking the visitor to pick from a list.
+  solutionSlug String?
+  productSlug  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("landing_pages")
+}
+
+model Page {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title String
+  body  String @db.Text
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("pages")
+}
+
+// Authored per page. Never auto-generated from the first paragraph — that is
+// how sites end up with 40 identical descriptions.
+model Seo {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  ogImageUrl  String?
+  noindex     Boolean @default(false)
+  canonical   String?
+
+  solution   Solution?
+  industry   Industry?
+  caseStudy  CaseStudy?
+  insight    Insight?
+  jobPosting JobPosting?
+  page       Page?
+  product    SaasProduct?
+
+  @@map("seo")
+}
+
+// ── module: core ────────────────────────────────────────────────────────────
+// Identity, access control, audit, settings and the encrypted secrets vault.
+// Every other module depends on this one.
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String?
+  image         String?
+  emailVerified DateTime?
+
+  // TOTP. `totpSecret` is encrypted at rest with ENCRYPTION_KEY, never returned
+  // to a client, and only decrypted inside the verification path.
+  totpSecret    String?
+  totpEnabledAt DateTime?
+  lastLoginAt   DateTime?
+  failedLogins  Int       @default(0)
+  lockedUntil   DateTime?
+
+  isActive Boolean @default(true)
+
+  roles         UserRole[]
+  sessions      Session[]
+  auditEntries  AuditLog[]
+  assignedLeads Lead[]         @relation("LeadOwner")
+  activities    LeadActivity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  key         String  @unique // "admin" | "editor" | "sales" | "viewer"
+  name        String
+  description String?
+  isSystem    Boolean @default(false) // system roles cannot be deleted
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  grantedAt DateTime @default(now())
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// Permission keys are contributed by modules via defineModule(), then
+// reconciled into this table on boot. The catalogue is data, not a hardcoded
+// enum, so a new module never requires a migration to become authorisable.
+model Permission {
+  id       String @id @default(cuid())
+  key      String @unique // "cms:write", "crm:read", ...
+  moduleId String
+  label    String
+
+  roles RolePermission[]
+
+  @@index([moduleId])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  ipAddress    String?
+  userAgent    String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Append-only. Every privileged action writes one row; nothing deletes them.
+model AuditLog {
+  id      String  @id @default(cuid())
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  action     String // "lead.status_changed", "product.published", ...
+  entityType String
+  entityId   String?
+  summary    String
+
+  // Before/after values for the changed fields only — never whole records,
+  // and never anything from the secrets vault.
+  changes Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique // "org.phone", "seo.defaultTitle", ...
+  value     Json
+  group     String   @default("general")
+  label     String
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@map("settings")
+}
+
+// Third-party credentials (AI providers, SMTP, ad platforms).
+// `secretCiphertext` is AES-256-GCM. The plaintext is never selected into an
+// API response — the console shows only `lastFour` and the test-connection
+// result.
+model Integration {
+  id       String @id @default(cuid())
+  provider String @unique // "minimax", "ollama", "meta-capi", "google-ads", "smtp"
+  label    String
+
+  isEnabled Boolean @default(false)
+
+  secretCiphertext String?
+  secretIv         String?
+  secretTag        String?
+  lastFour         String?
+
+  config Json @default("{}")
+
+  lastTestedAt DateTime?
+  lastTestOk   Boolean?
+  lastTestNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("integrations")
+}
+
+model FeatureFlag {
+  id          String  @id @default(cuid())
+  key         String  @unique
+  description String
+  isEnabled   Boolean @default(false)
+  rollout     Int     @default(0) // 0-100
+
+  updatedAt DateTime @updatedAt
+
+  @@map("feature_flags")
+}
+
+model MediaAsset {
+  id           String  @id @default(cuid())
+  key          String  @unique // S3 object key
+  url          String
+  filename     String
+  mimeType     String
+  bytes        Int
+  width        Int?
+  height       Int?
+  // Required for anything rendered on the public site. Empty alt is allowed
+  // only for decorative images, and must be an explicit empty string.
+  alt          String
+  isDecorative Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("media_assets")
+}
+
+// ── module: crm ─────────────────────────────────────────────────────────────
+// The commercial spine: every enquiry, where it came from, and what happened
+// to it. Attribution is captured at the moment of submission — reconstructing
+// it later is impossible.
+
+enum LeadStage {
+  NEW
+  QUALIFIED
+  OPPORTUNITY
+  CUSTOMER
+  LOST
+}
+
+enum LeadSourceType {
+  FORM
+  PHONE_CLICK
+  WHATSAPP_CLICK
+  EMAIL_CLICK
+  DEMO_REQUEST
+  REFERRAL
+  MANUAL
+}
+
+model Lead {
+  id    String    @id @default(cuid())
+  stage LeadStage @default(NEW)
+
+  // ── Who ───────────────────────────────────────────────────────────────
+  name        String
+  email       String
+  phone       String?
+  whatsapp    String?
+  companyName String?
+  jobTitle    String?
+  country     String?
+  countryCode String?
+  companySize String?
+
+  // ── What they want ────────────────────────────────────────────────────
+  interestType String? // "solution" | "product" | "general" | "career"
+  interestSlug String?
+  requirements String? @db.Text
+  budgetBand   String?
+  timeline     String?
+  message      String? @db.Text
+
+  sourceType LeadSourceType @default(FORM)
+
+  // ── Handling ──────────────────────────────────────────────────────────
+  ownerId String?
+  owner   User?   @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  qualifiedAt    DateTime?
+  convertedAt    DateTime?
+  lostAt         DateTime?
+  lostReason     String?
+  valueAmount    Int?
+  valueCurrency  String    @default("USD")
+  nextFollowUpAt DateTime?
+
+  // ── AI assist ─────────────────────────────────────────────────────────
+  // Advisory only. Scores never auto-action, auto-reply or auto-discard a
+  // lead; a human decides and the audit log records who.
+  aiSummary  String?   @db.Text
+  aiScore    Int?
+  aiScoredAt DateTime?
+  aiModel    String?
+
+  attribution Attribution?
+  activities  LeadActivity[]
+  demoRequest DemoRequest?
+
+  // Deduplication window key: same email + same day. Prevents a double-tap on
+  // a slow mobile connection from creating two leads and two notifications.
+  dedupeKey String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stage, createdAt])
+  @@index([email])
+  @@index([ownerId, stage])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+// First-touch marketing attribution, written in the same transaction as the
+// lead. This is what makes "spend -> lead -> customer -> revenue" answerable.
+model Attribution {
+  id     String @id @default(cuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+
+  gclid   String?
+  fbclid  String?
+  msclkid String?
+
+  referrer    String?
+  landingPath String?
+  currentPath String?
+
+  userAgent String?
+  ipHash    String? // hashed, never the raw address
+  country   String?
+
+  // Consent state at submission time, so we can prove why a tag did or did
+  // not fire for this visitor.
+  consentAnalytics Boolean @default(false)
+  consentMarketing Boolean @default(false)
+
+  // Server-side conversion delivery. Browser-side events are lost to ad
+  // blockers and ITP at a high rate; these are the copies that survive.
+  metaCapiSentAt   DateTime?
+  googleAdsSentAt  DateTime?
+  conversionErrors Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([utmCampaign])
+  @@index([utmSource, utmMedium])
+  @@map("attributions")
+}
+
+model LeadActivity {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  type    String // "note" | "stage_change" | "assignment" | "email" | "call" | "ai_summary"
+  summary String
+  detail  String? @db.Text
+  meta    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
+  @@map("lead_activities")
+}
+
+// Campaign spend, entered or synced, so attribution reporting can divide
+// money by outcomes rather than guessing.
+model CampaignSpend {
+  id       String @id @default(cuid())
+  platform String // "google-ads" | "meta" | "linkedin"
+  campaign String
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  amount   Int // minor units
+  currency String @default("USD")
+
+  impressions Int?
+  clicks      Int?
+
+  source String @default("manual") // "manual" | "api-sync"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([platform, campaign, periodStart, periodEnd])
+  @@index([platform, periodStart])
+  @@map("campaign_spend")
+}
+
+// ── module: saas ────────────────────────────────────────────────────────────
+// The product catalogue. Designed so Apex can launch product number five
+// without the corporate site being rebuilt: a product is a record with its own
+// pages, pricing, docs and demo funnel.
+
+model SaasProduct {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name     String
+  tagline  String
+  category String
+
+  // Problem -> solution, in the customer's language.
+  problem  String @db.Text
+  solution String @db.Text
+  summary  String @db.Text
+
+  // Provenance is mandatory here too. A product page that quietly rests on
+  // someone else's open-source project is exactly the claim a technical buyer
+  // checks first.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  isPubliclyReachable Boolean @default(false)
+  publicUrl           String?
+  docsUrl             String?
+  loginUrl            String?
+
+  // Anything listed must be something Apex can demonstrate *and* support.
+  demoAvailable  Boolean @default(false)
+  trialAvailable Boolean @default(false)
+  trialDays      Int?
+
+  securityNotes String? @db.Text
+
+  features     ProductFeature[]
+  screenshots  ProductScreenshot[]
+  plans        PricingPlan[]
+  integrations ProductIntegration[]
+  docs         DocPage[]
+  faqs         Faq[]
+  demoRequests DemoRequest[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("saas_products")
+}
+
+model ProductFeature {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String  @db.Text
+  icon        String?
+  benefit     String? // the outcome, not the mechanism
+
+  // False for anything on the roadmap. A roadmap item rendered as a shipped
+  // feature is the fastest way to lose a technical evaluation.
+  isShipped Boolean @default(true)
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_features")
+}
+
+model ProductScreenshot {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  url     String
+  alt     String
+  caption String?
+
+  // Screenshots come from the running system. Anything staged or mocked up
+  // must say so on the page.
+  isRealCapture Boolean   @default(true)
+  capturedAt    DateTime?
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_screenshots")
+}
+
+model PricingPlan {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name          String
+  description   String
+  // Null price means "contact us" rather than a fabricated number.
+  priceAmount   Int?
+  priceCurrency String  @default("USD")
+  pricePeriod   String? // "month" | "year"
+  isCustom      Boolean @default(false)
+  isFeatured    Boolean @default(false)
+
+  ctaLabel String        @default("Request a demo")
+  features PlanFeature[]
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("pricing_plans")
+}
+
+model PlanFeature {
+  id     String      @id @default(cuid())
+  planId String
+  plan   PricingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  label     String
+  included  Boolean @default(true)
+  limitNote String?
+
+  order Int @default(0)
+
+  @@index([planId, order])
+  @@map("plan_features")
+}
+
+model ProductIntegration {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  logoUrl     String?
+  docsUrl     String?
+
+  // Only integrations that actually exist. "Planned" is a separate, labelled
+  // state — never rendered as available.
+  isAvailable Boolean @default(true)
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_integrations")
+}
+
+model DocPage {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  slug    String
+  title   String
+  body    String @db.Text
+  section String @default("getting-started")
+
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, slug])
+  @@index([productId, section, order])
+  @@map("doc_pages")
+}
+
+model DemoRequest {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // A demo request is a lead with a product attached, so it joins the same
+  // pipeline rather than sitting in a second inbox nobody checks.
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  preferredTime String?
+  notes         String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("demo_requests")
+}
+
+// Apex Global Tech Solution — datasource and generator.
+// The schema is split by module: one .prisma file per modules/* folder, so a
+// module owns its tables the same way it owns its code. See docs/MODULES.md.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

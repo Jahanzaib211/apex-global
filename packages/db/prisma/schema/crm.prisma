@@ -1,0 +1,173 @@
+// ── module: crm ─────────────────────────────────────────────────────────────
+// The commercial spine: every enquiry, where it came from, and what happened
+// to it. Attribution is captured at the moment of submission — reconstructing
+// it later is impossible.
+
+enum LeadStage {
+  NEW
+  QUALIFIED
+  OPPORTUNITY
+  CUSTOMER
+  LOST
+}
+
+enum LeadSourceType {
+  FORM
+  PHONE_CLICK
+  WHATSAPP_CLICK
+  EMAIL_CLICK
+  DEMO_REQUEST
+  REFERRAL
+  MANUAL
+}
+
+model Lead {
+  id    String    @id @default(cuid())
+  stage LeadStage @default(NEW)
+
+  // ── Who ───────────────────────────────────────────────────────────────
+  name        String
+  email       String
+  phone       String?
+  whatsapp    String?
+  companyName String?
+  jobTitle    String?
+  country     String?
+  countryCode String?
+  companySize String?
+
+  // ── What they want ────────────────────────────────────────────────────
+  interestType String? // "solution" | "product" | "general" | "career"
+  interestSlug String?
+  requirements String? @db.Text
+  budgetBand   String?
+  timeline     String?
+  message      String? @db.Text
+
+  sourceType LeadSourceType @default(FORM)
+
+  // ── Handling ──────────────────────────────────────────────────────────
+  ownerId String?
+  owner   User?   @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  qualifiedAt DateTime?
+  convertedAt DateTime?
+  lostAt      DateTime?
+  lostReason  String?
+  valueAmount Int?
+  valueCurrency String @default("USD")
+  nextFollowUpAt DateTime?
+
+  // ── AI assist ─────────────────────────────────────────────────────────
+  // Advisory only. Scores never auto-action, auto-reply or auto-discard a
+  // lead; a human decides and the audit log records who.
+  aiSummary   String? @db.Text
+  aiScore     Int?
+  aiScoredAt  DateTime?
+  aiModel     String?
+
+  attribution Attribution?
+  activities  LeadActivity[]
+  demoRequest DemoRequest?
+
+  // Deduplication window key: same email + same day. Prevents a double-tap on
+  // a slow mobile connection from creating two leads and two notifications.
+  dedupeKey String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stage, createdAt])
+  @@index([email])
+  @@index([ownerId, stage])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+// First-touch marketing attribution, written in the same transaction as the
+// lead. This is what makes "spend -> lead -> customer -> revenue" answerable.
+model Attribution {
+  id     String @id @default(cuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+
+  gclid  String?
+  fbclid  String?
+  msclkid String?
+
+  referrer    String?
+  landingPath String?
+  currentPath String?
+
+  userAgent String?
+  ipHash    String? // hashed, never the raw address
+  country   String?
+
+  // Consent state at submission time, so we can prove why a tag did or did
+  // not fire for this visitor.
+  consentAnalytics Boolean @default(false)
+  consentMarketing Boolean @default(false)
+
+  // Server-side conversion delivery. Browser-side events are lost to ad
+  // blockers and ITP at a high rate; these are the copies that survive.
+  metaCapiSentAt   DateTime?
+  googleAdsSentAt  DateTime?
+  conversionErrors Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([utmCampaign])
+  @@index([utmSource, utmMedium])
+  @@map("attributions")
+}
+
+model LeadActivity {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  type    String // "note" | "stage_change" | "assignment" | "email" | "call" | "ai_summary"
+  summary String
+  detail  String? @db.Text
+  meta    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
+  @@map("lead_activities")
+}
+
+// Campaign spend, entered or synced, so attribution reporting can divide
+// money by outcomes rather than guessing.
+model CampaignSpend {
+  id       String @id @default(cuid())
+  platform String // "google-ads" | "meta" | "linkedin"
+  campaign String
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  amount   Int // minor units
+  currency String @default("USD")
+
+  impressions Int?
+  clicks      Int?
+
+  source String @default("manual") // "manual" | "api-sync"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([platform, campaign, periodStart, periodEnd])
+  @@index([platform, periodStart])
+  @@map("campaign_spend")
+}

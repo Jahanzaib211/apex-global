@@ -1,0 +1,13 @@
+// Apex Global Tech Solution — datasource and generator.
+// The schema is split by module: one .prisma file per modules/* folder, so a
+// module owns its tables the same way it owns its code. See docs/MODULES.md.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

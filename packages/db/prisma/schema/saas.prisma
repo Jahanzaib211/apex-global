@@ -1,0 +1,195 @@
+// ── module: saas ────────────────────────────────────────────────────────────
+// The product catalogue. Designed so Apex can launch product number five
+// without the corporate site being rebuilt: a product is a record with its own
+// pages, pricing, docs and demo funnel.
+
+model SaasProduct {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name     String
+  tagline  String
+  category String
+
+  // Problem -> solution, in the customer's language.
+  problem  String @db.Text
+  solution String @db.Text
+  summary  String @db.Text
+
+  // Provenance is mandatory here too. A product page that quietly rests on
+  // someone else's open-source project is exactly the claim a technical buyer
+  // checks first.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  isPubliclyReachable Boolean @default(false)
+  publicUrl           String?
+  docsUrl             String?
+  loginUrl            String?
+
+  // Anything listed must be something Apex can demonstrate *and* support.
+  demoAvailable   Boolean @default(false)
+  trialAvailable  Boolean @default(false)
+  trialDays       Int?
+
+  securityNotes String? @db.Text
+
+  features     ProductFeature[]
+  screenshots  ProductScreenshot[]
+  plans        PricingPlan[]
+  integrations ProductIntegration[]
+  docs         DocPage[]
+  faqs         Faq[]
+  demoRequests DemoRequest[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("saas_products")
+}
+
+model ProductFeature {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String  @db.Text
+  icon        String?
+  benefit     String? // the outcome, not the mechanism
+
+  // False for anything on the roadmap. A roadmap item rendered as a shipped
+  // feature is the fastest way to lose a technical evaluation.
+  isShipped Boolean @default(true)
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_features")
+}
+
+model ProductScreenshot {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  url     String
+  alt     String
+  caption String?
+
+  // Screenshots come from the running system. Anything staged or mocked up
+  // must say so on the page.
+  isRealCapture Boolean @default(true)
+  capturedAt    DateTime?
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_screenshots")
+}
+
+model PricingPlan {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String
+  // Null price means "contact us" rather than a fabricated number.
+  priceAmount   Int?
+  priceCurrency String  @default("USD")
+  pricePeriod   String? // "month" | "year"
+  isCustom      Boolean @default(false)
+  isFeatured    Boolean @default(false)
+
+  ctaLabel String @default("Request a demo")
+  features PlanFeature[]
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("pricing_plans")
+}
+
+model PlanFeature {
+  id     String      @id @default(cuid())
+  planId String
+  plan   PricingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  label     String
+  included  Boolean @default(true)
+  limitNote String?
+
+  order Int @default(0)
+
+  @@index([planId, order])
+  @@map("plan_features")
+}
+
+model ProductIntegration {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  logoUrl     String?
+  docsUrl     String?
+
+  // Only integrations that actually exist. "Planned" is a separate, labelled
+  // state — never rendered as available.
+  isAvailable Boolean @default(true)
+
+  order Int @default(0)
+
+  @@index([productId, order])
+  @@map("product_integrations")
+}
+
+model DocPage {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  slug    String
+  title   String
+  body    String @db.Text
+  section String @default("getting-started")
+
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, slug])
+  @@index([productId, section, order])
+  @@map("doc_pages")
+}
+
+model DemoRequest {
+  id        String      @id @default(cuid())
+  productId String
+  product   SaasProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // A demo request is a lead with a product attached, so it joins the same
+  // pipeline rather than sitting in a second inbox nobody checks.
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  preferredTime String?
+  notes         String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("demo_requests")
+}

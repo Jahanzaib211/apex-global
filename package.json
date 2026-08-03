@@ -23,10 +23,12 @@
     "db:push": "pnpm --filter @apex/db push",
     "db:seed": "pnpm --filter @apex/db seed",
     "db:studio": "pnpm --filter @apex/db studio",
-    "services:up": "docker compose -f infra/docker-compose.yml up -d",
-    "services:down": "docker compose -f infra/docker-compose.yml down",
+    "services:up": "docker compose --env-file .env -f infra/docker-compose.yml up -d",
+    "services:down": "docker compose --env-file .env -f infra/docker-compose.yml down",
+    "services:logs": "docker compose --env-file .env -f infra/docker-compose.yml logs -f",
+    "services:ps": "docker compose --env-file .env -f infra/docker-compose.yml ps",
     "smoke": "node scripts/smoke-test.mjs",
-    "audit:credibility": "node scripts/credibility-audit.mjs"
+    "audit:credibility": "pnpm --filter @apex/db run audit"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
