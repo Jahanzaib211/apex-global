@@ -63,9 +63,18 @@ written offsite.
 **A backup that has never been restored is not a backup.** Restore into a scratch database quarterly
 and confirm the row counts and the most recent lead. Record the date in this file when you do.
 
+```bash
+BACKUP_PASSPHRASE=... ./infra/scripts/backup-db.sh nightly
+BACKUP_PASSPHRASE=... ./infra/scripts/restore-db.sh .backups/apex-nightly-<stamp>.sql.gz.enc
+```
+
+The restore script never touches the live database — it recreates a scratch one, restores into that,
+and prints row counts plus the most recent lead so you can see the data actually came back.
+
 | Restore drill | Date | Result |
 |---|---|---|
-| _(first drill pending — record it here)_ | | |
+| Initial (development database) | 2026-08-04 | Passed — 4 leads, 9 solutions, 2 case studies, 3 products, 1 user restored. Surfaced a stale draft product left behind by a slug rename; the seed now reports orphans. |
+| _(next: production, before the first campaign)_ | | |
 
 ## Rotating a secret
 

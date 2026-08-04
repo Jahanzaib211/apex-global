@@ -36,3 +36,9 @@ Thumbs.db
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# local backups (encrypted, but still local artefacts)
+.backups/
+logs/
+test-results/
+playwright-report/

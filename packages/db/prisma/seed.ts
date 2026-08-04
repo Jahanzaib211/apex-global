@@ -297,6 +297,30 @@ async function seedProducts() {
 
   const live = products.filter((p) => p.status === "LIVE").length;
   console.log(`  saas: ${products.length} products (${live} live, ${products.length - live} draft)`);
+
+  // Renaming a slug in the content file creates a new row and orphans the old
+  // one — the seed upserts by slug, so it cannot see the rename. Report rather
+  // than delete: the seed cannot tell an orphan apart from a record an
+  // operator created in the console, and silently removing someone's content
+  // is a worse failure than leaving a stale draft.
+  await warnOrphans(
+    "saas product",
+    products.map((p) => p.slug),
+    (await prisma.saasProduct.findMany({ select: { slug: true } })).map((r) => r.slug),
+  );
+}
+
+async function warnOrphans(kind: string, expected: string[], actual: string[]) {
+  const orphans = actual.filter((slug) => !expected.includes(slug));
+  if (orphans.length === 0) return;
+
+  console.warn(
+    `\n  ⚠ ${orphans.length} ${kind}(s) in the database are not in the content files:\n` +
+      orphans.map((s) => `      ${s}`).join("\n") +
+      `\n    Either they were created in the console (fine), or a slug was renamed\n` +
+      `    and the old row is stale. Remove stale rows deliberately — the seed\n` +
+      `    will not delete content it did not create.\n`,
+  );
 }
 
 async function seedCaseStudies() {
