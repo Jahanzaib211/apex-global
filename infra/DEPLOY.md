@@ -1,5 +1,53 @@
 # Deployment
 
+> **Currently live on the homelab**, published at
+> **https://tech.apexgroupcompanies.com** through a Cloudflare tunnel. See
+> [Homelab publishing](#homelab-publishing-current) below. The VPS route
+> described after it is the production target for when ad spend starts.
+
+## Homelab publishing (current)
+
+Both apps run under PM2 on loopback; a Cloudflare tunnel is the only door in.
+
+```bash
+pnpm build                                    # NEXT_PUBLIC_SITE_URL is baked in at build time
+pm2 start infra/ecosystem.config.cjs
+pm2 save                                      # survives reboot via pm2-jahanzaib.service
+```
+
+| Process | Bind | Published |
+|---|---|---|
+| `apex-global-web` | `127.0.0.1:4300` | Yes — tech.apexgroupcompanies.com |
+| `apex-global-console` | `127.0.0.1:4301` | **No.** Local or Tailscale only |
+| `tunnel-apex-tech` | metrics `127.0.0.1:20008` | — |
+
+The tunnel:
+
+```bash
+# Token goes in a file, never on a command line (it would land in ~/.pm2/dump.pm2)
+install -m 600 /dev/null ~/.cloudflared/tech.token
+cat > ~/.cloudflared/tech.token               # paste from the Cloudflare dashboard, Ctrl-D
+
+pm2 start ~/.local/bin/cloudflared --name tunnel-apex-tech -- \
+  --no-autoupdate --protocol http2 \
+  --config ~/.cloudflared/tech-config.yml \
+  --metrics 127.0.0.1:20008 \
+  tunnel run --token-file ~/.cloudflared/tech.token
+pm2 save
+```
+
+Health at a glance: `./infra/scripts/tunnels-status.sh`
+(healthy = `online / 4 / 200`). Inventory: [`TUNNELS.md`](TUNNELS.md).
+
+**Changing the public hostname requires a rebuild, not a restart.**
+`NEXT_PUBLIC_SITE_URL` is inlined by Next at build time, and it drives every
+canonical URL, OG tag and `sitemap.xml` entry. Update `.env`, update the
+`seo.siteUrl` setting, then `pnpm build`.
+
+---
+
+## VPS production (target)
+
 Two environments. **Production runs on a rented VPS**, not on the homelab —
 a sales site that goes down with a domestic power cut or ISP outage is
 unaffordable in the middle of a paid campaign, and £30/month is cheap
