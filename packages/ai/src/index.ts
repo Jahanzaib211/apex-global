@@ -5,6 +5,7 @@ import type { AiProvider } from "./provider";
 export * from "./provider";
 export * from "./vault";
 export * from "./prompts";
+export * from "./runtime";
 export { minimax } from "./providers/minimax";
 export { ollama } from "./providers/ollama";
 

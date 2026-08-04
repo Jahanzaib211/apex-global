@@ -114,6 +114,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@apex/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@apex/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -168,6 +171,10 @@ importers:
         version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1)(lightningcss@1.32.0)
 
   packages/ai:
+    dependencies:
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@apex/config':
         specifier: workspace:*
@@ -211,6 +218,21 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.23.5
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1)(lightningcss@1.32.0)
+
+  packages/module-kit:
+    devDependencies:
+      '@apex/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.1
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

@@ -28,13 +28,23 @@ export const TIMELINES = [
   { value: "exploring", label: "Exploring options" },
 ] as const;
 
+/**
+ * Optional free-text field.
+ *
+ * `.nullish()` rather than `.optional()` is load-bearing: `FormData.get()`
+ * returns **null** for an input the form did not render, and the compact form
+ * on campaign pages omits several. With `.optional()` those nulls failed
+ * validation and every ad-page conversion was rejected with a generic error
+ * and no highlighted field. Empty strings and nulls both normalise to
+ * undefined so the column stays null rather than storing "".
+ */
 const optionalString = (max: number) =>
   z
     .string()
     .trim()
     .max(max)
-    .optional()
-    .transform((v) => (v === "" ? undefined : v));
+    .nullish()
+    .transform((v) => (v === "" || v === null ? undefined : v));
 
 export const leadSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(120),

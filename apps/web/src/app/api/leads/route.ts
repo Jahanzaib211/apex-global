@@ -1,6 +1,7 @@
 import { prisma } from "@apex/db";
 import { NextResponse } from "next/server";
 import { clientCountry, clientIp, dedupeKey, hashIp } from "@/lib/attribution.server";
+import { enrichLeadInBackground } from "@/lib/enrich";
 import { leadSchema } from "@/lib/lead-schema";
 
 export const runtime = "nodejs";
@@ -177,9 +178,13 @@ export async function POST(request: Request) {
       });
     });
 
-    // TODO(modules/crm): enqueue notification, AI summarisation and the
-    // server-side conversion event once the worker tier lands. Deliberately
-    // not fired inline — a slow third party must never block a submission.
+    // Enrichment runs after the lead is committed and is never awaited. A slow
+    // or failing model must not delay the response or lose the enquiry — the
+    // record is already safe, and a summary is a convenience on top of it.
+    void enrichLeadInBackground(lead.id);
+
+    // TODO(modules/crm): notification and server-side conversion delivery move
+    // onto BullMQ with the worker tier, for retries and a dead-letter queue.
 
     return NextResponse.json({ ok: true, id: lead.id }, { status: 201 });
   } catch (error) {
