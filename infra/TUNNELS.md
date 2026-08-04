@@ -13,17 +13,41 @@ Read-only; safe during an incident.
 | `tunnel-nova` | NOVA | `1e6cb156-0584-4c42-ad99-d1cb4ffb723b` | nova.alilabsx.com | `127.0.0.1:2026` | 20001 | inline ⚠ |
 | `tunnel-fox-hosting` | FOX HOSTING | `2a31dc3a-1d00-439a-9338-598e4965de90` | client.alilabsx.com | `127.0.0.1:4200` | 20002 | inline ⚠ |
 | `tunnel-whmcs` | WHMCS | `efb1095f-2bab-4129-badc-ae802fd44eab` | admin.alilabsx.com | `127.0.0.1:4201` | 20003 | inline ⚠ |
-| `tunnel-apex-group` | APEX GROUP | `677c31d0-0f5d-46fd-8f48-13036ec2b4b3` | apexgroupcompanies.com † | `127.0.0.1:3103` | 20004 | inline ⚠ |
+| `tunnel-apex-group` | APEX GROUP | `677c31d0-0f5d-46fd-8f48-13036ec2b4b3` | apex.apexgroupcompanies.com | `127.0.0.1:3103` | 20004 | inline ⚠ |
 | `tunnel-apex-tours` | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | apex-tours.local ‡ | `127.0.0.1:3001` | 20005 | inline ⚠ |
 | `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | apex-outsourcing.local ‡ | `127.0.0.1:3100` | 20006 | inline ⚠ |
-| `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | apexholdings.pk † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
+| `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
 | `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` |
 
-† Hostname does not currently resolve — the connector is healthy, but the DNS
-record is missing. See the hardening report.
+† The local config file names `apexholdings.pk`, but the tunnel is
+**remotely managed** — the dashboard is the source of truth, and it routes
+`holdings.apexgroupcompanies.com`. `apexholdings.pk` has no DNS record at all.
+The hostname column above records what is actually served, not what the file
+says. Neither root domain (`apexgroupcompanies.com`, `apexholdings.pk`)
+resolves; see the hardening report.
 ‡ `.local` placeholder; nothing publicly reachable by design.
 ⚠ Token stored inline in the PM2 args, so it is readable in `pm2 jlist` and in
 plaintext inside `~/.pm2/dump.pm2`. Not urgent, but see the hardening report.
+
+## Where ingress actually comes from
+
+Every tunnel here is created in the dashboard and run with a token, which makes
+it **remotely managed**: cloudflared downloads its ingress rules from Cloudflare
+and logs `Updated to new configuration …` on connect. The local
+`~/.cloudflared/*-config.yml` files supply process-level settings (metrics,
+protocol, timeouts) and **document** the intended routing, but their `ingress:`
+blocks do not decide anything.
+
+Practical consequence: **editing a config file will not change where traffic
+goes.** Change the public hostname in the dashboard. To see what a connector is
+really serving:
+
+```bash
+pm2 logs tunnel-<name> --lines 200 --nostream | grep -o 'Updated to new configuration.*' | tail -1
+```
+
+That command is how the hostname column above was corrected — two entries had
+been copied from the config files and were wrong.
 
 **Next free metrics port: 20009.**
 

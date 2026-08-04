@@ -22,10 +22,13 @@ TUNNELS=(
   "tunnel-nova|20001|nova.alilabsx.com"
   "tunnel-fox-hosting|20002|client.alilabsx.com"
   "tunnel-whmcs|20003|admin.alilabsx.com"
-  "tunnel-apex-group|20004|apexgroupcompanies.com"
+  # Hostnames below are what the connectors actually serve per their remote
+  # config, which is not always what the local config file claims. See
+  # TUNNELS.md → "Where ingress actually comes from".
+  "tunnel-apex-group|20004|apex.apexgroupcompanies.com"
   "tunnel-apex-tours|20005|-"
   "tunnel-apex-outsourcing|20006|-"
-  "tunnel-apex-holdings|20007|apexholdings.pk"
+  "tunnel-apex-holdings|20007|holdings.apexgroupcompanies.com"
   "tunnel-apex-tech|20008|tech.apexgroupcompanies.com"
 )
 

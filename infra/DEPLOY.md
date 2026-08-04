@@ -21,23 +21,47 @@ pm2 save                                      # survives reboot via pm2-jahanzai
 | `apex-global-console` | `127.0.0.1:4301` | **No.** Local or Tailscale only |
 | `tunnel-apex-tech` | metrics `127.0.0.1:20008` | — |
 
-The tunnel:
+The tunnel needs a token, which goes in a file rather than on a command line —
+inline, it would be readable in `pm2 jlist` and in plaintext inside
+`~/.pm2/dump.pm2`. Either paste it:
 
 ```bash
-# Token goes in a file, never on a command line (it would land in ~/.pm2/dump.pm2)
 install -m 600 /dev/null ~/.cloudflared/tech.token
 cat > ~/.cloudflared/tech.token               # paste from the Cloudflare dashboard, Ctrl-D
-
-pm2 start ~/.local/bin/cloudflared --name tunnel-apex-tech -- \
-  --no-autoupdate --protocol http2 \
-  --config ~/.cloudflared/tech-config.yml \
-  --metrics 127.0.0.1:20008 \
-  tunnel run --token-file ~/.cloudflared/tech.token
-pm2 save
 ```
+
+…or fetch it, if this host has an origin certificate from `cloudflared tunnel login`:
+
+```bash
+cloudflared tunnel token tech > ~/.cloudflared/tech.token
+chmod 600 ~/.cloudflared/tech.token
+```
+
+Then:
+
+```bash
+./infra/scripts/start-tech-tunnel.sh
+```
+
+That script is idempotent and touches no other tunnel. It verifies the token
+belongs to the `tech` tunnel before starting anything, refuses to publish a
+connector in front of a dead origin, then polls until four HA connections are
+registered and the public hostname returns 200 — so a failure is reported as
+one sentence rather than as a crash loop discovered later.
+
+**If a 1033 / HTTP 530 ever appears**, it means Cloudflare has the DNS route but
+no connector attached. Nine times out of ten the connector simply is not
+running: `pm2 describe tunnel-apex-tech`, then re-run the script above.
 
 Health at a glance: `./infra/scripts/tunnels-status.sh`
 (healthy = `online / 4 / 200`). Inventory: [`TUNNELS.md`](TUNNELS.md).
+
+> **Ingress lives in the dashboard, not in these files.** Every tunnel on this
+> host is dashboard-created and token-run, which makes it *remotely managed*:
+> cloudflared downloads its routing rules on connect. The local
+> `~/.cloudflared/*-config.yml` files set process options and document intent,
+> but editing their `ingress:` block changes nothing. If traffic goes to the
+> wrong port, fix it under **Public Hostname** in the dashboard.
 
 **Changing the public hostname requires a rebuild, not a restart.**
 `NEXT_PUBLIC_SITE_URL` is inlined by Next at build time, and it drives every
