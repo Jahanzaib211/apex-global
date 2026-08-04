@@ -12,6 +12,8 @@
 # A healthy tunnel shows: online / 4 connections / 200.
 #   0 connections  → the connector is running but not registered with Cloudflare
 #   530 (or 1033)  → Cloudflare has the DNS route but no connector attached
+#                    (usually: the connector simply is not running)
+#   502/504        → connected, but the origin behind it is down
 #   000            → the hostname does not resolve at all
 #
 # Usage: infra/scripts/tunnels-status.sh
@@ -26,15 +28,15 @@ TUNNELS=(
   # config, which is not always what the local config file claims. See
   # TUNNELS.md → "Where ingress actually comes from".
   "tunnel-apex-group|20004|apex.apexgroupcompanies.com"
-  "tunnel-apex-tours|20005|-"
-  "tunnel-apex-outsourcing|20006|-"
+  "tunnel-apex-tours|20005|tours.apexgroupcompanies.com"
+  "tunnel-apex-outsourcing|20006|outsourcing.apexgroupcompanies.com"
   "tunnel-apex-holdings|20007|holdings.apexgroupcompanies.com"
   "tunnel-apex-tech|20008|tech.apexgroupcompanies.com"
 )
 
-printf '%-26s %-10s %-6s %-32s %s\n' "PM2 PROCESS" "STATE" "CONNS" "HOSTNAME" "HTTP"
-printf '%-26s %-10s %-6s %-32s %s\n' "--------------------------" "----------" "-----" \
-  "--------------------------------" "----"
+printf '%-26s %-10s %-6s %-36s %s\n' "PM2 PROCESS" "STATE" "CONNS" "HOSTNAME" "HTTP"
+printf '%-26s %-10s %-6s %-36s %s\n' "--------------------------" "----------" "-----" \
+  "------------------------------------" "----"
 
 pm2_states="$(pm2 jlist 2>/dev/null || echo '[]')"
 
@@ -70,7 +72,7 @@ print(match['pm2_env']['status'] if match else 'absent')
     [ -z "$code" ] && code="000"
   fi
 
-  printf '%-26s %-10s %-6s %-32s %s\n' "$name" "$state" "$conns" "$host" "$code"
+  printf '%-26s %-10s %-6s %-36s %s\n' "$name" "$state" "$conns" "$host" "$code"
 done
 
 echo

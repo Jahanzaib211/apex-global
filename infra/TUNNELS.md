@@ -14,20 +14,23 @@ Read-only; safe during an incident.
 | `tunnel-fox-hosting` | FOX HOSTING | `2a31dc3a-1d00-439a-9338-598e4965de90` | client.alilabsx.com | `127.0.0.1:4200` | 20002 | inline ⚠ |
 | `tunnel-whmcs` | WHMCS | `efb1095f-2bab-4129-badc-ae802fd44eab` | admin.alilabsx.com | `127.0.0.1:4201` | 20003 | inline ⚠ |
 | `tunnel-apex-group` | APEX GROUP | `677c31d0-0f5d-46fd-8f48-13036ec2b4b3` | apex.apexgroupcompanies.com | `127.0.0.1:3103` | 20004 | inline ⚠ |
-| `tunnel-apex-tours` | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | apex-tours.local ‡ | `127.0.0.1:3001` | 20005 | inline ⚠ |
-| `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | apex-outsourcing.local ‡ | `127.0.0.1:3100` | 20006 | inline ⚠ |
+| `tunnel-apex-tours` | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | tours.apexgroupcompanies.com † | `127.0.0.1:3001` | 20005 | inline ⚠ |
+| `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | outsourcing.apexgroupcompanies.com † | `127.0.0.1:3100` | 20006 | inline ⚠ |
 | `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
-| `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** ✅ live | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
+| `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
 
-† The local config file names `apexholdings.pk`, but the tunnel is
-**remotely managed** — the dashboard is the source of truth, and it routes
-`holdings.apexgroupcompanies.com`. `apexholdings.pk` has no DNS record at all.
-The hostname column above records what is actually served, not what the file
-says. Neither root domain (`apexgroupcompanies.com`, `apexholdings.pk`)
-resolves; see the hardening report.
-‡ `.local` placeholder; nothing publicly reachable by design.
+All eight verified serving **HTTP 200** with 4 HA connections on 4 Aug 2026.
+
+† The local config file names a different hostname (`apex-tours.local`,
+`apex-outsourcing.local`, `apexholdings.pk`). Those files are **not
+authoritative** — see the section below. The column above records what each
+connector actually serves, taken from its log.
 ⚠ Token stored inline in the PM2 args, so it is readable in `pm2 jlist` and in
 plaintext inside `~/.pm2/dump.pm2`. Not urgent, but see the hardening report.
+
+Note also that no **root** domain resolves — `apexgroupcompanies.com`, `www.`
+and `apexholdings.pk` all return nothing. Everything lives on a subdomain.
+That is Finding 3 in the hardening report.
 
 ## Where ingress actually comes from
 
@@ -43,11 +46,18 @@ goes.** Change the public hostname in the dashboard. To see what a connector is
 really serving:
 
 ```bash
-pm2 logs tunnel-<name> --lines 200 --nostream | grep -o 'Updated to new configuration.*' | tail -1
+grep -ho 'Updated to new configuration.*' ~/.pm2/logs/tunnel-<name>-error.log | tail -1
 ```
 
-That command is how the hostname column above was corrected — two entries had
-been copied from the config files and were wrong.
+Read the log file directly rather than going through `pm2 logs --lines N` — the
+config line is printed once at connect, so on a long-running connector it has
+usually scrolled past whatever window you ask for.
+
+That command is how the hostname column above was corrected. **Four of the
+eight rows were wrong**, all copied from config files: `apex-tours` and
+`apex-outsourcing` were listed as unreachable `.local` placeholders when both
+serve live subdomains, `apex-holdings` was listed under `apexholdings.pk`, and
+`apex-group` under the bare root domain.
 
 **Next free metrics port: 20009.**
 
