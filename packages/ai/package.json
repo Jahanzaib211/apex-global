@@ -1,0 +1,19 @@
+{
+  "name": "@apex/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "devDependencies": {
+    "@apex/config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.8.2",
+    "vitest": "^2.1.8"
+  }
+}

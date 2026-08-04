@@ -2,7 +2,7 @@
   "name": "apex-global",
   "version": "0.1.0",
   "private": true,
-  "description": "Apex Global Tech Solution — global SaaS and technology platform",
+  "description": "Apex Global Tech Solution \u2014 global SaaS and technology platform",
   "type": "module",
   "packageManager": "pnpm@9.15.9",
   "engines": {
@@ -28,7 +28,8 @@
     "services:logs": "docker compose --env-file .env -f infra/docker-compose.yml logs -f",
     "services:ps": "docker compose --env-file .env -f infra/docker-compose.yml ps",
     "smoke": "node scripts/smoke-test.mjs",
-    "audit:credibility": "pnpm --filter @apex/db run audit"
+    "audit:credibility": "pnpm --filter @apex/db run audit",
+    "db:seed:admin": "pnpm --filter @apex/db run seed:admin"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

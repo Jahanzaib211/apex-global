@@ -23,13 +23,16 @@
     "lint": "eslint src prisma",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "clean": "rm -rf .turbo node_modules generated"
+    "clean": "rm -rf .turbo node_modules generated",
+    "seed:admin": "dotenv -e ../../.env -- tsx prisma/seed-admin.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1"
+    "@prisma/client": "^6.2.1",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "@apex/config": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.2",
     "dotenv-cli": "^8.0.0",
     "prisma": "^6.2.1",
