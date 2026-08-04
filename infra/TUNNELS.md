@@ -17,7 +17,7 @@ Read-only; safe during an incident.
 | `tunnel-apex-tours` | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | apex-tours.local ‡ | `127.0.0.1:3001` | 20005 | inline ⚠ |
 | `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | apex-outsourcing.local ‡ | `127.0.0.1:3100` | 20006 | inline ⚠ |
 | `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
-| `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` |
+| `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** ✅ live | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
 
 † The local config file names `apexholdings.pk`, but the tunnel is
 **remotely managed** — the dashboard is the source of truth, and it routes
