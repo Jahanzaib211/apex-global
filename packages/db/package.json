@@ -27,7 +27,7 @@
     "seed:admin": "dotenv -e ../../.env -- tsx prisma/seed-admin.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^7.9.1",
     "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.2",
     "dotenv-cli": "^8.0.0",
-    "prisma": "^6.2.1",
+    "prisma": "^7.9.1",
     "tsx": "^4.19.2",
     "typescript": "^5.8.2",
     "vitest": "^2.1.8"
