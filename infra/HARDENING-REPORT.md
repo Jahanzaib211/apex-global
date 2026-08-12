@@ -1,0 +1,288 @@
+# Infrastructure hardening report
+
+**Host:** `jahanzaib-A520M-DS3H` · Ubuntu 26.04 · 30 GB RAM / 8 GB swap / 457 GB disk
+**Compiled:** 2026-08-13
+
+> ### Why this file exists
+> `infra/TUNNELS.md` cites "the hardening report" and "Finding 3" in several
+> places, but no such file existed anywhere under `APEX GLOBAL/`. Its findings
+> survived only as those references. This report reconstructs the numbering
+> from the surviving citation (Finding 3 = root domains do not resolve) and
+> records every issue verified on this host as of the date above.
+>
+> Every finding below was **checked against the live system**, not inferred.
+> Where something has been fixed, the verification command is given so the
+> claim can be re-tested rather than trusted.
+
+---
+
+## Status summary
+
+| # | Finding | Severity | Status |
+|---|---|---|---|
+| 1 | Runaway self-healing daemon exhausted RAM + swap; host froze | **Critical** | ✅ Fixed 2026-08-13 |
+| 2 | k3s restart loop driven by a remote node | High | ✅ Fixed 2026-08-13 |
+| 3 | No root domain resolves | Medium | ⚠️ Open (partly actionable) |
+| 4 | 46 of 71 containers had no memory limit | High | ✅ Fixed 2026-08-13 |
+| 5 | Cloudflare tunnel tokens stored in world-readable plaintext | **High** | ⚠️ Open |
+| 6 | Cluster has no imagePullSecret; 7 workloads down 13 days | Medium | ⚠️ Open (needs PAT) |
+| 7 | `chat.apexgroupcompanies.com` serves HTTP 530 publicly | Medium | ⚠️ Open (needs dashboard) |
+| 8 | Compose file stored in `/tmp`, lost on reboot | Medium | ✅ Fixed 2026-08-13 |
+| 9 | No global OOM backstop | **Critical** | ✅ Fixed 2026-08-13 |
+
+---
+
+## Finding 1 — Runaway self-healing daemon (Critical, fixed)
+
+The host froze hard at **22:18:14 on 2026-08-12** and was force-reset. It was
+*not* an OOM kill — the kernel never fired the global OOM killer (zero
+`CONSTRAINT_NONE` events in boot `-1`). RAM and the 8 GB swap file were both
+exhausted and the machine thrashed until unresponsive. Boot `-1`'s journal ends
+mid-line on `gnome-shell: ... your system is too slow`, with no
+`systemd-journald: Journal stopped` marker — the signature of a forced reset.
+
+`nova-healthcheck` diffs `nova/ecosystem.config.js` against the live pm2 process
+list and tries to "heal" anything missing. **Five of its seven registered apps
+could never start**, and it retried all of them every ~5 s with no backoff and
+no failure ceiling:
+
+| Target | Why it could never succeed |
+|---|---|
+| `nova-dify` | script path `~/Desktop/dify/` does not exist |
+| `llama-bridge-disabled` | script path `~/Desktop/llama-bridge/` does not exist |
+| `nova-tunnel` | wraps `cloudflared-nova.service`, which is not installed |
+| `pm2 restart deerflow` | no pm2 app of that name — the app is called `nova` |
+| `sudo systemctl restart cloudflared-nova` | sudoers rule absent; needs a TTY |
+
+Measured rate: **281 auto-fix actions/minute (16,863/hour)**, spawning **733
+`pm2` + 725 `sudo` subprocesses per 21 minutes**. Each `pm2` invocation is a
+fresh Node process peaking at 50–100 MB. Extrapolated over that 14-hour boot:
+~236,000 failed actions and ~29,000 process spawns. Swap climbed monotonically
+all day — 3.45 GB @16:40 → 5.34 @21:20 → 6.24 @21:35 → **7.09 of 8 GB @22:05**.
+
+**Fix.** Per-probe exponential backoff plus a circuit breaker that abandons a
+repair after 5 consecutive failures and re-arms only when the probe recovers on
+its own. Unstartable apps removed from `ecosystem.config.js`. Retired probes
+switched off via `HEALTHCHECK_DISABLED_PROBES`. Three near-identical repair
+functions collapsed onto one helper. Covered by 7 new tests.
+
+```bash
+# Verify: should grow by single digits per hour, not ~17,000
+grep -c auto-fix ~/.pm2/logs/nova-healthcheck-error.log
+```
+
+Measured after the fix: **0.32/min, and zero pm2/sudo spawns.**
+
+> **Lesson.** A self-healing daemon needs a failure ceiling. A repair that can
+> never succeed, retried forever, is worse than no repair — it took the host
+> down. Anything added to `ecosystem.config.js` must actually be startable.
+
+---
+
+## Finding 2 — k3s restart loop driven by a remote node (High, fixed)
+
+`k8s/scripts/k3s-watchdog.py` ran `sudo systemctl restart k3s` whenever **any**
+node reported NotReady. The NotReady node was `boggyman` (192.168.18.118) — a
+**different machine** — which had been down 12 days. A local restart could never
+fix it, so the watchdog restarted k3s indefinitely at roughly its 10-minute
+cooldown, each start peaking around 2 GB.
+
+**Fix.** `check_node_ready()` now gates the restart action on the local node
+only; remote nodes are reported as a non-actionable warning. `boggyman` drained
+and deleted. Two pods stuck `Terminating` for 8 days force-deleted.
+
+```bash
+journalctl -u k3s | grep -c "Creating Container Manager object"   # ~1 per boot
+tail ~/.nova/k3s-watchdog.log                                     # all OK
+```
+
+---
+
+## Finding 3 — No root domain resolves (Medium, open)
+
+`apexgroupcompanies.com`, `www.apexgroupcompanies.com` and `apexholdings.pk` all
+fail to resolve. Everything lives on a subdomain. Re-verified 2026-08-13 with
+detail the original finding did not record:
+
+- **`apexgroupcompanies.com` is in this Cloudflare account** and the zone is
+  active, but holds only `MX` and `TXT` at the apex — no `A`/`AAAA`/`CNAME`, and
+  no `www` record at all. **Actionable now:** add a proxied CNAME to the APEX
+  GROUP tunnel `677c31d0-0f5d-46fd-8f48-13036ec2b4b3`, which already serves
+  `apex.apexgroupcompanies.com`.
+- **`apexholdings.pk` — not a real domain, closed 2026-08-13.** It is absent
+  from this Cloudflare account because it was never a live property; the owner
+  confirms it was a decided-against idea with no use case. The live Holdings
+  site is `holdings.apexgroupcompanies.com`, which serves HTTP 200. Nothing to
+  fix — the local config file naming `apexholdings.pk` is a leftover, and is
+  inert anyway (see "Where ingress actually comes from" in `TUNNELS.md`).
+
+Remaining impact is limited to the bare `apexgroupcompanies.com`, which is dead
+for anyone who types it without a subdomain.
+
+---
+
+## Finding 4 — Containers without memory limits (High, fixed)
+
+**46 of 71 running containers had no `mem_limit`**, so any single one could
+consume all 30 GB. Upstream mailcow sets none on any of its ~19 services.
+
+**Fix.** Limits applied live via `docker update` and persisted in
+`infra/mailcow-dockerized/docker-compose.override.yml` (values ~4–6× observed
+steady state, so normal operation never touches them).
+
+```bash
+docker stats --no-stream --format '{{.Name}}|{{.MemUsage}}' | grep -c '30.26GiB'   # 0
+```
+
+Result: **0 of 57 running containers uncapped.** A limit converts a host-wide
+freeze into one contained container restart.
+
+---
+
+## Finding 5 — Tunnel tokens in world-readable plaintext (High, OPEN)
+
+**7 of 10** cloudflared tunnels are started with the token inline in their pm2
+arguments rather than `--token-file`:
+
+`tunnel-nova`, `tunnel-whmcs`, `tunnel-fox-hosting`, `tunnel-apex-group`,
+`tunnel-apex-tours`, `tunnel-apex-outsourcing`, `cloud-apex-tunnel`
+
+Consequences — the tokens are readable from all of these:
+
+- `pm2 jlist` output (any process running as this user)
+- **`~/.pm2/dump.pm2`, which is mode `-rw-rw-r--` — world-readable**
+- `ps auxww` while the connector runs
+- shell history of whatever started them
+
+A tunnel token authorises the holder to serve traffic for that hostname. The
+same pattern was found in the `vibe-trading` cloudflared container (Finding 8).
+
+**Recommended fix.** For each, write the token to `~/.cloudflared/<name>.token`
+with mode 600 and restart using `--token-file`, exactly as
+`tunnel-apex-holdings` and `tunnel-apex-tech` already do — the correct pattern
+is already documented under "Adding a tunnel" in `TUNNELS.md`. Then
+`chmod 600 ~/.pm2/dump.pm2`, and rotate the exposed tokens in the dashboard,
+since they have been readable at rest for some time.
+
+---
+
+## Finding 6 — No imagePullSecret in the cluster (Medium, open)
+
+Seven workloads have been in `ImagePullBackOff`/`ErrImagePull` for 13 days:
+`billing/whmcs-bridge`, `stream/stream-api` ×2, `stream/stream-portal` ×2,
+`stream/expiry-sweep`, `monitoring/cost-report`.
+
+**One root cause, not seven.** Every one pulls from `ghcr.io/jahanzaib211/*` and
+gets `403 Forbidden`. The cluster has **zero** dockerconfigjson secrets:
+
+```bash
+kubectl get secrets -A --field-selector type=kubernetes.io/dockerconfigjson   # none
+```
+
+So either the packages are private, or they were never pushed. Both fix paths
+are written up in `~/Desktop/homelab-ops/KNOWN-ISSUES.md` and need a GitHub PAT
+with `read:packages`.
+
+> k3s uses **containerd**, not Docker — it cannot see local `docker images`.
+> To use a locally built image:
+> `docker save img:tag | sudo k3s ctr images import -`
+
+---
+
+## Finding 7 — `chat.apexgroupcompanies.com` returns 530 publicly (Medium, open)
+
+A proxied CNAME points at tunnel `a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1`, but no
+connector for that tunnel runs on this host — the ten pm2 cloudflared processes
+account for every other hostname and none is Chatwoot. Cloudflare therefore
+returns error 1033 (HTTP 530) to the public. Chatwoot itself is healthy on
+`127.0.0.1:4800`, and `TUNNELS.md` records it as intentionally loopback-only, so
+this is an orphan record from a half-finished publish.
+
+Either create the connector — **with Cloudflare Access in front, since Chatwoot
+holds customer conversations** — or delete the `chat` CNAME. This is currently
+the only Apex hostname serving a public error.
+
+---
+
+## Finding 8 — Compose file stored in `/tmp` (Medium, fixed)
+
+`vibe-trading`'s compose file lived at `/tmp/opencode/vibe-trading/docker-compose.yml`
+and was **gone**. Four containers were still running, orphaned: docker's restart
+policy kept them alive, but with no compose file they could never be recreated,
+updated or moved. This is the second time `/tmp` has caused an outage in this
+stack — its nginx config was lost the same way (see `KNOWN-ISSUES.md`).
+
+**Fix.** Reconstructed from `docker inspect` at
+`~/Desktop/vibe-trading/docker-compose.yml`, with the tunnel token moved out of
+the command line into `.env` (see Finding 5), memory limits added, and the
+nginx bind mount repointed at a real path.
+
+**Then decommissioned, 2026-08-13.** The owner confirms vibe-trading was an
+experiment with no real use case. All four containers stopped and removed and
+the 2.3 GB image deleted; the five named volumes (~5 MB total) were kept as a
+safety net. The reconstructed compose file is retained as the record of how to
+stand it back up.
+
+While decommissioning, one thing worth noting for any future stack: the
+`cloudflared-quick` service ran `tunnel --url http://nginx:8080`, which
+publishes to a **random public trycloudflare URL with no authentication**. It
+had been running 5 hours. An ad-hoc sharing tunnel left with
+`restart: unless-stopped` is a standing unauthenticated exposure — if you use
+one, do not give it a restart policy.
+
+> **Lesson.** Never bind-mount or store configuration under `/tmp`. It does not
+> survive a reboot.
+
+---
+
+## Finding 9 — No global OOM backstop (Critical, fixed)
+
+When RAM and swap were exhausted the kernel never OOM-killed anything; the host
+simply thrashed to a standstill. Two contributing settings:
+
+- `vm.overcommit_memory = 1` — the kernel never refuses an allocation, so
+  nothing pushes back until RAM *and* swap are genuinely gone, by which point
+  the desktop is already unresponsive.
+- `systemd-oomd` is active but Ubuntu's default configuration only watches
+  `user.slice` pressure. It did not fire.
+
+**Fix.** `earlyoom` installed and enabled, triggering at 6% free RAM *and* 6%
+free swap, configured to never kill `systemd`/`gnome-shell`/`Xorg`/`sshd`/
+`k3s-server` and to prefer `next-server`/`node`/`esbuild`/`tsc` — the transient
+2–4 GB build spikes that push this host over. Applied by
+`~/Desktop/homelab-ops/scripts/apply-oom-hardening.sh`.
+
+```bash
+systemctl is-active earlyoom      # active
+journalctl -u earlyoom -f         # watch during a large build
+```
+
+---
+
+## Things that are right, and should stay that way
+
+Worth recording so a future cleanup does not "fix" them:
+
+- **`apex-global-console` is deliberately not exposed.** It holds every lead and
+  the encrypted credentials vault. If it ever needs remote access, put
+  Cloudflare Access in front rather than exposing the login page.
+- **Nextcloud is reached over Tailscale, never the public internet**, and its
+  k3s storage class is `local-path` with a `nodeSelector` pinning it to this
+  host. Removing that nodeSelector would reschedule it onto a worker and bring
+  it up empty.
+- **`fox-nginx` sits in `Created` state on purpose** — no ports, not in the
+  tunnel path.
+- **Chatwoot is loopback-only by design** (see Finding 7).
+
+---
+
+## Operating guidance
+
+The 2026-08-12 freeze needed both a runaway loop *and* zero headroom. The loops
+are fixed and `earlyoom` now covers the headroom, but the host remains densely
+packed — 57 containers, 30 k3s pods and 23 pm2 apps on one 30 GB desktop.
+
+**Do not run multi-app Next.js builds while the whole stack is up.** Each
+`next build` costs 2–4 GB. Build one app at a time, or bring non-essential
+stacks down first. That build storm is what tipped the machine over; on a box
+with headroom it would have been a non-event.

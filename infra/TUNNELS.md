@@ -18,8 +18,33 @@ Read-only; safe during an incident.
 | `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | outsourcing.apexgroupcompanies.com † | `127.0.0.1:3100` | 20006 | inline ⚠ |
 | `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
 | `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
+| `cloud-apex-tunnel` | cloud (mailcow) | see dashboard | **cloud.apexgroupcompanies.com** | `127.0.0.1:8085` (caddy) | — * | inline ⚠ |
 
-All eight verified serving **HTTP 200** with 4 HA connections on 4 Aug 2026.
+| — loopback only — | Chatwoot | — | *(no connector — but see ⛔ below)* | `127.0.0.1:4800` | — | — |
+
+⛔ **Orphaned DNS record — `chat.apexgroupcompanies.com` returns 530 publicly.**
+Found 2026-08-13. A proxied CNAME exists in the zone pointing at tunnel
+`a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1`, but **no connector for that tunnel runs
+on this host** — the ten pm2 cloudflared processes cover every other row in this
+table and none of them is Chatwoot. So Cloudflare accepts the request, finds no
+connector, and serves error 1033 (HTTP 530) to the public. Chatwoot itself is
+healthy on `127.0.0.1:4800`.
+
+Two ways to close it, both needing the dashboard:
+- **Publish it** — create the connector for that tunnel with origin
+  `127.0.0.1:4800` and follow "Adding a tunnel" below. Note the console warning
+  above applies: Chatwoot holds customer conversations, so put Cloudflare Access
+  in front rather than exposing it bare.
+- **Retire it** — delete the `chat` CNAME from the zone so the hostname stops
+  answering with an error page.
+
+Until then this is the only Apex hostname serving a public error.
+
+All nine tunnels verified serving **HTTP 200** with 4 HA connections on 4 Aug 2026
+(cloud-apex-tunnel verified 8 Aug 2026; it runs without a `--metrics` flag, so
+the metrics column is `-` and `tunnels-status.sh` shows `-` connections).
+Chatwoot is **loopback only** (no tunnel, no public hostname) — see the "Adding a
+tunnel" section when a public host for it is wanted.
 
 † The local config file names a different hostname (`apex-tours.local`,
 `apex-outsourcing.local`, `apexholdings.pk`). Those files are **not
@@ -31,6 +56,22 @@ plaintext inside `~/.pm2/dump.pm2`. Not urgent, but see the hardening report.
 Note also that no **root** domain resolves — `apexgroupcompanies.com`, `www.`
 and `apexholdings.pk` all return nothing. Everything lives on a subdomain.
 That is Finding 3 in the hardening report.
+
+Re-verified 2026-08-13, with detail the finding did not record:
+
+- `apexgroupcompanies.com` **is** in this Cloudflare account (zone active), but
+  the zone holds only `MX` and `TXT` at the apex — no `A`/`AAAA`/`CNAME`, and no
+  `www` record at all. Adding a proxied CNAME to the APEX GROUP tunnel
+  (`677c31d0-…`, already serving `apex.`) would light both up.
+- `apexholdings.pk` is **not in this Cloudflare account** at all, so no API
+  token here can fix it. It needs adding to Cloudflare, or fixing at whatever
+  registrar/DNS host currently holds it.
+
+The hardening report this file cites had been lost — it existed only as these
+references. It has been reconstructed at [HARDENING-REPORT.md](HARDENING-REPORT.md),
+with the original numbering preserved (Finding 3 = root domains) and every
+finding re-verified against the live host. The inline-token issue flagged in the
+table above is **Finding 5** there.
 
 ## Where ingress actually comes from
 
@@ -59,7 +100,8 @@ eight rows were wrong**, all copied from config files: `apex-tours` and
 serve live subdomains, `apex-holdings` was listed under `apexholdings.pk`, and
 `apex-group` under the bare root domain.
 
-**Next free metrics port: 20009.**
+**Next little port: 20010** (20009 is taken by the cloud/mailcow tunnel's slot in
+`tunnels-status.sh`, even though that connector exposes no metrics port).
 
 ## Apps behind the tunnels
 
