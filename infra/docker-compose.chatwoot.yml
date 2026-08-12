@@ -1,0 +1,184 @@
+# Apex Global Tech Solution — Chatwoot (self-hosted live chat & helpdesk).
+#
+# The "talk to a real human" layer: a self-hosted open-source live chat inbox
+# behind a Cloudflare tunnel, the same pattern as every other published
+# service on this host (origin on loopback, edge in front, nothing else open).
+#
+# Ports: 4800 (web) / 4830 (sidekiq n/a). Nothing bound to 0.0.0.0.
+#
+# First boot:
+#   1. export SECRET_KEY_BASE          (openssl rand -hex 64)
+#      export CHATWOOT_FRONTEND_URL    (public URL, e.g. https://chat.domain.xyz)
+#   2. docker compose -f infra/docker-compose.chatwoot.yml up -d
+#   3. First web hit runs `db:create db:schema:load` via the migrate service,
+#      then the admin sign-up page is available at /auth/sign_up.
+#
+# The API key pair (the widget + API token) is created inside Chatwoot:
+# Settings → Inbox → Add → Website, then copy the widget script into this
+# repo's org.chatwoot_url / org.chatwoot_widget_token settings.
+
+name: apex-chatwoot
+
+x-chatwoot-app: &chatwoot-app
+  image: chatwoot/chatwoot:${CHATWOOT_TAG:?CHATWOOT_TAG is required}
+  environment: &chatwoot-env
+    RAILS_ENV: production
+    NODE_ENV: production
+    INSTALLATION_ENV: docker
+    SECRET_KEY_BASE: ${CHATWOOT_SECRET_KEY_BASE:?CHATWOOT_SECRET_KEY_BASE is required}
+    POSTGRES_HOST: chatwoot-postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_DATABASE: ${CHATWOOT_POSTGRES_DATABASE:-chatwoot}
+    POSTGRES_USERNAME: ${CHATWOOT_POSTGRES_USERNAME:-chatwoot}
+    POSTGRES_PASSWORD: ${CHATWOOT_POSTGRES_PASSWORD:?CHATWOOT_POSTGRES_PASSWORD is required}
+    POSTGRES_SSLMODE: disable
+    REDIS_URL: redis://:${CHATWOOT_REDIS_PASSWORD:?CHATWOOT_REDIS_PASSWORD is required}@chatwoot-redis:6379
+    FRONTEND_URL: ${CHATWOOT_FRONTEND_URL:?CHATWOOT_FRONTEND_URL is required}
+    DEFAULT_LOCALE: ${CHATWOOT_DEFAULT_LOCALE:-en}
+    RAILS_LOG_TO_STDOUT: "true"
+    LOG_LEVEL: info
+    DISABLE_TELEMETRY: "true"
+    SMTP_ADDRESS: ${CHATWOOT_SMTP_ADDRESS:-127.0.0.1}
+    SMTP_PORT: ${CHATWOOT_SMTP_PORT:-587}
+    SMTP_USERNAME: ${CHATWOOT_SMTP_USERNAME:-chatwoot@cloud.apexgroupcompanies.com}
+    # Required, with no default on purpose. A literal fallback password here
+    # is a credential published to whoever can read this repo, and it silently
+    # "works" so nobody notices it is there.
+    SMTP_PASSWORD: ${CHATWOOT_SMTP_PASSWORD:?CHATWOOT_SMTP_PASSWORD is required}
+    SMTP_ENABLE_STARTTLS_AUTO: ${CHATWOOT_SMTP_ENABLE_STARTTLS_AUTO:-true}
+    SMTP_OPENSSL_VERIFY_MODE: ${CHATWOOT_SMTP_OPENSSL_VERIFY_MODE:-none}
+    SMTP_AUTHENTICATION: ${CHATWOOT_SMTP_AUTHENTICATION:-login}
+    SMTP_DOMAIN: cloud.apexgroupcompanies.com
+    SMTP_HELO_DOMAIN: cloud.apexgroupcompanies.com
+    MAILER_SENDER_EMAIL: ${CHATWOOT_MAILER_SENDER_EMAIL:-chatwoot@cloud.apexgroupcompanies.com}
+    MAILER_SENDER_NAME: ${CHATWOOT_MAILER_SENDER_NAME:-Apex Global Live Chat}
+    # Every public visitor reaches Chatwoot through the same Cloudflare
+    # tunnel egress IP, so Rack::Attack's per-IP widget throttles would
+    # blacklist the whole site after a handful of opens. The proxy is the
+    # security boundary here (auth'd outbound tunnel); widget APIs carry
+    # their own conversation tokens, so the bomb-protection throttles
+    # are disabled rather than letting 429s break the chat widget.
+    ENABLE_RACK_ATTACK_WIDGET_API: "false"
+  volumes:
+    - chatwoot_storage:/app/storage
+  restart: unless-stopped
+  depends_on:
+    chatwoot-postgres:
+      condition: service_healthy
+    chatwoot-redis:
+      condition: service_healthy
+
+services:
+  chatwoot-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: chatwoot-postgres
+    environment:
+      POSTGRES_USER: ${CHATWOOT_POSTGRES_USERNAME:-chatwoot}
+      POSTGRES_PASSWORD: ${CHATWOOT_POSTGRES_PASSWORD:?CHATWOOT_POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${CHATWOOT_POSTGRES_DATABASE:-chatwoot}
+    volumes:
+      - chatwoot_pgdata:/var/lib/postgresql/data
+    # Load-bearing. The app tier (web/sidekiq, via the x-chatwoot-app anchor)
+    # is `unless-stopped`, so without this the data tier is the *only* thing
+    # that stays down after a reboot — web comes back up against a dead
+    # database and sidekiq crash-loops indefinitely. That is exactly what
+    # happened on 2026-08-11.
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CHATWOOT_POSTGRES_USERNAME:-chatwoot} -d ${CHATWOOT_POSTGRES_DATABASE:-chatwoot}"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  chatwoot-redis:
+    image: redis:7-alpine
+    container_name: chatwoot-redis
+    command: ["sh", "-c", "redis-server --requirepass \"$CHATWOOT_REDIS_PASSWORD\" --appendonly yes"]
+    environment:
+      CHATWOOT_REDIS_PASSWORD: ${CHATWOOT_REDIS_PASSWORD:?CHATWOOT_REDIS_PASSWORD is required}
+    volumes:
+      - chatwoot_redisdata:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$CHATWOOT_REDIS_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+  # One-shot DB bootstrap. Idempotent: run after the web boots, harmless to
+  # re-run — it leaves state in place once the schema exists.
+  chatwoot-migrate:
+    <<: *chatwoot-app
+    container_name: chatwoot-migrate
+    restart: "no"
+    entrypoint: docker/entrypoints/rails.sh
+    command: ["bundle", "exec", "rails", "db:create", "db:schema:load"]
+
+  chatwoot-web:
+    <<: *chatwoot-app
+    container_name: chatwoot-web
+    ports:
+      - "127.0.0.1:4800:3000"
+    entrypoint: docker/entrypoints/rails.sh
+    command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  chatwoot-sidekiq:
+    <<: *chatwoot-app
+    container_name: chatwoot-sidekiq
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  # Reverse proxy for Chatwoot widget + ActionCable websocket.
+  # Proxies /cable, /api/v1/widget, /packs, /widget to Chatwoot (4800);
+  # everything else → Next.js (4300). This keeps the widget same-origin
+  # on tech.apexgroupcompanies.com while fixing the websocket.
+  chatwoot-nginx:
+    image: nginx:alpine
+    container_name: chatwoot-nginx
+    ports:
+      - "127.0.0.1:4801:80"
+    volumes:
+      - ./chatwoot/nginx/chatwoot-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+    depends_on:
+      - chatwoot-web
+    networks:
+      - default
+
+  # Outbound SMTP relay (Postfix, Ubuntu). Chatwoot submits mail to
+  # `chatwoot-smtp:25`; the relay delivers directly to the recipient MX.
+  # Host networking is required because the docker bridge NAT blocks
+  # outbound 25 from this host.
+  chatwoot-smtp:
+    build: ./smtp
+    container_name: chatwoot-smtp
+    hostname: chatwoot-smtp
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      POSTFIX_HOSTNAME: ${CHATWOOT_SMTP_HELO:-chatwoot-smtp.apex.local}
+      POSTFIX_MYNETWORKS: "172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 127.0.1.1"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  chatwoot_pgdata:
+  chatwoot_storage:
+  chatwoot_redisdata:
