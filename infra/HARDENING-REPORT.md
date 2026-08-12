@@ -3,12 +3,24 @@
 **Host:** `jahanzaib-A520M-DS3H` · Ubuntu 26.04 · 30 GB RAM / 8 GB swap / 457 GB disk
 **Compiled:** 2026-08-13
 
-> ### Why this file exists
-> `infra/TUNNELS.md` cites "the hardening report" and "Finding 3" in several
-> places, but no such file existed anywhere under `APEX GLOBAL/`. Its findings
-> survived only as those references. This report reconstructs the numbering
-> from the surviving citation (Finding 3 = root domains do not resolve) and
-> records every issue verified on this host as of the date above.
+> ### Why this file exists, and how it relates to the tunnel report
+> This is the **host** hardening report: the 2026-08-12 memory-exhaustion
+> freeze and the container/service posture around it.
+>
+> It is **not** the tunnel report. That one exists and is authoritative for
+> anything tunnel-shaped: **`~/Desktop/TUNNEL-HARDENING.md`** (4 Aug 2026), the
+> document `infra/TUNNELS.md` and `infra/scripts/tunnels-status.sh` both cite.
+> It lives on the Desktop rather than in this repo, which is why a repo-scoped
+> search for it comes back empty — an earlier version of this file wrongly
+> concluded it had been lost and tried to reconstruct its numbering. It had not.
+> **When the two disagree on a tunnel, that file wins.**
+>
+> Its findings, for cross-reference: 1 — six tunnel tokens in the plaintext PM2
+> dump · 2 — migrating leaves the old tokens behind · 2a — rotate the `tech`
+> token · 3 — no root domain resolves · 4 — the local config files describe a
+> system that no longer exists · 5 — nothing scrapes the metrics endpoints ·
+> 6 — no Cloudflare alerting. Findings 3 and 5 below are this host's view of its
+> Findings 3 and 1; the rest are new and specific to the freeze.
 >
 > Every finding below was **checked against the live system**, not inferred.
 > Where something has been fixed, the verification command is given so the
@@ -100,9 +112,12 @@ tail ~/.nova/k3s-watchdog.log                                     # all OK
 
 ## Finding 3 — No root domain resolves (Medium, open)
 
+**Authority: Finding 3 of `~/Desktop/TUNNEL-HARDENING.md`.** Kept here under the
+same number so the two agree. Re-verified 2026-08-13 with detail that report did
+not record.
+
 `apexgroupcompanies.com`, `www.apexgroupcompanies.com` and `apexholdings.pk` all
-fail to resolve. Everything lives on a subdomain. Re-verified 2026-08-13 with
-detail the original finding did not record:
+fail to resolve. Everything lives on a subdomain.
 
 - **`apexgroupcompanies.com` is in this Cloudflare account** and the zone is
   active, but holds only `MX` and `TXT` at the apex — no `A`/`AAAA`/`CNAME`, and
@@ -139,13 +154,29 @@ freeze into one contained container restart.
 
 ---
 
-## Finding 5 — Tunnel tokens in world-readable plaintext (High, OPEN)
+## Finding 5 — Tunnel tokens in world-readable plaintext (High, partly fixed)
 
-**7 of 10** cloudflared tunnels are started with the token inline in their pm2
+**This is Finding 1 of `~/Desktop/TUNNEL-HARDENING.md`**, which carries the full
+zero-downtime migration recipe (its Appendix) and the token-rotation steps. Use
+that one to do the work; this entry only records the current count and what
+changed on 2026-08-13.
+
+Six cloudflared tunnels are still started with the token inline in their pm2
 arguments rather than `--token-file`:
 
 `tunnel-nova`, `tunnel-whmcs`, `tunnel-fox-hosting`, `tunnel-apex-group`,
-`tunnel-apex-tours`, `tunnel-apex-outsourcing`, `cloud-apex-tunnel`
+`tunnel-apex-tours`, `tunnel-apex-outsourcing`
+
+**Fixed 2026-08-13:** `cloud-apex-tunnel` moved to
+`~/.cloudflared/cloud-apex.token` (mode 600) — its token had additionally been
+inline in `infra/ecosystem.config.cjs`, a **git-tracked file in a repo whose
+remote is public**. It was never committed (`git log -S` finds nothing), but it
+sat in a 170-file working tree, one `git add -A` from leaking. `~/.pm2/dump.pm2`
+and its `.bak` were also chmod'd from 664 to 600. The new `tunnel-chat` was
+created with `--token-file` from the start.
+
+Note `tunnel-apex-holdings`, `tunnel-apex-tech` and `tunnel-fincept` already did
+this correctly — the pattern to copy is in "Adding a tunnel" in `TUNNELS.md`.
 
 Consequences — the tokens are readable from all of these:
 

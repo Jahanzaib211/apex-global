@@ -18,27 +18,29 @@ Read-only; safe during an incident.
 | `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | outsourcing.apexgroupcompanies.com † | `127.0.0.1:3100` | 20006 | inline ⚠ |
 | `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
 | `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
-| `cloud-apex-tunnel` | cloud (mailcow) | see dashboard | **cloud.apexgroupcompanies.com** | `127.0.0.1:8085` (caddy) | — * | inline ⚠ |
+| `tunnel-fincept` | fincept | `882027dc-b5bb-4b62-a0eb-24ce8f622125` | fincept.apexgroupcompanies.com ‡ | `127.0.0.1:6080` | 20010 | `~/.cloudflared/fincept.token` |
+| `tunnel-chat` | chat | `a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1` | **chat.apexgroupcompanies.com** | `127.0.0.1:4800` (chatwoot-web) § | 20011 | `~/.cloudflared/chat.token` |
+| `cloud-apex-tunnel` | cloud (mailcow) | `97d3536e-4bf3-4bc6-aa33-2c07674af70c` | **cloud.apexgroupcompanies.com** | `127.0.0.1:8085` (caddy) | — * | `~/.cloudflared/cloud-apex.token` |
 
-| — loopback only — | Chatwoot | — | *(no connector — but see ⛔ below)* | `127.0.0.1:4800` | — | — |
+§ **`chat` was an orphaned DNS record until 2026-08-13** — the CNAME existed and
+pointed at tunnel `a311a9d1-…`, but no connector for it ran, so Cloudflare
+returned error 1033 (HTTP 530) to the public. That single missing connector was
+the only thing blocking group-wide live chat: Chatwoot was healthy, all five
+website inboxes existed, and every site was already built with its own token.
+Closed by registering `tunnel-chat` above.
 
-⛔ **Orphaned DNS record — `chat.apexgroupcompanies.com` returns 530 publicly.**
-Found 2026-08-13. A proxied CNAME exists in the zone pointing at tunnel
-`a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1`, but **no connector for that tunnel runs
-on this host** — the ten pm2 cloudflared processes cover every other row in this
-table and none of them is Chatwoot. So Cloudflare accepts the request, finds no
-connector, and serves error 1033 (HTTP 530) to the public. Chatwoot itself is
-healthy on `127.0.0.1:4800`.
+⚠️ **The origin is `:4800`, not `:4801`.** The container named `chatwoot-nginx`
+publishes `127.0.0.1:4801`, but it reverse-proxies the *Apex tech marketing
+site* — verified by response body: `:4801` returns "Apex Global Tech Solution",
+`:4800` returns the Chatwoot dashboard bundle. An earlier plan specified `:4801`
+because it was written while Chatwoot was down and only the nginx container was
+answering. Pointing this tunnel at `:4801` would serve the marketing site at
+`chat.apexgroupcompanies.com`.
 
-Two ways to close it, both needing the dashboard:
-- **Publish it** — create the connector for that tunnel with origin
-  `127.0.0.1:4800` and follow "Adding a tunnel" below. Note the console warning
-  above applies: Chatwoot holds customer conversations, so put Cloudflare Access
-  in front rather than exposing it bare.
-- **Retire it** — delete the `chat` CNAME from the zone so the hostname stops
-  answering with an error page.
-
-Until then this is the only Apex hostname serving a public error.
+⚠️ **Chatwoot is now public and holds customer conversations.** It is protected
+by its own login only — there is no Cloudflare Access in front, unlike the
+console, which is deliberately unpublished for the same class of reason. Worth
+adding Access here.
 
 All nine tunnels verified serving **HTTP 200** with 4 HA connections on 4 Aug 2026
 (cloud-apex-tunnel verified 8 Aug 2026; it runs without a `--metrics` flag, so
@@ -50,8 +52,21 @@ tunnel" section when a public host for it is wanted.
 `apex-outsourcing.local`, `apexholdings.pk`). Those files are **not
 authoritative** — see the section below. The column above records what each
 connector actually serves, taken from its log.
+‡ **`tunnel-fincept` was missing from this table entirely** until 2026-08-13,
+which is how its metrics port came to be advertised as free below. It exposes a
+VNC desktop to the public internet behind VNC auth only — no Cloudflare Access
+in front. Worth revisiting; see `HARDENING-REPORT.md`.
+
 ⚠ Token stored inline in the PM2 args, so it is readable in `pm2 jlist` and in
 plaintext inside `~/.pm2/dump.pm2`. Not urgent, but see the hardening report.
+
+`cloud-apex-tunnel` was moved off an inline token on 2026-08-13 — its token had
+been sitting in `infra/ecosystem.config.cjs`, a git-tracked file in a repo whose
+remote is public. It now reads `~/.cloudflared/cloud-apex.token` (mode 600), and
+`~/.pm2/dump.pm2` was chmod'd to 600. **Six tunnels still carry inline tokens**
+(Finding 5 in `HARDENING-REPORT.md`). Remember that pm2 bakes args into its saved
+dump: applying a token change is `pm2 delete` + `start` + `save`, never
+`pm2 restart`.
 
 Note also that no **root** domain resolves — `apexgroupcompanies.com`, `www.`
 and `apexholdings.pk` all return nothing. Everything lives on a subdomain.
@@ -67,11 +82,15 @@ Re-verified 2026-08-13, with detail the finding did not record:
   token here can fix it. It needs adding to Cloudflare, or fixing at whatever
   registrar/DNS host currently holds it.
 
-The hardening report this file cites had been lost — it existed only as these
-references. It has been reconstructed at [HARDENING-REPORT.md](HARDENING-REPORT.md),
-with the original numbering preserved (Finding 3 = root domains) and every
-finding re-verified against the live host. The inline-token issue flagged in the
-table above is **Finding 5** there.
+The hardening report this file cites is **`~/Desktop/TUNNEL-HARDENING.md`**
+(4 Aug 2026) — on the Desktop, not in this repo, which is why searching the repo
+for it comes up empty. It is the authority for anything tunnel-shaped, and its
+Appendix carries the zero-downtime connector-replacement recipe.
+
+A companion [HARDENING-REPORT.md](HARDENING-REPORT.md) covers the **host** side —
+the 2026-08-12 memory freeze, container limits, service posture. Where the two
+overlap they are cross-numbered: the inline-token issue is Finding 1 there and
+Finding 5 here; root domains is Finding 3 in both.
 
 ## Where ingress actually comes from
 
@@ -100,8 +119,10 @@ eight rows were wrong**, all copied from config files: `apex-tours` and
 serve live subdomains, `apex-holdings` was listed under `apexholdings.pk`, and
 `apex-group` under the bare root domain.
 
-**Next little port: 20010** (20009 is taken by the cloud/mailcow tunnel's slot in
-`tunnels-status.sh`, even though that connector exposes no metrics port).
+**Next free metrics port: 20011.** This previously said 20010, but
+`tunnel-fincept` already holds 20010 — it was simply absent from the table
+above, so the number looked free. (20009 is taken by the cloud/mailcow tunnel's
+slot in `tunnels-status.sh`, even though that connector exposes no metrics port.)
 
 ## Apps behind the tunnels
 

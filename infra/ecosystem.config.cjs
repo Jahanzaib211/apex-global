@@ -57,5 +57,47 @@ module.exports = {
       error_file: path.join(ROOT, "logs/apex-global-console.error.log"),
       out_file: path.join(ROOT, "logs/apex-global-console.out.log"),
     },
+    {
+      // Cloudflared tunnel dedicated to cloud.apexgroupcompanies.com. Mailcow
+      // stack terminates at Caddy on 127.0.0.1:8067; this tunnel is the
+      // overlay that publishes that origin over HTTPS at cloudflare's edge.
+      //
+      // The token is read from ~/.cloudflared/cloud-apex.token (mode 600), NOT
+      // inlined here. It used to be inline, in this git-tracked file, in a repo
+      // whose remote is the public github.com/Jahanzaib211/apex-global — it was
+      // never actually committed, but it was one `git add -A` from being. An
+      // inline token is also readable from `pm2 jlist`, from `ps auxww`, and
+      // from ~/.pm2/dump.pm2. See infra/HARDENING-REPORT.md, Finding 5.
+      //
+      // NOTE: pm2 bakes args into its saved dump, so editing this file does not
+      // change a running process. Applying a token change is delete + start +
+      // save, never `pm2 restart` — see infra/TUNNELS.md.
+      ...base,
+      name: "cloud-apex-tunnel",
+      script: "cloudflared",
+      args: `tunnel run --token-file ${path.join(
+        require("os").homedir(),
+        ".cloudflared/cloud-apex.token",
+      )}`,
+      max_memory_restart: "128M",
+      error_file: path.join(ROOT, "logs/cloud-apex-tunnel.error.log"),
+      out_file: path.join(ROOT, "logs/cloud-apex-tunnel.out.log"),
+    },
+    {
+      // Mailcow watchdog — polls public origin + internal Caddy every minute
+      // and restarts the mailcow stack + the cloudflared tunnel via PM2 when
+      // either probe fails three times in a row. Stays in the foreground so
+      // PM2 can restart it on exit, but the loop is endless so it never
+      // exits normally; set `max_restarts: 99` to allow PM2 to recycle it.
+      ...base,
+      name: "mailcow-watchdog",
+      script: "infra/scripts/mailcow-watchdog.sh",
+      max_memory_restart: "256M",
+      min_uptime: "1m",
+      max_restarts: 99,
+      restart_delay: 5000,
+      error_file: path.join(ROOT, "logs/mailcow-watchdog.error.log"),
+      out_file: path.join(ROOT, "logs/mailcow-watchdog.out.log"),
+    },
   ],
 };
