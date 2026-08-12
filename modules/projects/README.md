@@ -1,6 +1,6 @@
 # projects
 
-**Status: planned** · depends on: `core`, `crm`
+**Status: active (core flows; timesheets not built)** · depends on: `core`, `crm`
 
 ## Purpose
 
@@ -15,9 +15,13 @@ is doing it, how long it took, and whether the client has signed it off.
 
 `projects:read` · `projects:write` · `projects:admin`
 
-## Routes (proposed)
+## Routes
 
-`/projects` · `/projects/[id]` · `/projects/timesheets`
+Customer-facing today, in the portal: `/portal/projects` ·
+`/portal/projects/[id]`.
+
+Proposed console routes: `/projects` · `/projects/[id]` ·
+`/projects/timesheets`.
 
 ## Jobs (proposed)
 

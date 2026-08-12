@@ -32,12 +32,22 @@ export function clientCountry(headers: Headers): string | undefined {
 }
 
 /**
- * Deduplication key: same email, same day.
+ * Deduplication key: same site, same email, same day.
  *
  * A double-tap on a slow mobile connection would otherwise create two leads and
  * two notifications, and sales would call the same person twice.
+ *
+ * The site is part of the key because five Apex properties now share this
+ * pipeline. Keyed on email alone, someone who enquired at Apex Tours in the
+ * morning and at Apex Tech in the afternoon would have the second enquiry
+ * folded into the first as a note — a different business, a different team,
+ * and a real opportunity quietly lost. Scoping the window per site keeps the
+ * double-tap protection while letting genuinely distinct intents through.
  */
-export function dedupeKey(email: string): string {
+export function dedupeKey(email: string, sourceSite: string): string {
   const day = new Date().toISOString().slice(0, 10);
-  return createHash("sha256").update(`${email.toLowerCase()}:${day}`).digest("hex").slice(0, 32);
+  return createHash("sha256")
+    .update(`${sourceSite}:${email.toLowerCase()}:${day}`)
+    .digest("hex")
+    .slice(0, 32);
 }

@@ -8,16 +8,29 @@ export const metadata: Metadata = { title: "Leads" };
 
 const STAGES = ["NEW", "QUALIFIED", "OPPORTUNITY", "CUSTOMER", "LOST"] as const;
 
-type Props = { searchParams: Promise<{ stage?: string; q?: string }> };
+/**
+ * The Apex properties that feed this pipeline. Keep in step with `LEAD_SITES`
+ * in apps/web/src/lib/ingest-lead.ts, which is what actually writes the value.
+ */
+const SITES: Record<string, string> = {
+  "tech": "Apex Tech",
+  "apex-group": "Group",
+  "apex-holdings": "Holdings",
+  "apex-outsourcing": "Outsourcing",
+  "apex-tours": "Tours",
+};
+
+type Props = { searchParams: Promise<{ stage?: string; q?: string; site?: string }> };
 
 export default async function LeadsPage({ searchParams }: Props) {
   await requirePermission("crm:read");
-  const { stage, q } = await searchParams;
+  const { stage, q, site } = await searchParams;
 
   const where = {
     ...(stage && STAGES.includes(stage as (typeof STAGES)[number])
       ? { stage: stage as (typeof STAGES)[number] }
       : {}),
+    ...(site && site in SITES ? { sourceSite: site } : {}),
     ...(q
       ? {
           OR: [
@@ -29,7 +42,7 @@ export default async function LeadsPage({ searchParams }: Props) {
       : {}),
   };
 
-  const [leads, counts] = await Promise.all([
+  const [leads, counts, siteCounts] = await Promise.all([
     prisma.lead.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -40,9 +53,20 @@ export default async function LeadsPage({ searchParams }: Props) {
       },
     }),
     prisma.lead.groupBy({ by: ["stage"], _count: true }),
+    prisma.lead.groupBy({ by: ["sourceSite"], _count: true }),
   ]);
 
   const countFor = (s: string) => counts.find((c) => c.stage === s)?._count ?? 0;
+  const countForSite = (s: string) => siteCounts.find((c) => c.sourceSite === s)?._count ?? 0;
+
+  /** Preserve the other filters when switching one of them. */
+  const hrefWith = (patch: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    const next = { stage, q, site, ...patch };
+    for (const [k, v] of Object.entries(next)) if (v) params.set(k, v);
+    const qs = params.toString();
+    return qs ? `/leads?${qs}` : "/leads";
+  };
 
   return (
     <div className="flex flex-col gap-7">
@@ -56,7 +80,7 @@ export default async function LeadsPage({ searchParams }: Props) {
       <div className="flex flex-wrap items-center gap-3">
         <nav className="flex flex-wrap gap-1" aria-label="Filter by stage">
           <Link
-            href="/leads"
+            href={hrefWith({ stage: undefined })}
             className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
               !stage
                 ? "bg-[var(--color-navy-900)] text-[var(--color-canvas-100)]"
@@ -68,7 +92,7 @@ export default async function LeadsPage({ searchParams }: Props) {
           {STAGES.map((s) => (
             <Link
               key={s}
-              href={`/leads?stage=${s}`}
+              href={hrefWith({ stage: s })}
               className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
                 stage === s
                   ? "bg-[var(--color-navy-900)] text-[var(--color-canvas-100)]"
@@ -83,6 +107,7 @@ export default async function LeadsPage({ searchParams }: Props) {
 
         <form className="ml-auto" action="/leads">
           {stage ? <input type="hidden" name="stage" value={stage} /> : null}
+          {site ? <input type="hidden" name="site" value={site} /> : null}
           <input
             type="search"
             name="q"
@@ -93,11 +118,45 @@ export default async function LeadsPage({ searchParams }: Props) {
         </form>
       </div>
 
+      {/* Which Apex property produced the enquiry. Only worth showing once
+          more than one site is actually feeding the pipeline. */}
+      {siteCounts.length > 1 ? (
+        <nav className="flex flex-wrap items-center gap-1" aria-label="Filter by site">
+          <span className="mr-1 text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+            Site
+          </span>
+          <Link
+            href={hrefWith({ site: undefined })}
+            className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+              !site
+                ? "bg-[var(--color-navy-900)] text-[var(--color-canvas-100)]"
+                : "border border-[var(--border-default)] hover:border-[var(--border-strong)]"
+            }`}
+          >
+            All
+          </Link>
+          {Object.entries(SITES).map(([slug, label]) => (
+            <Link
+              key={slug}
+              href={hrefWith({ site: slug })}
+              className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+                site === slug
+                  ? "bg-[var(--color-navy-900)] text-[var(--color-canvas-100)]"
+                  : "border border-[var(--border-default)] hover:border-[var(--border-strong)]"
+              }`}
+            >
+              {label} <span className="opacity-60">{countForSite(slug)}</span>
+            </Link>
+          ))}
+        </nav>
+      ) : null}
+
       <div className="scroll-x rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)]">
         <table className="w-full min-w-[52rem] text-sm">
           <thead>
             <tr className="border-b border-[var(--border-subtle)] text-left text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
               <th className="px-5 py-3 font-semibold">Name</th>
+              <th className="px-5 py-3 font-semibold">Site</th>
               <th className="px-5 py-3 font-semibold">Company</th>
               <th className="px-5 py-3 font-semibold">Interest</th>
               <th className="px-5 py-3 font-semibold">Source</th>
@@ -114,6 +173,11 @@ export default async function LeadsPage({ searchParams }: Props) {
                     {lead.name}
                   </Link>
                   <p className="text-xs text-[var(--ink-muted)]">{lead.email}</p>
+                </td>
+                <td className="px-5 py-3">
+                  <span className="whitespace-nowrap rounded-full border border-[var(--border-default)] px-2 py-0.5 text-xs text-[var(--ink-secondary)]">
+                    {SITES[lead.sourceSite] ?? lead.sourceSite}
+                  </span>
                 </td>
                 <td className="px-5 py-3 text-[var(--ink-secondary)]">
                   {lead.companyName ?? "—"}

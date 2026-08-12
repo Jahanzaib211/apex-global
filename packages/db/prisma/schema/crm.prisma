@@ -46,6 +46,16 @@ model Lead {
 
   sourceType LeadSourceType @default(FORM)
 
+  // Which Apex property captured this enquiry: "tech", "apex-group",
+  // "apex-holdings", "apex-outsourcing", "apex-tours".
+  //
+  // The group runs five public sites into this one pipeline. Without a source
+  // brand every site's demand lands in one undifferentiated pile, and neither
+  // "which site is actually producing pipeline" nor "route this to the team
+  // that owns it" can be answered. Defaults to "tech" so rows written before
+  // the group sites were wired keep their true origin.
+  sourceSite String @default("tech")
+
   // ── Handling ──────────────────────────────────────────────────────────
   ownerId String?
   owner   User?   @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
@@ -69,9 +79,20 @@ model Lead {
   attribution Attribution?
   activities  LeadActivity[]
   demoRequest DemoRequest?
+  quotes      Quote[]
+  invoices    Invoice[]
+  tickets     Ticket[]
+  projects    Project[] @relation("LeadProjects")
+  portalAccounts PortalAccount[]
 
-  // Deduplication window key: same email + same day. Prevents a double-tap on
-  // a slow mobile connection from creating two leads and two notifications.
+  // Deduplication window key: same site + same email + same day. Prevents a
+  // double-tap on a slow mobile connection from creating two leads and two
+  // notifications.
+  //
+  // The site is part of the key on purpose. Someone who enquires at Apex Tours
+  // and at Apex Tech on the same day has two distinct intents for two
+  // different businesses; collapsing them into one lead would silently discard
+  // the second and hand it to the wrong team.
   dedupeKey String? @unique
 
   createdAt DateTime @default(now())
@@ -81,6 +102,7 @@ model Lead {
   @@index([email])
   @@index([ownerId, stage])
   @@index([createdAt])
+  @@index([sourceSite, createdAt])
   @@map("leads")
 }
 
@@ -170,4 +192,68 @@ model CampaignSpend {
   @@unique([platform, campaign, periodStart, periodEnd])
   @@index([platform, periodStart])
   @@map("campaign_spend")
+}
+
+// ── Marketing module ───────────────────────────────────────────────────────
+// A named, addressable campaign. `slug` is the value passed in the
+// `utm_campaign` query parameter and matched against Attribution on lead
+// submission, so the spend→lead→customer join is one SQL query away.
+model Campaign {
+  id     String @id @default(cuid())
+  slug   String @unique // matches utm_campaign
+  status String  @default("active") // "active" | "paused" | "completed"
+
+  name        String
+  channel     String  // "google-ads" | "meta" | "linkedin" | "email" | "organic"
+  objective   String? // "leads" | "demos" | "traffic"
+
+  // The landing page URL this campaign drives traffic to. Required for paid
+  // campaigns so the spend can be tied to a destination.
+  landingPath String?
+
+  // Budget the campaign is allowed to spend. The attribution report surfaces
+  // actual spend against this number so over-spend is visible at a glance.
+  budgetAmount   Int?
+  budgetCurrency String @default("USD")
+
+  // Linked SaaS product or service, optional. A campaign selling
+  // "Architecture & Design" sets interestSlug here so attribution can be
+  // segmented by surface without parsing the landing path.
+  interestSlug String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, channel])
+  @@map("campaigns")
+}
+
+// Aggregate roll-up of attribution for a campaign over a date range.
+// Computed on a schedule (see modules/marketing/README.md) and cached so the
+// attribution report renders in one query rather than scanning every lead.
+model AttributionReport {
+  id         String   @id @default(cuid())
+  campaignSlug String
+  periodStart DateTime
+  periodEnd   DateTime
+
+  leads        Int
+  qualified    Int
+  opportunities Int
+  customers    Int
+
+  revenueAmount   Int // sum of Lead.valueAmount for customers, in minor units
+  revenueCurrency String @default("USD")
+
+  spendAmount   Int // sum of CampaignSpend for the campaign+period, in minor units
+  spendCurrency String @default("USD")
+
+  createdAt DateTime @default(now())
+
+  @@unique([campaignSlug, periodStart, periodEnd])
+  @@index([campaignSlug, periodEnd])
+  @@map("attribution_reports")
 }

@@ -1,6 +1,6 @@
 # billing
 
-**Status: planned** · depends on: `core`, `crm`
+**Status: active** · depends on: `core`, `crm`
 
 ## Purpose
 
@@ -19,9 +19,15 @@ Floating point does not appear anywhere near a balance.
 
 `billing:read` · `billing:write` · `billing:admin`
 
-## Routes (proposed)
+## Routes
 
-`/billing/invoices` · `/billing/invoices/[id]` · `/billing/subscriptions`
+Customer-facing today, in the portal: `/portal/invoices` ·
+`/portal/invoices/[id]` · `POST /portal/invoices/[id]/pay` (Hyperswitch), with
+payment state reconciled by `POST /api/webhooks/hyperswitch`. See
+[docs/API.md](../../docs/API.md).
+
+Proposed console routes: `/billing/invoices` · `/billing/invoices/[id]` ·
+`/billing/subscriptions`.
 
 ## Jobs (proposed)
 

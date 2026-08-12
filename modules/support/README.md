@@ -1,6 +1,6 @@
 # support
 
-**Status: planned** · depends on: `core`, `crm`
+**Status: active** · depends on: `core`, `crm`
 
 ## Purpose
 
@@ -17,9 +17,13 @@ one whose absence is felt daily.
 
 `support:read` · `support:write` · `support:admin`
 
-## Routes (proposed)
+## Routes
 
-`/support/tickets` · `/support/tickets/[id]` · `/support/queues`
+Customer-facing today, in the portal: `/portal/tickets` ·
+`/portal/tickets/[id]` · `/portal/tickets/new`.
+
+Proposed console routes: `/support/tickets` · `/support/tickets/[id]` ·
+`/support/queues`.
 
 ## Jobs (proposed)
 

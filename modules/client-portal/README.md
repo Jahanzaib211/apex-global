@@ -1,6 +1,6 @@
 # client-portal
 
-**Status: planned** · depends on: `core`, `billing`, `support`, `projects`
+**Status: active** · depends on: `core`, `billing`, `support`, `projects`
 
 ## Purpose
 
@@ -25,9 +25,16 @@ permissions.
 Portal users get scoped access to their own account's data, enforced at the
 query layer — never by hiding a link.
 
-## Routes (proposed)
+## Routes
 
-`apps/portal`: `/`, `/tickets`, `/invoices`, `/documents`, `/projects`
+The portal is a route group inside `apps/web`, not a separate app — one deploy
+carries both surfaces.
+
+`/portal/` · `/portal/tickets` · `/portal/invoices` · `/portal/documents` ·
+`/portal/projects` · `/portal/services` · `/portal/account`
+
+Its API routes, including the OAuth and invitation flows, are inventoried in
+[docs/API.md](../../docs/API.md).
 
 ## Jobs (proposed)
 

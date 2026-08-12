@@ -1,6 +1,6 @@
 # marketing
 
-**Status: planned** · depends on: `core`, `crm`, `cms`
+**Status: partial — attribution and campaign spend only** · depends on: `core`, `crm`, `cms`
 
 ## Purpose
 
@@ -18,9 +18,11 @@ Reuses `crm.CampaignSpend` rather than duplicating it.
 
 `marketing:read` · `marketing:write`
 
-## Routes (proposed)
+## Routes
 
-`/marketing/campaigns` · `/marketing/calendar` · `/marketing/attribution`
+Console, built: `/marketing/campaigns` · `/marketing/attribution`.
+
+Proposed: `/marketing/calendar`.
 
 ## Jobs (proposed)
 
