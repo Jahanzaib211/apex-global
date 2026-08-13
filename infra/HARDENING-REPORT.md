@@ -169,11 +169,17 @@ arguments rather than `--token-file`:
 
 **Fixed 2026-08-13:** `cloud-apex-tunnel` moved to
 `~/.cloudflared/cloud-apex.token` (mode 600) — its token had additionally been
-inline in `infra/ecosystem.config.cjs`, a **git-tracked file in a repo whose
-remote is public**. It was never committed (`git log -S` finds nothing), but it
-sat in a 170-file working tree, one `git add -A` from leaking. `~/.pm2/dump.pm2`
-and its `.bak` were also chmod'd from 664 to 600. The new `tunnel-chat` was
-created with `--token-file` from the start.
+inline in `infra/ecosystem.config.cjs`, a **git-tracked file**. It was never
+committed (`git log -S` finds nothing), but it sat in a 170-file working tree,
+one `git add -A` from entering history permanently. `~/.pm2/dump.pm2` and its
+`.bak` were also chmod'd from 664 to 600. The new `tunnel-chat` was created with
+`--token-file` from the start.
+
+An earlier revision of this line said the remote was **public**. It is not —
+`Jahanzaib211/apex-global` is private, confirmed via `gh repo view`. The risk was
+real but narrower than stated: a committed token is readable by anyone with repo
+access, survives in history after deletion, and would have to be rotated rather
+than removed. It was not public exposure.
 
 Note `tunnel-apex-holdings`, `tunnel-apex-tech` and `tunnel-fincept` already did
 this correctly — the pattern to copy is in "Adding a tunnel" in `TUNNELS.md`.

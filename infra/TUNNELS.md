@@ -61,8 +61,10 @@ in front. Worth revisiting; see `HARDENING-REPORT.md`.
 plaintext inside `~/.pm2/dump.pm2`. Not urgent, but see the hardening report.
 
 `cloud-apex-tunnel` was moved off an inline token on 2026-08-13 — its token had
-been sitting in `infra/ecosystem.config.cjs`, a git-tracked file in a repo whose
-remote is public. It now reads `~/.cloudflared/cloud-apex.token` (mode 600), and
+been sitting in `infra/ecosystem.config.cjs`, a git-tracked file. (An earlier
+note here called the remote public; it is private. The token would still have
+entered history permanently on any `git add -A`, and would then need rotating
+rather than deleting.) It now reads `~/.cloudflared/cloud-apex.token` (mode 600), and
 `~/.pm2/dump.pm2` was chmod'd to 600. **Six tunnels still carry inline tokens**
 (Finding 5 in `HARDENING-REPORT.md`). Remember that pm2 bakes args into its saved
 dump: applying a token change is `pm2 delete` + `start` + `save`, never
