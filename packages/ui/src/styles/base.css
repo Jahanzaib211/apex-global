@@ -1,5 +1,41 @@
 /* Base layer — applied once, in apps/web and apps/console. */
 
+/* Motion design tokens.
+ *
+ * One source of truth for every animation duration on the site, named after
+ * the effect that owns them. Putting durations in tokens does three things:
+ *  - visually the pacing stays consistent across pages (one number to turn);
+ *  - the animation conformance spec (tests/e2e/public/animation.spec.ts)
+ *    asserts these exact values on the live DOM, so a drift in either
+ *    direction fails a build instead of being noticed by a visitor;
+ *  - reduced-motion only requires the single global rule below, because every
+ *    effect reads its timing from these tokens / inline vars.
+ * Keep durations in seconds (s): the tests parse them from `getComputedStyle`.
+ *
+ * Motion budget: nothing below loops faster than ~1.0s and nothing falls
+ * slower than ~3s drift — a beat fast enough to feel alive, slow enough to
+ * never flicker or overtake a visitor's attention.
+ */
+:root {
+  /* Logo: entrance "ribbons wake up", then an amber chase that re-arms on hover. */
+  --motion-logo-sweep-dur: 0.9s;
+  --motion-logo-chase-dur: 3.4s;
+  --motion-logo-chase-delay: 0.3s;
+  --motion-logo-gap: 0.18s; /* measured between adjacent delay stops */
+  --motion-peak-dur: 3.2s;
+  --motion-hover-chase-dur: 1.5s;
+  /* Hero */
+  --motion-matrix-fall: 14s; /* long, one full field length */
+  --motion-matrix-speed-min: 12s;
+  --motion-matrix-speed-max: 26s;
+  --motion-glow-drift: 14s;
+  --motion-glint-pass: 2.4s;
+  --motion-glint-delay: 1.8s;
+  --motion-aurora: 26s;
+  /* Marquee */
+  --motion-marquee-scroll: 64s;
+}
+
 @layer base {
   *,
   *::before,
@@ -127,5 +163,424 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* The code editor caret in the LiveCode campaign component. This is a pure
+   CSS blink — nothing JS-driven — so it is cheap and disabled by the reduced
+   motion rule above. */
+@layer components {
+  .caret-blink {
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
+  @keyframes caret-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+/* Technology marquee (homepage strip). Pure CSS so it animates reliably:
+   the motion library version rendered static because the hook never started
+   a keyframe path. `--marquee-translate` is consumed by the component. */
+@layer components {
+  .marquee-track {
+    /* Slow, steady pace — the full doubled track takes ~64s to loop. */
+    animation: marquee-scroll 64s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: var(--marquee-translate, translateX(-50%));
+    }
+  }
+
+  /* Band labels glow with a soft amber halo. */
+  .tech-glow {
+    text-shadow:
+      0 0 10px var(--color-amber-500),
+      0 0 26px var(--color-amber-500),
+      0 0 48px color-mix(in srgb, var(--color-amber-500) 55%, transparent);
+  }
+
+  /* Technologies get a subtle neon rim that eases in as they pass. */
+  .tech-item {
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .tech-item:hover {
+    border-color: var(--color-amber-500);
+    box-shadow:
+      0 0 14px var(--color-amber-500),
+      0 0 2px var(--color-amber-500);
+  }
+}
+
+/* Hero section micro-motion.
+ *
+ * Three pure-CSS effects that animate on mount and loop slowly, so the
+ * marketing hero feels alive without pulling in a motion bundle:
+ *
+ *   - .hero-glow        a soft amber orb that drifts around the backdrop
+ *   - .hero-shimmer     a light sweep that crosses the headline lines
+ *   - .hero-pulse       the status dot in the eyebrow badge
+ *
+ * All are governed by the global `prefers-reduced-motion` rule below and are
+ * decorative (aria-hidden). */
+@layer components {
+  .hero-glow {
+    animation: hero-glow-drift 14s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  @keyframes hero-glow-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(2rem, 1rem, 0) scale(1.12);
+    }
+  }
+
+  .hero-shimmer {
+    position: relative;
+    background: linear-gradient(
+      110deg,
+      var(--color-amber-500) 20%,
+      #fff8d6 40%,
+      var(--color-amber-500) 60%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: hero-shimmer-sweep 5s ease-in-out infinite;
+  }
+
+  @keyframes hero-shimmer-sweep {
+    0% {
+      background-position: 120% 0;
+    }
+    100% {
+      background-position: -80% 0;
+    }
+  }
+
+  .hero-pulse {
+    animation: hero-pulse 2.2s ease-in-out infinite;
+  }
+
+  @keyframes hero-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(0.85);
+    }
+  }
+}
+
+/* Apex brand mark — personality.
+ *
+ * Opt-in (Logo/Mark `animated`): the three swept ribbons rise and fade in on
+ * mount, then run a slow amber-tinged chase; the peak breathes on the same
+ * beat. Hovering anywhere over `.apex-logo` doubles the chase speed and
+ * reverses it, so the mark visibly responds. The global prefers-reduced-motion
+ * rule below zeroes every one of these animations.
+ */
+@layer components {
+  /* Static amber halo that the peak breathes against. Applied once, so it is
+     a single cheap paint, never an animated filter. */
+  .apex-logo svg {
+    filter: drop-shadow(0 0 1px color-mix(in srgb, var(--color-amber-500) 30%, transparent))
+      drop-shadow(0 0 6px color-mix(in srgb, var(--color-amber-500) 16%, transparent));
+  }
+
+  .apex-peak {
+    /* The "motor": the crest drinks light on the same beat the ribbons run. */
+    animation: apex-peak-breathe var(--motion-peak-dur, 3.2s) ease-in-out infinite;
+  }
+
+  @keyframes apex-peak-breathe {
+    0%,
+    100% {
+      fill-opacity: 1;
+      filter: drop-shadow(0 0 2px color-mix(in srgb, var(--color-amber-400) 50%, transparent));
+    }
+    50% {
+      fill-opacity: 0.9;
+      filter: drop-shadow(0 0 7px color-mix(in srgb, var(--color-amber-400) 80%, transparent));
+    }
+  }
+
+  /* Three ribbons, mounted nearest-first. This is the entrance *only*:
+     the shadows difference is what makes the mark read as three layers. */
+  .apex-sweep {
+    transform-origin: 8px 96px;
+    animation:
+      apex-sweep-in var(--motion-logo-sweep-dur, 0.9s) cubic-bezier(0.22, 1, 0.36, 1) backwards,
+      apex-sweep-glow var(--motion-logo-chase-dur, 3.4s) ease-in-out
+        var(--motion-logo-chase-delay, 0.3s) infinite;
+  }
+
+  /* BUG-FIX: the old `.apex-logo .apex-sweep` shorthand reset `animation-delay`
+     to 0 for all three ribbons, killing the stagger. Delays must be declared
+     with STRICTLY HIGHER specificity than the shorthand so each ribbon keeps
+     its own start. `gap` is the seam: ribbon N starts N·gap later than
+     ribbon 0, so the light genuinely runs nearest-first. */
+  .apex-logo .apex-sweep {
+    animation:
+      apex-sweep-in var(--motion-logo-sweep-dur, 0.9s) cubic-bezier(0.22, 1, 0.36, 1) both,
+      apex-sweep-glow var(--motion-logo-chase-dur, 3.4s) ease-in-out
+        var(--motion-logo-chase-delay, 0.3s) infinite;
+  }
+
+  .apex-logo .apex-sweep-0 {
+    animation-delay: 0s, 0s;
+  }
+
+  .apex-logo .apex-sweep-1 {
+    animation-delay:
+      calc(var(--motion-logo-gap, 0.18s) * 1),
+      calc(var(--motion-logo-chase-delay, 0.3s) + var(--motion-logo-gap, 0.18s) * 1);
+  }
+
+  .apex-logo .apex-sweep-2 {
+    animation-delay:
+      calc(var(--motion-logo-gap, 0.18s) * 2),
+      calc(var(--motion-logo-chase-delay, 0.3s) + var(--motion-logo-gap, 0.18s) * 2);
+  }
+
+  @keyframes apex-sweep-in {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* The idle glow: a soft amber light passes along the ribbons in sequence
+     (nearest-first), using only opacity — compositor-friendly, no filter
+     repaint. It keeps running after the entrance. */
+  @keyframes apex-sweep-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    38% {
+      opacity: 1;
+    }
+    72% {
+      opacity: 0.72;
+    }
+  }
+
+  /* Hover only quickens the chase — it never changes `animation-delay`,
+     which per the CSS spec would RESTART the animation and visibly stutter.
+     Speeding the same phase is what makes the logo feel like it notices you. */
+  .apex-logo:hover .apex-sweep,
+  .apex-logo:focus-within .apex-sweep {
+    animation-duration: var(--motion-logo-sweep-dur, 0.9s), var(--motion-hover-chase-dur, 1.5s);
+  }
+
+  .apex-logo:hover .apex-peak {
+    animation-duration: calc(var(--motion-peak-dur, 3.2s) / 1.6);
+  }
+}
+
+/* Hero: 3D matrix scene + headline sheens + rotating aurora.
+ *
+ * The glyph rain sits on a real perspective stage: each column travels its own
+ * depth (`--depth`, a translateZ), so near columns are larger, brighter and
+ * cutting; far columns recede, blur and dim. The fall itself animates the
+ * `translate` property (independent of `transform`), which keeps the depth
+ * constant while the column drops — and keeps the whole effect on the
+ * compositor instead of repainting SVG. All decorative (aria-hidden) and all
+ * killed by the global prefers-reduced-motion rule.
+ */
+@layer components {
+  .hero-matrix-scene {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    perspective: 900px;
+    perspective-origin: 50% 32%;
+  }
+
+  .hero-matrix-column {
+    position: absolute;
+    top: -12%;
+    bottom: -12%;
+    width: 8px;
+    font-family: var(--font-mono);
+    font-size: var(--col-size, 12px);
+    line-height: 1;
+    white-space: pre;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    color: color-mix(in srgb, var(--color-amber-500) 42%, var(--color-success-500) 58%);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--color-amber-500) 35%, transparent);
+    opacity: var(--col-opacity, 0.12);
+    transform: translateZ(var(--col-depth, 0px));
+    filter: blur(var(--col-blur, 0px));
+    animation-name: hero-matrix-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: var(--col-speed, var(--motion-matrix-fall, 14s));
+  }
+
+  @keyframes hero-matrix-fall {
+    from {
+      translate: 0 -24%;
+    }
+    to {
+      translate: 0 24%;
+    }
+  }
+
+  /* The run itself is dim; a bright head copy sits at the leading edge
+     (bottom) through a mask, so every column reads as a falling glyph. The
+     mask fades the tail out as it re-enters at the top, hiding the loop seam. */
+  .hero-matrix-column::before {
+    position: absolute;
+    inset: 0;
+    content: attr(data-glyphs);
+    color: var(--color-amber-300);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-amber-500) 75%, transparent);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 84%,
+      rgba(0, 0, 0, 0.35) 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 84%, rgba(0, 0, 0, 0.35) 100%);
+    animation: hero-matrix-glyph-glint 3.5s ease-in-out infinite;
+  }
+
+  @keyframes hero-matrix-glyph-glint {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  /* Slow amber aurora behind the headline: a big conic that feathers out, so
+     the hero reads as lit FROM BEHIND the copy rather than on the copy. */
+  .hero-aurora {
+    pointer-events: none;
+    animation: hero-aurora-spin var(--motion-aurora, 26s) linear infinite;
+  }
+
+  @keyframes hero-aurora-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .hero-shimmer-line {
+    background: linear-gradient(
+      110deg,
+      var(--color-navy-100) 30%,
+      var(--color-amber-200) 50%,
+      var(--color-navy-100) 70%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: hero-shimmer-line-sweep 8s ease-in-out infinite;
+  }
+
+  @keyframes hero-shimmer-line-sweep {
+    0% {
+      background-position: 140% 0;
+    }
+    100% {
+      background-position: -40% 0;
+    }
+  }
+
+  /* "Built to Scale." — a permanently-readable amber shimmer like the other
+     two headline lines, plus a gentle one-shot brightness pulse after load.
+     The old one-shot background-position sweep made the text vanish once it
+     finished (the resting transparent band sat over the clipped text). */
+  .hero-glint {
+    background: linear-gradient(
+      110deg,
+      var(--color-navy-100) 30%,
+      var(--color-amber-200) 50%,
+      var(--color-navy-100) 70%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation:
+      hero-shimmer-line-sweep 8s ease-in-out infinite,
+      hero-glint-open var(--motion-glint-pass, 2.4s) ease-in-out var(--motion-glint-delay, 1.8s);
+  }
+
+  @keyframes hero-glint-open {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  .cta-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-sheen::after {
+    position: absolute;
+    top: -40%;
+    left: -60%;
+    width: 40%;
+    height: 180%;
+    content: "";
+    transform: rotate(18deg) translateX(0);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-canvas-0) 42%, transparent),
+      transparent
+    );
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cta-sheen:hover::after {
+    transform: rotate(18deg) translateX(320%);
+    transition-duration: 0.75s;
   }
 }

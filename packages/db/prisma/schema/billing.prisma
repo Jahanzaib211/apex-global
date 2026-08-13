@@ -1,0 +1,107 @@
+// ── module: billing ────────────────────────────────────────────────────────
+// Quotes, invoices, payments and subscriptions. The schema is intentionally
+// small — the goal is the operational loop (issue invoice → customer pays →
+// webhook reconciles), not a full accounting system.
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+  OVERDUE
+}
+
+model Quote {
+  id     String      @id @default(cuid())
+  number String      @unique // QT-0001
+
+  status QuoteStatus @default(DRAFT)
+
+  customerName  String
+  customerEmail String
+  companyName   String?
+
+  lineItems  Json // [{ description, quantity, unitAmount, currency }]
+  subtotalAmount Int
+  taxAmount      Int @default(0)
+  totalAmount    Int
+  currency       String @default("USD")
+
+  notes   String?
+  validUntil DateTime?
+
+  // Link back to the lead this quote was generated against, so attribution
+  // reporting can roll spend → lead → quote → invoice → revenue.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  // What this quote is selling. Either a service (modular engagement) or a
+  // product (SaaS). Exactly one is set.
+  serviceSlug String?
+  productSlug  String?
+
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  invoices Invoice[]
+
+  @@index([status, createdAt])
+  @@map("quotes")
+}
+
+model Invoice {
+  id     String        @id @default(cuid())
+  number String        @unique // INV-0001
+
+  status InvoiceStatus @default(DRAFT)
+
+  customerName  String
+  customerEmail String
+  companyName   String?
+
+  subtotalAmount Int
+  taxAmount      Int @default(0)
+  totalAmount    Int
+  currency       String @default("USD")
+
+  notes String?
+
+  lineItems Json? // [{ description, quantity, unitAmount, currency }]
+
+  // Link back to the originating quote, if any.
+  quoteId String?
+  quote   Quote?  @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+
+  // Lead attribution — same purpose as the link on Quote.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  serviceSlug String?
+  productSlug  String?
+
+  // Payment reconciliation fields, populated by the Hyperswitch webhook.
+  paymentProvider String? // "hyperswitch" | "manual"
+  paymentRef      String? // gateway payment id
+  paidAt          DateTime?
+
+  dueDate DateTime?
+  sentAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([dueDate])
+  @@map("invoices")
+}

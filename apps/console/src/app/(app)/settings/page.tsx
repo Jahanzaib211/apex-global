@@ -46,7 +46,10 @@ export default async function SettingsPage({ searchParams }: Props) {
         provider,
         label: definition.label,
         isEnabled: enabled,
-        config: { model: model || definition.defaultModel, baseUrl: baseUrl || definition.defaultBaseUrl },
+        config: {
+          model: model || definition.defaultModel,
+          baseUrl: baseUrl || definition.defaultBaseUrl,
+        },
         ...(sealed
           ? {
               secretCiphertext: sealed.ciphertext,
@@ -58,7 +61,10 @@ export default async function SettingsPage({ searchParams }: Props) {
       },
       update: {
         isEnabled: enabled,
-        config: { model: model || definition.defaultModel, baseUrl: baseUrl || definition.defaultBaseUrl },
+        config: {
+          model: model || definition.defaultModel,
+          baseUrl: baseUrl || definition.defaultBaseUrl,
+        },
         ...(sealed
           ? {
               secretCiphertext: sealed.ciphertext,
@@ -96,7 +102,9 @@ export default async function SettingsPage({ searchParams }: Props) {
     const record = await prisma.integration.findUnique({ where: { provider } });
 
     if (!record?.secretCiphertext || !record.secretIv || !record.secretTag) {
-      redirect(`/settings?error=${encodeURIComponent("No credential saved for this provider yet.")}`);
+      redirect(
+        `/settings?error=${encodeURIComponent("No credential saved for this provider yet.")}`,
+      );
     }
 
     const definition = getProvider(provider);
@@ -179,7 +187,7 @@ export default async function SettingsPage({ searchParams }: Props) {
                     </p>
                   </div>
                   {record?.isEnabled ? (
-                    <span className="rounded-full bg-[var(--color-success-100)] px-2.5 py-0.5 text-2xs font-medium text-[var(--color-success-500)]">
+                    <span className="text-2xs rounded-full bg-[var(--color-success-100)] px-2.5 py-0.5 font-medium text-[var(--color-success-500)]">
                       Enabled
                     </span>
                   ) : null}
@@ -194,7 +202,9 @@ export default async function SettingsPage({ searchParams }: Props) {
                       type="password"
                       name="apiKey"
                       autoComplete="off"
-                      placeholder={record?.lastFour ? "Leave blank to keep the current key" : "Paste the key"}
+                      placeholder={
+                        record?.lastFour ? "Leave blank to keep the current key" : "Paste the key"
+                      }
                       className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-raised)] px-3 text-sm font-normal"
                     />
                   </label>
@@ -254,24 +264,74 @@ export default async function SettingsPage({ searchParams }: Props) {
         <div className="scroll-x mt-6 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)]">
           <table className="w-full min-w-[40rem] text-sm">
             <tbody className="divide-y divide-[var(--border-subtle)]">
-              {settings.map((s) => (
-                <tr key={s.key}>
-                  <td className="px-5 py-3 align-top">
-                    <p className="font-medium">{s.label}</p>
-                    <p className="text-2xs text-[var(--ink-muted)]">{s.key}</p>
-                  </td>
-                  <td className="px-5 py-3 text-[var(--ink-secondary)]">
-                    {typeof s.value === "string" && s.value ? (
-                      s.value
-                    ) : (
-                      <span className="text-[var(--color-amber-700)]">not set</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {settings
+                .filter((s) => !s.group.startsWith("partner"))
+                .map((s) => (
+                  <tr key={s.key}>
+                    <td className="px-5 py-3 align-top">
+                      <p className="font-medium">{s.label}</p>
+                      <p className="text-2xs text-[var(--ink-muted)]">{s.key}</p>
+                    </td>
+                    <td className="px-5 py-3 text-[var(--ink-secondary)]">
+                      {typeof s.value === "string" && s.value ? (
+                        s.value
+                      ) : (
+                        <span className="text-[var(--color-amber-700)]">not set</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
+      </section>
+
+      {/* ── Engineering partner ─────────────────────────────────────── */}
+      <section>
+        <h2 className="text-xl">Engineering partner</h2>
+        <p className="mt-1 max-w-2xl text-sm text-[var(--ink-secondary)]">
+          The technology partner responsible for designing, building and operating the platforms
+          behind Apex. Their portfolio is linked from the public site footer, the site header and
+          the homepage partner strip.
+        </p>
+
+        <div className="mt-6 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
+          {(
+            ["partner.name", "partner.tagline", "partner.url", "partner.relationship"] as const
+          ).map((key) => {
+            const setting = settings.find((s) => s.key === key);
+            return (
+              <dl
+                key={key}
+                className="grid items-baseline gap-x-6 gap-y-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[14rem_1fr] [&:not(:first-child)]:border-t [&:not(:first-child)]:border-[var(--border-subtle)]"
+              >
+                <dt className="text-sm font-medium">{setting?.label ?? key}</dt>
+                <dd className="text-sm text-[var(--ink-secondary)]">
+                  {typeof setting?.value === "string" && setting.value ? (
+                    key === "partner.url" ? (
+                      <a
+                        href={setting.value}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="text-[var(--color-amber-700)] underline-offset-4 hover:underline"
+                      >
+                        {setting.value}
+                      </a>
+                    ) : (
+                      setting.value
+                    )
+                  ) : (
+                    <span className="text-[var(--color-amber-700)]">not set</span>
+                  )}
+                </dd>
+              </dl>
+            );
+          })}
+        </div>
+        <p className="text-2xs mt-3 text-[var(--ink-muted)]">
+          Edit these values in <code>packages/db/prisma/content/site.ts</code> and re-run{" "}
+          <code>pnpm db:seed</code>.
+        </p>
       </section>
     </div>
   );

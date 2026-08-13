@@ -21,24 +21,25 @@ pnpm dev
 
 ## Layout
 
-| Path | What it is |
-|---|---|
-| `apps/web` | Public site: marketing, SaaS product pages, ad landing pages |
-| `apps/console` | Internal admin: CMS, leads, settings, module host |
-| `packages/ui` | Design system — brand tokens, primitives, motion, diagrams |
-| `packages/db` | Prisma client and schema (one file per module) |
-| `packages/ai` | Provider-agnostic AI interface and encrypted key vault |
-| `packages/analytics` | Consent manager, GA4 / Meta / Ads events, server-side conversions |
-| `packages/module-kit` | `defineModule()` contract and registry loader |
-| `modules/*` | Business capability, each with its own spec and schema |
-| `infra/` | Compose stack, deployment configuration, backups |
-| `docs/` | Architecture, brand, modules, credibility, runbook, SEO |
+| Path                  | What it is                                                             |
+| --------------------- | ---------------------------------------------------------------------- |
+| `apps/web`            | Public site: marketing, SaaS product pages, ad landing pages           |
+| `apps/console`        | Internal admin: CMS, leads, settings, module host                      |
+| `packages/ui`         | Design system — brand tokens, primitives, motion, diagrams             |
+| `packages/db`         | Prisma client and schema (one file per module)                         |
+| `packages/ai`         | Provider-agnostic AI interface and encrypted key vault                 |
+| `packages/analytics`  | Consent manager, GA4 / Meta / Ads events, server-side conversions      |
+| `packages/module-kit` | `defineModule()` contract and registry loader                          |
+| `modules/*`           | Business capability, each with its own spec and schema                 |
+| `infra/`              | Compose stack, deployment configuration, backups                       |
+| `docs/`               | Architecture, API reference, brand, modules, credibility, runbook, SEO |
 
 ## Read first
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the system fits together
 - [docs/CREDIBILITY.md](docs/CREDIBILITY.md) — **what may and may not be published, enforced in CI**
 - [docs/MODULES.md](docs/MODULES.md) — the module registry and how to add one
+- [docs/API.md](docs/API.md) — every HTTP route, its caller and its authentication
 - [docs/BRAND.md](docs/BRAND.md) — palette, type, mark, usage discipline
 - [docs/RUNBOOK.md](docs/RUNBOOK.md) — setup, deploys, incidents, backups
 - [docs/SEO.md](docs/SEO.md) — international SEO and attribution

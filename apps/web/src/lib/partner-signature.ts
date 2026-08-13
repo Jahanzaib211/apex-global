@@ -23,7 +23,9 @@ export function signaturePayload(timestamp: string, site: string, rawBody: strin
 }
 
 export function sign(timestamp: string, site: string, rawBody: string, secret: string): string {
-  return createHmac("sha256", secret).update(signaturePayload(timestamp, site, rawBody)).digest("hex");
+  return createHmac("sha256", secret)
+    .update(signaturePayload(timestamp, site, rawBody))
+    .digest("hex");
 }
 
 export type SignatureFailure = "missing" | "stale" | "mismatch";

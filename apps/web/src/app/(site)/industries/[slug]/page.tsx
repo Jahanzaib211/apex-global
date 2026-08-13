@@ -108,7 +108,7 @@ export default async function IndustryPage({ params }: Props) {
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {industry.caseStudies.map((c) => (
               <Card key={c.slug} as="article" interactive className="flex flex-col gap-3 p-8">
-                <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+                <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                   {displayClient({ ...c, clientConsent: false })}
                 </p>
                 <h3 className="text-xl">

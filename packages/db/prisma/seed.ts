@@ -6,6 +6,9 @@ import { products } from "./content/products.js";
 import { caseStudies, faqs, insights, landingPages, roles, settings } from "./content/site.js";
 import { solutions } from "./content/solutions.js";
 import { techProof } from "./content/tech-proof.js";
+import { services, serviceBundles } from "./content/services.js";
+import { liveEndpoints } from "./content/endpoints.js";
+import { campaigns } from "./content/campaigns.js";
 
 const prisma = new PrismaClient();
 
@@ -23,13 +26,63 @@ const PERMISSIONS = [
   ["saas", "saas:write", "Edit products, pricing and docs"],
   ["ai-assist", "ai:read", "View AI configuration and output"],
   ["ai-assist", "ai:admin", "Configure providers and credentials"],
+  ["partner", "partner:read", "View engineering partner settings"],
+  ["partner", "partner:write", "Manage engineering partner settings"],
+  ["marketing", "marketing:read", "View campaigns and attribution reporting"],
+  ["marketing", "marketing:write", "Manage campaigns and ad spend"],
+  ["billing", "billing:read", "View invoices and payments"],
+  ["billing", "billing:write", "Create and send invoices"],
+  ["billing", "billing:admin", "Configure tax, currency and payment providers"],
+  ["support", "support:read", "View tickets"],
+  ["support", "support:write", "Respond to and resolve tickets"],
+  ["support", "support:admin", "Configure queues and response targets"],
+  ["projects", "projects:read", "View projects and tasks"],
+  ["projects", "projects:write", "Manage projects, tasks and timesheets"],
+  ["projects", "projects:admin", "Configure project templates and rates"],
+  ["client-portal", "portal:read", "View portal accounts"],
+  ["client-portal", "portal:admin", "Manage portal access and entitlements"],
 ] as const;
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
   admin: PERMISSIONS.map(([, key]) => key),
-  editor: ["core:read", "cms:read", "cms:write", "cms:publish", "saas:read", "saas:write", "ai:read"],
-  sales: ["core:read", "cms:read", "crm:read", "crm:write", "saas:read", "ai:read"],
-  viewer: ["core:read", "cms:read", "crm:read", "saas:read", "ai:read"],
+  editor: [
+    "core:read",
+    "cms:read",
+    "cms:write",
+    "cms:publish",
+    "saas:read",
+    "saas:write",
+    "ai:read",
+    "partner:read",
+    "marketing:read",
+  ],
+  sales: [
+    "core:read",
+    "cms:read",
+    "crm:read",
+    "crm:write",
+    "saas:read",
+    "ai:read",
+    "billing:read",
+    "support:read",
+    "support:write",
+    "partner:read",
+    "marketing:read",
+    "portal:read",
+  ],
+  viewer: [
+    "core:read",
+    "cms:read",
+    "crm:read",
+    "saas:read",
+    "ai:read",
+    "billing:read",
+    "support:read",
+    "projects:read",
+    "partner:read",
+    "marketing:read",
+    "portal:read",
+  ],
 };
 
 async function seedCore() {
@@ -68,7 +121,9 @@ async function seedCore() {
     });
   }
 
-  console.log(`  core: ${settings.length} settings, ${roles.length} roles, ${PERMISSIONS.length} permissions`);
+  console.log(
+    `  core: ${settings.length} settings, ${roles.length} roles, ${PERMISSIONS.length} permissions`,
+  );
 }
 
 async function seedSolutions() {
@@ -296,7 +351,9 @@ async function seedProducts() {
   }
 
   const live = products.filter((p) => p.status === "LIVE").length;
-  console.log(`  saas: ${products.length} products (${live} live, ${products.length - live} draft)`);
+  console.log(
+    `  saas: ${products.length} products (${live} live, ${products.length - live} draft)`,
+  );
 
   // Renaming a slug in the content file creates a new row and orphans the old
   // one — the seed upserts by slug, so it cannot see the rename. Report rather
@@ -419,6 +476,182 @@ async function seedInsightsAndFaqs() {
   console.log(`  cms: ${insights.length} insights, ${faqs.length} general FAQs`);
 }
 
+async function seedCampaigns() {
+  for (const c of campaigns) {
+    await prisma.campaign.upsert({
+      where: { slug: c.slug },
+      create: {
+        slug: c.slug,
+        status: c.status,
+        name: c.name,
+        channel: c.channel,
+        objective: c.objective ?? null,
+        landingPath: c.landingPath,
+        budgetAmount: c.budgetAmount ?? null,
+        budgetCurrency: c.budgetCurrency ?? "USD",
+        interestSlug: c.interestSlug ?? null,
+        startsAt: c.startsAt ? new Date(c.startsAt) : null,
+        endsAt: c.endsAt ? new Date(c.endsAt) : null,
+      },
+      update: {
+        status: c.status,
+        name: c.name,
+        channel: c.channel,
+        objective: c.objective ?? null,
+        landingPath: c.landingPath,
+        budgetAmount: c.budgetAmount ?? null,
+        interestSlug: c.interestSlug ?? null,
+      },
+    });
+  }
+  console.log(`  marketing: ${campaigns.length} campaigns`);
+}
+
+async function seedServices() {
+  for (const s of services) {
+    const seo = await prisma.seo.create({
+      data: { title: s.seoTitle, description: s.seoDescription },
+    });
+
+    await prisma.service.upsert({
+      where: { slug: s.slug },
+      create: {
+        slug: s.slug,
+        order: s.order,
+        status: s.status,
+        name: s.name,
+        tagline: s.tagline,
+        summary: s.summary,
+        body: s.body ?? null,
+        icon: s.icon,
+        category: s.category,
+        flatFeeAmount: s.flatFeeAmount,
+        feeCurrency: s.feeCurrency,
+        timelineDays: s.timelineDays,
+        timelineLabel: s.timelineLabel,
+        origin: s.origin,
+        upstreamName: s.upstreamName ?? null,
+        upstreamUrl: s.upstreamUrl ?? null,
+        upstreamLicense: s.upstreamLicense ?? null,
+        deliverables: [...s.deliverables],
+        outcomes: [...s.outcomes],
+        technologies: [...s.technologies],
+        publishedAt: new Date(),
+        seoId: seo.id,
+      },
+      update: {
+        order: s.order,
+        status: s.status,
+        name: s.name,
+        tagline: s.tagline,
+        summary: s.summary,
+        body: s.body ?? null,
+        icon: s.icon,
+        category: s.category,
+        flatFeeAmount: s.flatFeeAmount,
+        feeCurrency: s.feeCurrency,
+        timelineDays: s.timelineDays,
+        timelineLabel: s.timelineLabel,
+        origin: s.origin,
+        upstreamName: s.upstreamName ?? null,
+        upstreamUrl: s.upstreamUrl ?? null,
+        upstreamLicense: s.upstreamLicense ?? null,
+        deliverables: [...s.deliverables],
+        outcomes: [...s.outcomes],
+        technologies: [...s.technologies],
+      },
+    });
+  }
+
+  for (const b of serviceBundles) {
+    const seo = await prisma.seo.create({
+      data: { title: b.seoTitle, description: b.seoDescription },
+    });
+
+    await prisma.serviceBundle.upsert({
+      where: { slug: b.slug },
+      create: {
+        slug: b.slug,
+        order: b.order,
+        status: b.status,
+        name: b.name,
+        tagline: b.tagline,
+        summary: b.summary,
+        body: b.body ?? null,
+        serviceSlugs: [...b.serviceSlugs],
+        bundlePriceAmount: b.bundlePriceAmount,
+        sumPriceAmount: b.sumPriceAmount,
+        feeCurrency: b.feeCurrency,
+        bestFor: b.bestFor,
+        outcomes: [...b.outcomes],
+        publishedAt: new Date(),
+        seoId: seo.id,
+      },
+      update: {
+        order: b.order,
+        status: b.status,
+        name: b.name,
+        tagline: b.tagline,
+        summary: b.summary,
+        body: b.body ?? null,
+        serviceSlugs: [...b.serviceSlugs],
+        bundlePriceAmount: b.bundlePriceAmount,
+        sumPriceAmount: b.sumPriceAmount,
+        feeCurrency: b.feeCurrency,
+        bestFor: b.bestFor,
+        outcomes: [...b.outcomes],
+      },
+    });
+  }
+
+  console.log(`  cms: ${services.length} services, ${serviceBundles.length} bundles`);
+}
+
+async function seedLiveEndpoints() {
+  for (const e of liveEndpoints) {
+    await prisma.liveEndpoint.upsert({
+      where: { slug: e.slug },
+      create: {
+        slug: e.slug,
+        order: e.order,
+        status: e.status,
+        name: e.name,
+        kind: e.kind,
+        publicUrl: e.publicUrl ?? null,
+        originLoopback: e.originLoopback ?? null,
+        summary: e.summary,
+        role: e.role,
+        origin: e.origin,
+        upstreamName: e.upstreamName ?? null,
+        upstreamUrl: e.upstreamUrl ?? null,
+        upstreamLicense: e.upstreamLicense ?? null,
+        isPubliclyLinkable: e.isPubliclyLinkable,
+        publishedAt: new Date(),
+      },
+      update: {
+        order: e.order,
+        status: e.status,
+        name: e.name,
+        kind: e.kind,
+        publicUrl: e.publicUrl ?? null,
+        originLoopback: e.originLoopback ?? null,
+        summary: e.summary,
+        role: e.role,
+        origin: e.origin,
+        upstreamName: e.upstreamName ?? null,
+        upstreamUrl: e.upstreamUrl ?? null,
+        upstreamLicense: e.upstreamLicense ?? null,
+        isPubliclyLinkable: e.isPubliclyLinkable,
+      },
+    });
+  }
+
+  const links = liveEndpoints.filter((e) => e.isPubliclyLinkable).length;
+  console.log(
+    `  cms: ${liveEndpoints.length} live endpoints (${links} publicly linkable, ${liveEndpoints.length - links} loopback only)`,
+  );
+}
+
 async function seedLandingPages() {
   for (const l of landingPages) {
     await prisma.landingPage.upsert({
@@ -451,6 +684,9 @@ async function main() {
   await seedIndustries();
   await seedTechProof();
   await seedProducts();
+  await seedServices();
+  await seedLiveEndpoints();
+  await seedCampaigns();
   await seedCaseStudies();
   await seedInsightsAndFaqs();
   await seedLandingPages();

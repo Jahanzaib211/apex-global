@@ -80,7 +80,13 @@ export default async function ProductPage({ params }: Props) {
           </Link>
         </nav>
 
-        <SectionHeading inverse as="h1" eyebrow={product.category} title={product.name} lede={product.tagline} />
+        <SectionHeading
+          inverse
+          as="h1"
+          eyebrow={product.category}
+          title={product.name}
+          lede={product.tagline}
+        />
 
         <p className="mt-6 max-w-3xl text-lg leading-relaxed text-[var(--color-navy-200)]">
           {product.summary}
@@ -97,7 +103,10 @@ export default async function ProductPage({ params }: Props) {
               target="_blank"
               className="inline-flex h-13 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-inverse)] px-6 text-base font-medium text-[var(--color-canvas-100)] transition-colors hover:border-[var(--color-canvas-100)]"
             >
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--color-success-500)]" />
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-[var(--color-success-500)]"
+              />
               See it running ↗
             </a>
           ) : null}
@@ -117,13 +126,13 @@ export default async function ProductPage({ params }: Props) {
       <Section tone="page">
         <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
           <div>
-            <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+            <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--ink-muted)] uppercase">
               The problem
             </h2>
             <Prose text={product.problem} className="mt-5" />
           </div>
           <div>
-            <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+            <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
               What we do about it
             </h2>
             <Prose text={product.solution} className="mt-5" />
@@ -154,7 +163,7 @@ export default async function ProductPage({ params }: Props) {
               a technical evaluation. */}
           {roadmap.length > 0 ? (
             <div className="mt-10">
-              <h3 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+              <h3 className="text-2xs font-semibold tracking-[0.18em] text-[var(--ink-muted)] uppercase">
                 On the roadmap — not yet available
               </h3>
               <ul className="mt-4 flex flex-wrap gap-3">
@@ -262,7 +271,11 @@ export default async function ProductPage({ params }: Props) {
           <div>
             <SectionHeading
               eyebrow="Next step"
-              title={product.demoAvailable ? `See ${product.name} properly` : `Talk to us about ${product.name}`}
+              title={
+                product.demoAvailable
+                  ? `See ${product.name} properly`
+                  : `Talk to us about ${product.name}`
+              }
               lede="We will show you the authenticated views, not a slide deck — including the parts that are still rough."
             />
           </div>
@@ -271,6 +284,8 @@ export default async function ProductPage({ params }: Props) {
               compact
               interestType="product"
               interestSlug={product.slug}
+              productSlug={product.slug}
+              endpoint={product.demoAvailable ? "/api/demo-request" : "/api/leads"}
               submitLabel={product.demoAvailable ? "Request a demo" : "Send enquiry"}
             />
           </div>

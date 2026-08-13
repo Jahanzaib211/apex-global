@@ -42,3 +42,9 @@ Thumbs.db
 logs/
 test-results/
 playwright-report/
+
+# graphify knowledge-graph intermediates (12MB+) — regenerable via scripts/generate-repo-graph.py
+graphify-out/
+
+# live password cheat-sheet — never commit
+infra/MASTER-CREDENTIALS.md

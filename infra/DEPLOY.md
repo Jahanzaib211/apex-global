@@ -15,11 +15,11 @@ pm2 start infra/ecosystem.config.cjs
 pm2 save                                      # survives reboot via pm2-jahanzaib.service
 ```
 
-| Process | Bind | Published |
-|---|---|---|
-| `apex-global-web` | `127.0.0.1:4300` | Yes — tech.apexgroupcompanies.com |
-| `apex-global-console` | `127.0.0.1:4301` | **No.** Local or Tailscale only |
-| `tunnel-apex-tech` | metrics `127.0.0.1:20008` | — |
+| Process               | Bind                      | Published                         |
+| --------------------- | ------------------------- | --------------------------------- |
+| `apex-global-web`     | `127.0.0.1:4300`          | Yes — tech.apexgroupcompanies.com |
+| `apex-global-console` | `127.0.0.1:4301`          | **No.** Local or Tailscale only   |
+| `tunnel-apex-tech`    | metrics `127.0.0.1:20008` | —                                 |
 
 The tunnel needs a token, which goes in a file rather than on a command line —
 inline, it would be readable in `pm2 jlist` and in plaintext inside
@@ -57,7 +57,7 @@ Health at a glance: `./infra/scripts/tunnels-status.sh`
 (healthy = `online / 4 / 200`). Inventory: [`TUNNELS.md`](TUNNELS.md).
 
 > **Ingress lives in the dashboard, not in these files.** Every tunnel on this
-> host is dashboard-created and token-run, which makes it *remotely managed*:
+> host is dashboard-created and token-run, which makes it _remotely managed_:
 > cloudflared downloads its routing rules on connect. The local
 > `~/.cloudflared/*-config.yml` files set process options and document intent,
 > but editing their `ingress:` block changes nothing. If traffic goes to the
@@ -78,12 +78,12 @@ unaffordable in the middle of a paid campaign, and £30/month is cheap
 insurance. **Staging runs on the homelab**, where the hardware is already paid
 for and downtime costs nothing.
 
-| | Production | Staging |
-|---|---|---|
-| Host | Managed VPS (2 vCPU / 4 GB is enough to start) | Homelab |
-| Deploys on | A tagged release (`vX.Y.Z`) | Every merge to `main` |
-| Public via | Cloudflare tunnel → CDN + WAF | Cloudflare tunnel |
-| Database | Postgres in Compose, loopback-bound | Same |
+|            | Production                                     | Staging               |
+| ---------- | ---------------------------------------------- | --------------------- |
+| Host       | Managed VPS (2 vCPU / 4 GB is enough to start) | Homelab               |
+| Deploys on | A tagged release (`vX.Y.Z`)                    | Every merge to `main` |
+| Public via | Cloudflare tunnel → CDN + WAF                  | Cloudflare tunnel     |
+| Database   | Postgres in Compose, loopback-bound            | Same                  |
 
 Both bind every service to `127.0.0.1`. Public reachability comes from an
 outbound tunnel, so neither host has an inbound port to scan.

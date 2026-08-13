@@ -54,7 +54,7 @@ export default async function ContactPage({ searchParams }: Props) {
 
           <aside className="flex flex-col gap-9">
             <div>
-              <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+              <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                 Direct
               </h2>
               <ul className="mt-4 flex flex-col gap-3 text-[var(--ink-secondary)]">
@@ -98,7 +98,7 @@ export default async function ContactPage({ searchParams }: Props) {
 
             {address ? (
               <div>
-                <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+                <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                   Registered office
                 </h2>
                 <p className="mt-4 leading-relaxed text-[var(--ink-secondary)]">{address}</p>
@@ -109,7 +109,7 @@ export default async function ContactPage({ searchParams }: Props) {
             ) : null}
 
             <div>
-              <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+              <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                 What happens next
               </h2>
               <ol className="mt-4 flex flex-col gap-4">
@@ -119,7 +119,7 @@ export default async function ContactPage({ searchParams }: Props) {
                   "A written proposal with scope, cost and what we would do first.",
                 ].map((step, i) => (
                   <li key={step} className="flex gap-3 text-sm text-[var(--ink-secondary)]">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--bg-sunken)] text-2xs font-semibold text-[var(--ink-primary)]">
+                    <span className="text-2xs flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--bg-sunken)] font-semibold text-[var(--ink-primary)]">
                       {i + 1}
                     </span>
                     {step}

@@ -16,6 +16,24 @@ export const getSettings = cache(async (): Promise<Record<string, string>> => {
   );
 });
 
+export const getSetting = cache(async (key: string): Promise<unknown> => {
+  const row = await prisma.setting.findUnique({ where: { key } });
+  if (!row) return undefined;
+  return row.value;
+});
+
+/** Convenience: read a boolean setting, defaulting to `false` when missing or non-boolean. */
+export async function getBoolSetting(key: string): Promise<boolean> {
+  const v = await getSetting(key);
+  return v === true || v === "true" || v === "on" || v === 1;
+}
+
+/** Convenience: read a string setting. */
+export async function getStringSetting(key: string, fallback = ""): Promise<string> {
+  const v = await getSetting(key);
+  return typeof v === "string" ? v : fallback;
+}
+
 export const getSolutions = cache(async () =>
   prisma.solution.findMany({
     where: { status: "LIVE" },
@@ -191,3 +209,70 @@ export function displayClient(study: {
 }): string {
   return study.clientConsent && study.clientName ? study.clientName : study.anonymousLabel;
 }
+
+// ── Productised services ────────────────────────────────────────────────────
+
+export const getServices = cache(async () =>
+  prisma.service.findMany({
+    where: { status: "LIVE" },
+    orderBy: { order: "asc" },
+    select: {
+      slug: true,
+      name: true,
+      tagline: true,
+      summary: true,
+      icon: true,
+      category: true,
+      flatFeeAmount: true,
+      feeCurrency: true,
+      timelineDays: true,
+      timelineLabel: true,
+      deliverables: true,
+      technologies: true,
+    },
+  }),
+);
+
+export const getService = cache(async (slug: string) =>
+  prisma.service.findFirst({
+    where: { slug, status: "LIVE" },
+    include: {
+      seo: true,
+      faqs: { where: { status: "LIVE" }, orderBy: { order: "asc" } },
+    },
+  }),
+);
+
+export const getServiceBundles = cache(async () =>
+  prisma.serviceBundle.findMany({
+    where: { status: "LIVE" },
+    orderBy: { order: "asc" },
+    select: {
+      slug: true,
+      name: true,
+      tagline: true,
+      summary: true,
+      bundlePriceAmount: true,
+      sumPriceAmount: true,
+      feeCurrency: true,
+      serviceSlugs: true,
+      bestFor: true,
+    },
+  }),
+);
+
+export const getServiceBundle = cache(async (slug: string) =>
+  prisma.serviceBundle.findFirst({
+    where: { slug, status: "LIVE" },
+    include: { seo: true },
+  }),
+);
+
+// ── Live endpoints ─────────────────────────────────────────────────────────
+
+export const getLiveEndpoints = cache(async () =>
+  prisma.liveEndpoint.findMany({
+    where: { status: "LIVE" },
+    orderBy: [{ kind: "asc" }, { order: "asc" }],
+  }),
+);

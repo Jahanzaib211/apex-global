@@ -22,7 +22,15 @@ const DEFAULT_W = 148;
 
 const NODES: Node[] = [
   { id: "internet", label: "Public internet", x: 20, y: 12, w: 180, tone: "muted" },
-  { id: "edge", label: "Edge network", sub: "CDN · WAF · TLS", x: 20, y: 92, w: 180, tone: "accent" },
+  {
+    id: "edge",
+    label: "Edge network",
+    sub: "CDN · WAF · TLS",
+    x: 20,
+    y: 92,
+    w: 180,
+    tone: "accent",
+  },
 
   { id: "web", label: "Public site", sub: ":4300", x: 268, y: 92 },
   { id: "console", label: "Ops console", sub: ":4301", x: 268, y: 168 },
@@ -74,7 +82,15 @@ export function ArchitectureDiagram() {
         </desc>
 
         <defs>
-          <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <marker
+            id="arrow"
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
+          >
             <path d="M0 0 L8 4 L0 8 z" fill="var(--border-strong)" />
           </marker>
         </defs>

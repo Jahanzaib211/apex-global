@@ -34,6 +34,24 @@ describe("Mark", () => {
       expect(path.getAttribute("fill")).toBe("currentColor");
     }
   });
+
+  it("keeps every path static (no animation classes) by default", () => {
+    const { container } = render(<Mark />);
+    for (const path of container.querySelectorAll("path")) {
+      expect(path.getAttribute("class")).toBeNull();
+    }
+  });
+
+  it("adds the sweep + peak animation classes when animated", () => {
+    const { container } = render(<Mark animated />);
+    const paths = container.querySelectorAll("path");
+    expect(paths).toHaveLength(4);
+    expect(container.querySelector(".apex-peak")).not.toBeNull();
+    expect(container.querySelectorAll(".apex-sweep")).toHaveLength(3);
+    expect(container.querySelectorAll(".apex-sweep-0")).toHaveLength(1);
+    expect(container.querySelectorAll(".apex-sweep-1")).toHaveLength(1);
+    expect(container.querySelectorAll(".apex-sweep-2")).toHaveLength(1);
+  });
 });
 
 describe("Logo", () => {
@@ -41,5 +59,17 @@ describe("Logo", () => {
     render(<Logo />);
     expect(screen.getByText("APEX GLOBAL")).toBeInTheDocument();
     expect(screen.getByText("TECH SOLUTION")).toBeInTheDocument();
+  });
+
+  it("does not force animation on the mark unless asked", () => {
+    const { container } = render(<Logo />);
+    expect(container.querySelector("svg .apex-peak")).toBeNull();
+    expect(container.querySelector(".apex-logo")).toBeNull();
+  });
+
+  it("forwards animated to the mark", () => {
+    const { container } = render(<Logo animated />);
+    expect(container.querySelector(".apex-logo")).not.toBeNull();
+    expect(container.querySelector(".apex-peak")).not.toBeNull();
   });
 });

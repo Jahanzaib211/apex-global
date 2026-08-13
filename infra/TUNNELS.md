@@ -8,19 +8,19 @@ Every tunnel running on this host. Check state with:
 
 Read-only; safe during an incident.
 
-| PM2 process | Cloudflare tunnel | Tunnel ID | Public hostname | Origin | Metrics | Token |
-|---|---|---|---|---|---|---|
-| `tunnel-nova` | NOVA | `1e6cb156-0584-4c42-ad99-d1cb4ffb723b` | nova.alilabsx.com | `127.0.0.1:2026` | 20001 | inline ⚠ |
-| `tunnel-fox-hosting` | FOX HOSTING | `2a31dc3a-1d00-439a-9338-598e4965de90` | client.alilabsx.com | `127.0.0.1:4200` | 20002 | inline ⚠ |
-| `tunnel-whmcs` | WHMCS | `efb1095f-2bab-4129-badc-ae802fd44eab` | admin.alilabsx.com | `127.0.0.1:4201` | 20003 | inline ⚠ |
-| `tunnel-apex-group` | APEX GROUP | `677c31d0-0f5d-46fd-8f48-13036ec2b4b3` | apex.apexgroupcompanies.com | `127.0.0.1:3103` | 20004 | inline ⚠ |
-| `tunnel-apex-tours` | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | tours.apexgroupcompanies.com † | `127.0.0.1:3001` | 20005 | inline ⚠ |
-| `tunnel-apex-outsourcing` | APEX OUTSOURCING | `5f401d60-c64a-4468-b947-235a5f3a6641` | outsourcing.apexgroupcompanies.com † | `127.0.0.1:3100` | 20006 | inline ⚠ |
-| `tunnel-apex-holdings` | APEX HOLDINGS | see dashboard | holdings.apexgroupcompanies.com † | `127.0.0.1:3102` | 20007 | `~/.cloudflared/apex-holdings.token` |
-| `tunnel-apex-tech` | tech | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com** | `127.0.0.1:4300` | 20008 | `~/.cloudflared/tech.token` (rotate — see report) |
-| `tunnel-fincept` | fincept | `882027dc-b5bb-4b62-a0eb-24ce8f622125` | fincept.apexgroupcompanies.com ‡ | `127.0.0.1:6080` | 20010 | `~/.cloudflared/fincept.token` |
-| `tunnel-chat` | chat | `a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1` | **chat.apexgroupcompanies.com** | `127.0.0.1:4800` (chatwoot-web) § | 20011 | `~/.cloudflared/chat.token` |
-| `cloud-apex-tunnel` | cloud (mailcow) | `97d3536e-4bf3-4bc6-aa33-2c07674af70c` | **cloud.apexgroupcompanies.com** | `127.0.0.1:8085` (caddy) | — * | `~/.cloudflared/cloud-apex.token` |
+| PM2 process               | Cloudflare tunnel  | Tunnel ID                              | Public hostname                      | Origin                            | Metrics | Token                                             |
+| ------------------------- | ------------------ | -------------------------------------- | ------------------------------------ | --------------------------------- | ------- | ------------------------------------------------- |
+| `tunnel-nova`             | NOVA               | `1e6cb156-0584-4c42-ad99-d1cb4ffb723b` | nova.alilabsx.com                    | `127.0.0.1:2026`                  | 20001   | inline ⚠                                          |
+| `tunnel-fox-hosting`      | FOX HOSTING        | `2a31dc3a-1d00-439a-9338-598e4965de90` | client.alilabsx.com                  | `127.0.0.1:4200`                  | 20002   | inline ⚠                                          |
+| `tunnel-whmcs`            | WHMCS              | `efb1095f-2bab-4129-badc-ae802fd44eab` | admin.alilabsx.com                   | `127.0.0.1:4201`                  | 20003   | inline ⚠                                          |
+| `tunnel-apex-group`       | APEX GROUP         | `677c31d0-0f5d-46fd-8f48-13036ec2b4b3` | apex.apexgroupcompanies.com          | `127.0.0.1:3103`                  | 20004   | inline ⚠                                          |
+| `tunnel-apex-tours`       | APEX TRAVEL N TOUR | `80df5f7a-0864-4873-905b-170bbadd858f` | tours.apexgroupcompanies.com †       | `127.0.0.1:3001`                  | 20005   | inline ⚠                                          |
+| `tunnel-apex-outsourcing` | APEX OUTSOURCING   | `5f401d60-c64a-4468-b947-235a5f3a6641` | outsourcing.apexgroupcompanies.com † | `127.0.0.1:3100`                  | 20006   | inline ⚠                                          |
+| `tunnel-apex-holdings`    | APEX HOLDINGS      | see dashboard                          | holdings.apexgroupcompanies.com †    | `127.0.0.1:3102`                  | 20007   | `~/.cloudflared/apex-holdings.token`              |
+| `tunnel-apex-tech`        | tech               | `7f399ee2-f932-4963-9c20-a4a0881cfe81` | **tech.apexgroupcompanies.com**      | `127.0.0.1:4300`                  | 20008   | `~/.cloudflared/tech.token` (rotate — see report) |
+| `tunnel-fincept`          | fincept            | `882027dc-b5bb-4b62-a0eb-24ce8f622125` | fincept.apexgroupcompanies.com ‡     | `127.0.0.1:6080`                  | 20010   | `~/.cloudflared/fincept.token`                    |
+| `tunnel-chat`             | chat               | `a311a9d1-b4bc-42b8-b1be-fa44ff61e0c1` | **chat.apexgroupcompanies.com**      | `127.0.0.1:4800` (chatwoot-web) § | 20011   | `~/.cloudflared/chat.token`                       |
+| `cloud-apex-tunnel`       | cloud (mailcow)    | `97d3536e-4bf3-4bc6-aa33-2c07674af70c` | **cloud.apexgroupcompanies.com**     | `127.0.0.1:8085` (caddy)          | — *     | `~/.cloudflared/cloud-apex.token`                 |
 
 § **`chat` was an orphaned DNS record until 2026-08-13** — the CNAME existed and
 pointed at tunnel `a311a9d1-…`, but no connector for it ran, so Cloudflare
@@ -30,8 +30,8 @@ website inboxes existed, and every site was already built with its own token.
 Closed by registering `tunnel-chat` above.
 
 ⚠️ **The origin is `:4800`, not `:4801`.** The container named `chatwoot-nginx`
-publishes `127.0.0.1:4801`, but it reverse-proxies the *Apex tech marketing
-site* — verified by response body: `:4801` returns "Apex Global Tech Solution",
+publishes `127.0.0.1:4801`, but it reverse-proxies the _Apex tech marketing
+site_ — verified by response body: `:4801` returns "Apex Global Tech Solution",
 `:4800` returns the Chatwoot dashboard bundle. An earlier plan specified `:4801`
 because it was written while Chatwoot was down and only the nginx container was
 answering. Pointing this tunnel at `:4801` would serve the marketing site at
@@ -128,9 +128,9 @@ slot in `tunnels-status.sh`, even though that connector exposes no metrics port.
 
 ## Apps behind the tunnels
 
-| PM2 process | Port | Published? |
-|---|---|---|
-| `apex-global-web` | `127.0.0.1:4300` | Yes — tech.apexgroupcompanies.com |
+| PM2 process           | Port             | Published?                                    |
+| --------------------- | ---------------- | --------------------------------------------- |
+| `apex-global-web`     | `127.0.0.1:4300` | Yes — tech.apexgroupcompanies.com             |
 | `apex-global-console` | `127.0.0.1:4301` | **No, deliberately.** Local or Tailscale only |
 
 The console holds every lead and the encrypted credentials vault. It is absent

@@ -6,18 +6,20 @@ permission catalogue from the registry, so adding a module never requires touchi
 
 ## Registry
 
-| Module | Status | Purpose |
-|---|---|---|
-| [`core`](../modules/core/README.md) | active | Users, roles, permissions, sessions, audit log, settings, integrations vault, feature flags, media |
-| [`cms`](../modules/cms/README.md) | active | All public content: pages, solutions, industries, case studies, insights, testimonials, jobs, FAQs, landing pages, technology-proof entries, SEO |
-| [`crm`](../modules/crm/README.md) | active | Leads, companies, contacts, opportunities, activities, attribution, pipeline |
-| [`saas`](../modules/saas/README.md) | active | SaaS product catalogue: products, features, screenshots, pricing plans, integrations, docs, demo requests |
-| [`ai-assist`](../modules/ai-assist/README.md) | active | Provider configuration, prompt registry, lead summarisation/scoring, content drafting |
-| [`billing`](../modules/billing/README.md) | planned | Quotes, invoices, payments, subscriptions, dunning |
-| [`support`](../modules/support/README.md) | planned | Tickets, SLAs, queues, knowledge base |
-| [`projects`](../modules/projects/README.md) | planned | Delivery projects, tasks, timesheets, client approvals |
-| [`hr`](../modules/hr/README.md) | planned | Employees, shifts, attendance, leave, payroll export |
-| [`marketing`](../modules/marketing/README.md) | planned | Content calendar, campaigns, ad-spend sync, attribution reporting |
+| Module                                                        | Status  | Purpose                                                                                                                                                 |
+| ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`core`](../modules/core/README.md)                           | active  | Users, roles, permissions, sessions, audit log, settings, integrations vault, feature flags, media                                                      |
+| [`cms`](../modules/cms/README.md)                             | active  | All public content: pages, solutions, industries, case studies, insights, testimonials, jobs, FAQs, landing pages, technology-proof entries, SEO        |
+| [`crm`](../modules/crm/README.md)                             | active  | Leads, companies, contacts, opportunities, activities, attribution, pipeline                                                                            |
+| [`saas`](../modules/saas/README.md)                           | active  | SaaS product catalogue: products, features, screenshots, pricing plans, integrations, docs, demo requests                                               |
+| [`ai-assist`](../modules/ai-assist/README.md)                 | active  | Provider configuration, prompt registry, lead summarisation/scoring, content drafting                                                                   |
+| [`billing`](../modules/billing/README.md)                     | active  | Quotes, invoices, payments (Hyperswitch), subscriptions, dunning                                                                                        |
+| [`support`](../modules/support/README.md)                     | active  | Tickets, SLAs, queues, knowledge base. Portal users open + reply to tickets.                                                                            |
+| [`projects`](../modules/projects/README.md)                   | active  | Delivery projects, tasks, timesheets, client approvals                                                                                                  |
+| [`hr`](../modules/hr/README.md)                               | planned | Employees, shifts, attendance, leave, payroll export                                                                                                    |
+| [`marketing`](../modules/marketing/README.md)                 | active  | Campaigns, ad-spend sync, attribution reporting — the spend-to-revenue join                                                                             |
+| [`client-portal`](../modules/client-portal/README.md)         | active  | Customer accounts at `/portal/*`: tickets, invoices, documents, projects. Multi-provider auth (email+password / Google / Microsoft / magic-link / 2FA). |
+| [`partner`](<../apps/console/src/app/(app)/partner/page.tsx>) | active  | Engineering partner (ALI Technologies) settings, integrations hub.                                                                                      |
 
 `active` modules are built and contribute console navigation. `planned` modules ship their spec and
 schema stub only — they are documented so the design holds, and switching one on is a status change
@@ -55,7 +57,8 @@ Each spec answers the same questions in the same order, so any of them can be re
 2. **Status** — active or planned, and what "done" means
 3. **Data model** — entities and their relationships
 4. **Permissions** — every key and who should hold it
-5. **Routes** — console routes and any public endpoints
+5. **Routes** — console routes and any public endpoints, each also listed in
+   [API.md](API.md) with its caller
 6. **Jobs** — background work, triggers and schedules
 7. **Dependencies** — other modules it needs
 8. **Open questions** — what is unresolved

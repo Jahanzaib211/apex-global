@@ -27,7 +27,7 @@ export default async function AuditPage() {
       <div className="scroll-x rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)]">
         <table className="w-full min-w-[48rem] text-sm">
           <thead>
-            <tr className="border-b border-[var(--border-subtle)] text-left text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+            <tr className="text-2xs border-b border-[var(--border-subtle)] text-left tracking-[0.12em] text-[var(--ink-muted)] uppercase">
               <th className="px-5 py-3 font-semibold">When</th>
               <th className="px-5 py-3 font-semibold">Who</th>
               <th className="px-5 py-3 font-semibold">Action</th>
@@ -37,7 +37,7 @@ export default async function AuditPage() {
           <tbody className="divide-y divide-[var(--border-subtle)]">
             {entries.map((e) => (
               <tr key={e.id}>
-                <td className="whitespace-nowrap px-5 py-3 text-[var(--ink-muted)]">
+                <td className="px-5 py-3 whitespace-nowrap text-[var(--ink-muted)]">
                   {e.createdAt.toLocaleString("en-GB")}
                 </td>
                 <td className="px-5 py-3">{e.actor?.name ?? "System"}</td>

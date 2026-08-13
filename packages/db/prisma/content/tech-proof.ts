@@ -325,6 +325,38 @@ The practical result is that the attack surface is the application, not the netw
     ],
   },
   {
+    slug: "self-hosted-chat",
+    order: 11,
+    status: "LIVE",
+    title: "Self-hosted live chat & helpdesk (Chatwoot)",
+    category: "infrastructure",
+    summary:
+      'The "talk to a real person" channel: a self-hosted open-source live-chat and helpdesk inbox running behind the same edge — loopback origin, outbound tunnel in front. No room for a third-party chat provider.',
+    detail: `Apex runs Chatwoot self-hosted rather than paying for a live-chat SaaS: the Rails web tier and Sidekiq worker talk to a dedicated PostgreSQL and Redis, all on loopback, with nothing listening on the public interface. The widget mounts on the public site from the launcher, and the inbox is administered here.
+
+It is deliberately the anti-message-anything: no AI pretending to be helpful, a straight line to a human on the team. This is open-source software (MIT) that we deploy, configure and operate — not software we wrote.
+
+_In practice this replaces the guesswork of "which chat provider" with one more system we run._`,
+    origin: "THIRD_PARTY_OSS",
+    upstreamName: "Chatwoot",
+    upstreamUrl: "https://www.chatwoot.com",
+    upstreamLicense: "MIT",
+    isPubliclyReachable: false,
+    technologies: ["Chatwoot", "Rails", "PostgreSQL (pgvector)", "Redis", "Sidekiq", "Docker"],
+    evidence: [
+      {
+        label: "Deployed services",
+        value: "Web, worker, PostgreSQL and Redis all healthy on loopback",
+        source: "Container health checks, 7 August 2026",
+      },
+      {
+        label: "Exposure",
+        value: "Loopback only — no inbound port, widget reached via the edge in front",
+        source: "Service binding review, 7 August 2026",
+      },
+    ],
+  },
+  {
     slug: "engineering-practice",
     order: 10,
     status: "LIVE",
@@ -339,7 +371,14 @@ Changes reach staging automatically and production only from a tagged release, a
 This repository is built to the same standard, including the two gates that protect what we publish: a credibility audit and a positioning audit, both of which can fail a build.`,
     origin: "BUILT_BY_APEX",
     isPubliclyReachable: false,
-    technologies: ["TypeScript", "Vitest", "Playwright", "GitHub Actions", "CodeQL", "Lighthouse CI"],
+    technologies: [
+      "TypeScript",
+      "Vitest",
+      "Playwright",
+      "GitHub Actions",
+      "CodeQL",
+      "Lighthouse CI",
+    ],
     evidence: [
       {
         label: "Merge gate",

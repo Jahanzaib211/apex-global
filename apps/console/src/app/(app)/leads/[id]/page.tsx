@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { audit } from "@/lib/audit";
 import { requirePermission } from "@/lib/auth";
+import { convertLeadToCustomer } from "@/lib/convert-lead";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Lead" };
@@ -22,7 +23,10 @@ export default async function LeadPage({ params }: Props) {
     include: {
       attribution: true,
       owner: { select: { id: true, name: true } },
-      activities: { orderBy: { createdAt: "desc" }, include: { actor: { select: { name: true } } } },
+      activities: {
+        orderBy: { createdAt: "desc" },
+        include: { actor: { select: { name: true } } },
+      },
     },
   });
   if (!lead) notFound();
@@ -56,8 +60,10 @@ export default async function LeadPage({ params }: Props) {
         data: {
           stage,
           ownerId,
-          qualifiedAt: stage === "QUALIFIED" && !before.qualifiedAt ? new Date() : before.qualifiedAt,
-          convertedAt: stage === "CUSTOMER" && !before.convertedAt ? new Date() : before.convertedAt,
+          qualifiedAt:
+            stage === "QUALIFIED" && !before.qualifiedAt ? new Date() : before.qualifiedAt,
+          convertedAt:
+            stage === "CUSTOMER" && !before.convertedAt ? new Date() : before.convertedAt,
           lostAt: stage === "LOST" && !before.lostAt ? new Date() : before.lostAt,
         },
       });
@@ -84,7 +90,13 @@ export default async function LeadPage({ params }: Props) {
       }
       if (note) {
         await tx.leadActivity.create({
-          data: { leadId: id, actorId: actor.id, type: "note", summary: "Note added", detail: note },
+          data: {
+            leadId: id,
+            actorId: actor.id,
+            type: "note",
+            summary: "Note added",
+            detail: note,
+          },
         });
       }
     });
@@ -101,6 +113,24 @@ export default async function LeadPage({ params }: Props) {
           ...(ownerChanged ? { ownerId: { from: before.ownerId ?? null, to: ownerId } } : {}),
         },
       });
+    }
+
+    // Auto-create the client portal account when a lead crosses into CUSTOMER.
+    // The portal invoice visibility query joins `invoice.lead.portalAccounts`,
+    // so this link is what makes a console-issued invoice appear for them.
+    if (stage === "CUSTOMER") {
+      try {
+        await convertLeadToCustomer(id, actor);
+        await audit({
+          actor,
+          action: "lead.converted",
+          entityType: "Lead",
+          entityId: id,
+          summary: `${before.name} converted to client account`,
+        });
+      } catch (err) {
+        console.error("[lead] conversion failed", err);
+      }
     }
 
     redirect(`/leads/${id}`);
@@ -138,7 +168,7 @@ export default async function LeadPage({ params }: Props) {
                 ["Source", lead.sourceType],
               ].map(([label, value]) => (
                 <div key={String(label)}>
-                  <dt className="text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+                  <dt className="text-2xs tracking-[0.12em] text-[var(--ink-muted)] uppercase">
                     {label}
                   </dt>
                   <dd className="mt-0.5 text-sm">{value || "—"}</dd>
@@ -148,10 +178,10 @@ export default async function LeadPage({ params }: Props) {
 
             {lead.message ? (
               <div className="mt-5 border-t border-[var(--border-subtle)] pt-5">
-                <h3 className="text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+                <h3 className="text-2xs tracking-[0.12em] text-[var(--ink-muted)] uppercase">
                   Message
                 </h3>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">{lead.message}</p>
+                <p className="mt-2 text-sm leading-relaxed whitespace-pre-wrap">{lead.message}</p>
               </div>
             ) : null}
           </section>
@@ -216,11 +246,11 @@ export default async function LeadPage({ params }: Props) {
                 <li key={a.id} className="px-6 py-4">
                   <p className="text-sm font-medium">{a.summary}</p>
                   {a.detail ? (
-                    <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--ink-secondary)]">
+                    <p className="mt-1 text-sm whitespace-pre-wrap text-[var(--ink-secondary)]">
                       {a.detail}
                     </p>
                   ) : null}
-                  <p className="mt-1 text-2xs text-[var(--ink-muted)]">
+                  <p className="text-2xs mt-1 text-[var(--ink-muted)]">
                     {a.actor?.name ?? "System"} · {a.createdAt.toLocaleString("en-GB")}
                   </p>
                 </li>
@@ -263,7 +293,7 @@ export default async function LeadPage({ params }: Props) {
               </p>
             ) : null}
 
-            <p className="mt-4 border-t border-[var(--border-subtle)] pt-3 text-2xs text-[var(--ink-muted)]">
+            <p className="text-2xs mt-4 border-t border-[var(--border-subtle)] pt-3 text-[var(--ink-muted)]">
               Consent at submission: analytics {attribution?.consentAnalytics ? "yes" : "no"},
               marketing {attribution?.consentMarketing ? "yes" : "no"}. IP stored as a rotating hash
               only.
@@ -273,7 +303,7 @@ export default async function LeadPage({ params }: Props) {
           {lead.aiSummary ? (
             <section className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
               <h2 className="font-semibold">AI summary</h2>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-[var(--ink-secondary)]">
+              <p className="mt-2 text-sm whitespace-pre-wrap text-[var(--ink-secondary)]">
                 {lead.aiSummary}
               </p>
               {lead.aiScore != null ? (
@@ -281,7 +311,7 @@ export default async function LeadPage({ params }: Props) {
                   Score <span className="font-display font-semibold">{lead.aiScore}</span>/100
                 </p>
               ) : null}
-              <p className="mt-3 text-2xs text-[var(--ink-muted)]">
+              <p className="text-2xs mt-3 text-[var(--ink-muted)]">
                 Advisory only — generated by {lead.aiModel ?? "a model"} and never used to action or
                 discard a lead on its own.
               </p>

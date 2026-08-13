@@ -109,7 +109,7 @@ export default async function SolutionPage({ params }: Props) {
           <aside className="flex flex-col gap-10">
             {solution.capabilities.length > 0 ? (
               <div>
-                <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+                <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                   Capabilities
                 </h2>
                 <ul className="mt-4 flex flex-col gap-3">
@@ -128,7 +128,7 @@ export default async function SolutionPage({ params }: Props) {
 
             {solution.outcomes.length > 0 ? (
               <div>
-                <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+                <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                   What you end up with
                 </h2>
                 <ul className="mt-4 flex flex-col gap-3">
@@ -171,7 +171,7 @@ export default async function SolutionPage({ params }: Props) {
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {solution.caseStudies.map((c) => (
               <Card key={c.slug} as="article" interactive className="flex flex-col gap-3 p-8">
-                <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+                <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                   {displayClient({ ...c, clientConsent: false })}
                 </p>
                 <h3 className="text-xl">
@@ -203,7 +203,9 @@ export default async function SolutionPage({ params }: Props) {
       <Section tone="inverse" className="py-16 md:py-20">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div>
-            <h2 className="text-2xl md:text-3xl">Discuss a {solution.name.toLowerCase()} project</h2>
+            <h2 className="text-2xl md:text-3xl">
+              Discuss a {solution.name.toLowerCase()} project
+            </h2>
             <p className="mt-3 max-w-xl text-[var(--color-navy-200)]">
               Tell us the constraint you are working against. We will tell you what we would do.
             </p>

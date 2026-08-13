@@ -11,13 +11,19 @@ const rules = (v: Violation[]) => v.map((x) => x.rule);
 
 describe("scanText", () => {
   it("rejects absolute security claims", () => {
-    expect(rules(scanText("X", "body", "Our platform is 100% secure."))).toContain("banned-language");
+    expect(rules(scanText("X", "body", "Our platform is 100% secure."))).toContain(
+      "banned-language",
+    );
     expect(rules(scanText("X", "body", "An unhackable system."))).toContain("banned-language");
   });
 
   it("rejects unqualified superlatives", () => {
-    expect(rules(scanText("X", "body", "The world's best consultancy."))).toContain("banned-language");
-    expect(rules(scanText("X", "body", "Our industry-leading platform."))).toContain("banned-language");
+    expect(rules(scanText("X", "body", "The world's best consultancy."))).toContain(
+      "banned-language",
+    );
+    expect(rules(scanText("X", "body", "Our industry-leading platform."))).toContain(
+      "banned-language",
+    );
     expect(rules(scanText("X", "body", "A best-in-class approach."))).toContain("banned-language");
   });
 
@@ -28,8 +34,12 @@ describe("scanText", () => {
 
   it("catches leaked development credentials", () => {
     expect(rules(scanText("X", "body", "login with TestPass123!"))).toContain("credential-leak");
-    expect(rules(scanText("X", "body", "key sk-abcdefghijklmnopqrstuv"))).toContain("credential-leak");
-    expect(rules(scanText("X", "body", "-----BEGIN RSA PRIVATE KEY-----"))).toContain("credential-leak");
+    expect(rules(scanText("X", "body", "key sk-abcdefghijklmnopqrstuv"))).toContain(
+      "credential-leak",
+    );
+    expect(rules(scanText("X", "body", "-----BEGIN RSA PRIVATE KEY-----"))).toContain(
+      "credential-leak",
+    );
   });
 
   it("permits the sister front's brand and domains", () => {
@@ -76,7 +86,9 @@ function stubPrisma(overrides: Record<string, unknown[]> = {}) {
     solution: { findMany: from("solution") },
     insight: { findMany: empty },
     landingPage: { findMany: empty },
-     
+    liveEndpoint: { findMany: empty },
+    service: { findMany: empty },
+    serviceBundle: { findMany: empty },
   } as any;
 }
 

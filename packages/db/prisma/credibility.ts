@@ -15,7 +15,10 @@ export interface Violation {
 
 /** Superlatives and absolutes we cannot substantiate, so we do not use them. */
 const BANNED_PHRASES: Array<{ pattern: RegExp; why: string }> = [
-  { pattern: /\b100%\s*secure\b/i, why: "nothing is 100% secure; claiming it discredits everything else" },
+  {
+    pattern: /\b100%\s*secure\b/i,
+    why: "nothing is 100% secure; claiming it discredits everything else",
+  },
   { pattern: /\bunhackable\b/i, why: "unsubstantiable" },
   { pattern: /\bbank[-\s]grade\s+security\b/i, why: "meaningless — say which controls" },
   { pattern: /\bmilitary[-\s]grade\b/i, why: "marketing language with no technical meaning" },
@@ -24,7 +27,10 @@ const BANNED_PHRASES: Array<{ pattern: RegExp; why: string }> = [
   { pattern: /\bcutting[-\s]edge\b/i, why: "filler; describe the capability instead" },
   { pattern: /\bguarantee(d)?\s+(uptime|security|results|roi)\b/i, why: "unsupportable guarantee" },
   { pattern: /\bbest[-\s]in[-\s]class\b/i, why: "unqualified superlative" },
-  { pattern: /\bzero\s+downtime\b/i, why: "absolute claim; state the measured availability instead" },
+  {
+    pattern: /\bzero\s+downtime\b/i,
+    why: "absolute claim; state the measured availability instead",
+  },
 ];
 
 /**
@@ -301,6 +307,123 @@ export async function assertCredibility(prisma: PrismaClient): Promise<Violation
       ...scanText(`LandingPage(${l.slug})`, "subheadline", l.subheadline),
       ...scanText(`LandingPage(${l.slug})`, "body", l.body),
     );
+  }
+
+  // ── Services ───────────────────────────────────────────────────────────
+  const services = await prisma.service.findMany({ where: { status: "LIVE" } });
+  for (const s of services) {
+    const id = `Service(${s.slug})`;
+
+    // Third-party stack must name its upstream. Without this the page implies
+    // we wrote the whole toolchain by omission.
+    if (s.origin === "THIRD_PARTY_OSS" && !s.upstreamName) {
+      violations.push({
+        rule: "missing-attribution",
+        entity: id,
+        detail: "origin is THIRD_PARTY_OSS but no upstream project is named",
+      });
+    }
+    if (s.upstreamName && !s.upstreamLicense) {
+      violations.push({
+        rule: "missing-licence",
+        entity: id,
+        detail: `credits "${s.upstreamName}" but states no licence`,
+      });
+    }
+
+    // Pricing rule. The flat fee is the headline — publishing a service with
+    // a zero fee would invite a "what does this actually cost" question.
+    if (s.flatFeeAmount <= 0) {
+      violations.push({
+        rule: "unpriced-service",
+        entity: id,
+        detail: "service is published but has no flat fee",
+      });
+    }
+
+    violations.push(
+      ...scanText(id, "summary", s.summary),
+      ...scanText(id, "body", s.body),
+      ...scanText(id, "tagline", s.tagline),
+    );
+  }
+
+  // ── Service bundles ────────────────────────────────────────────────────
+  const bundles = await prisma.serviceBundle.findMany({ where: { status: "LIVE" } });
+  for (const b of bundles) {
+    const id = `ServiceBundle(${b.slug})`;
+    if (b.bundlePriceAmount <= 0) {
+      violations.push({
+        rule: "unpriced-bundle",
+        entity: id,
+        detail: "bundle is published but has no bundle price",
+      });
+    }
+    if (b.bundlePriceAmount > b.sumPriceAmount) {
+      violations.push({
+        rule: "bundle-price-inflation",
+        entity: id,
+        detail: `bundle price ${b.bundlePriceAmount} exceeds sum of modules ${b.sumPriceAmount}`,
+      });
+    }
+    if (b.serviceSlugs.length === 0) {
+      violations.push({
+        rule: "empty-bundle",
+        entity: id,
+        detail: "bundle contains no service slugs",
+      });
+    }
+    violations.push(...scanText(id, "summary", b.summary), ...scanText(id, "bestFor", b.bestFor));
+  }
+
+  // ── Live endpoints ──────────────────────────────────────────────────────
+  const endpoints = await prisma.liveEndpoint.findMany({ where: { status: "LIVE" } });
+  for (const e of endpoints) {
+    const id = `LiveEndpoint(${e.slug})`;
+
+    if (e.origin === "THIRD_PARTY_OSS" && !e.upstreamName) {
+      violations.push({
+        rule: "missing-attribution",
+        entity: id,
+        detail: "origin is THIRD_PARTY_OSS but no upstream project is named",
+      });
+    }
+    if (e.upstreamName && !e.upstreamLicense) {
+      violations.push({
+        rule: "missing-licence",
+        entity: id,
+        detail: `credits "${e.upstreamName}" but states no licence`,
+      });
+    }
+
+    // An endpoint cannot be marked publicly linkable without a URL to link
+    // to, and a URL on a private endpoint is the opposite mistake.
+    if (e.isPubliclyLinkable && !e.publicUrl) {
+      violations.push({
+        rule: "unverifiable-claim",
+        entity: id,
+        detail: "marked publicly linkable but has no public URL",
+      });
+    }
+    if (!e.isPubliclyLinkable && e.publicUrl) {
+      violations.push({
+        rule: "misleading-url",
+        entity: id,
+        detail: "has a public URL but is not marked publicly linkable",
+      });
+    }
+
+    // Loopback-only endpoints must declare a loopback address. Publishing
+    // "we run a Postgres" without the port makes the claim unverifiable.
+    if (!e.publicUrl && !e.originLoopback) {
+      violations.push({
+        rule: "unverifiable-claim",
+        entity: id,
+        detail: "endpoint has neither a public URL nor a loopback origin",
+      });
+    }
+
+    violations.push(...scanText(id, "summary", e.summary), ...scanText(id, "role", e.role));
   }
 
   return violations;

@@ -41,13 +41,13 @@ no benefit. Turborepo caches per-package builds so CI stays fast.
 
 Business capability lives in `modules/*`, not in the apps. A module is a folder with:
 
-| File | Purpose |
-|---|---|
-| `README.md` | The spec: purpose, data model, permissions, routes, jobs, status |
-| `module.ts` | `defineModule()` registration |
-| `prisma/<slug>.prisma` | Its slice of the schema |
-| `src/` | Server logic, queries, jobs |
-| `console/` | Its console routes and components |
+| File                   | Purpose                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| `README.md`            | The spec: purpose, data model, permissions, routes, jobs, status |
+| `module.ts`            | `defineModule()` registration                                    |
+| `prisma/<slug>.prisma` | Its slice of the schema                                          |
+| `src/`                 | Server logic, queries, jobs                                      |
+| `console/`             | Its console routes and components                                |
 
 `apps/console` builds navigation, the dashboard and the RBAC permission catalogue **from the
 registry**. Adding a module is one folder plus one line in the registry — never a refactor of the
@@ -67,10 +67,10 @@ everything else ships zero JavaScript.
 
 Three entry points, all documented in [API.md](API.md):
 
-| Route | Source |
-|---|---|
-| `POST /api/leads` | this site's forms |
-| `POST /api/demo-request` | this site, when the enquiry names a SaaS product |
+| Route                     | Source                                                        |
+| ------------------------- | ------------------------------------------------------------- |
+| `POST /api/leads`         | this site's forms                                             |
+| `POST /api/demo-request`  | this site, when the enquiry names a SaaS product              |
 | `POST /api/leads/partner` | the other four Apex properties, server-to-server, HMAC-signed |
 
 All three converge on one function — `ingestLead()` in `apps/web/src/lib/ingest-lead.ts` — so the
@@ -101,7 +101,7 @@ form submit (or signed partner POST)
 > in the Twenty pipeline automatically" is not true today.
 
 `sourceSite` is what keeps five brands' demand separable in one pipeline, and it is in the dedupe key
-deliberately: the same person enquiring at tours *and* at tech on one day is two intents, and hashing
+deliberately: the same person enquiring at tours _and_ at tech on one day is two intents, and hashing
 on email alone would silently collapse them into one lead.
 
 **The worker tier is still not built.** Enrichment, notification and the Twenty sync all run as
@@ -123,11 +123,11 @@ landing path, user agent, country, consent state. That is what makes
 
 ## Environments
 
-| Environment | Runs on | Deploys when |
-|---|---|---|
-| dev | local, `pnpm dev` + compose services | — |
-| staging | homelab | merge to `main` |
-| production | managed VPS behind Cloudflare | tagged release |
+| Environment | Runs on                              | Deploys when    |
+| ----------- | ------------------------------------ | --------------- |
+| dev         | local, `pnpm dev` + compose services | —               |
+| staging     | homelab                              | merge to `main` |
+| production  | managed VPS behind Cloudflare        | tagged release  |
 
 Migrations are forward-only. Every migration is applied to staging first, and the rollback path is
 tested there before a production tag is cut.

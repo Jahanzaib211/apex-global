@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { audit } from "@/lib/audit";
+import { purgeWebCache } from "@/lib/revalidate";
 import { requirePermission } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -14,18 +15,78 @@ export const metadata: Metadata = { title: "Content" };
  * Full field-level editing is not built yet — this is the part that matters
  * first, because it is what lets someone take a page down without a deploy.
  */
-type Kind = "solution" | "product" | "caseStudy" | "insight" | "landingPage";
+type Kind =
+  | "solution"
+  | "product"
+  | "service"
+  | "bundle"
+  | "endpoint"
+  | "caseStudy"
+  | "insight"
+  | "landingPage";
 
 export default async function ContentPage() {
   await requirePermission("cms:read");
 
-  const [solutions, products, caseStudies, insights, landingPages] = await Promise.all([
-    prisma.solution.findMany({ orderBy: { order: "asc" }, select: { id: true, slug: true, name: true, status: true, updatedAt: true } }),
-    prisma.saasProduct.findMany({ orderBy: { order: "asc" }, select: { id: true, slug: true, name: true, status: true, updatedAt: true } }),
-    prisma.caseStudy.findMany({ orderBy: { updatedAt: "desc" }, select: { id: true, slug: true, title: true, status: true, updatedAt: true, clientName: true, clientConsent: true } }),
-    prisma.insight.findMany({ orderBy: { updatedAt: "desc" }, select: { id: true, slug: true, title: true, status: true, updatedAt: true } }),
-    prisma.landingPage.findMany({ orderBy: { updatedAt: "desc" }, select: { id: true, slug: true, headline: true, status: true, updatedAt: true } }),
-  ]);
+  const [solutions, products, services, bundles, endpoints, caseStudies, insights, landingPages] =
+    await Promise.all([
+      prisma.solution.findMany({
+        orderBy: { order: "asc" },
+        select: { id: true, slug: true, name: true, status: true, updatedAt: true },
+      }),
+      prisma.saasProduct.findMany({
+        orderBy: { order: "asc" },
+        select: { id: true, slug: true, name: true, status: true, updatedAt: true },
+      }),
+      prisma.service.findMany({
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          status: true,
+          updatedAt: true,
+          flatFeeAmount: true,
+          feeCurrency: true,
+        },
+      }),
+      prisma.serviceBundle.findMany({
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          status: true,
+          updatedAt: true,
+          bundlePriceAmount: true,
+          feeCurrency: true,
+        },
+      }),
+      prisma.liveEndpoint.findMany({
+        orderBy: { order: "asc" },
+        select: { id: true, slug: true, name: true, status: true, updatedAt: true, kind: true },
+      }),
+      prisma.caseStudy.findMany({
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          status: true,
+          updatedAt: true,
+          clientName: true,
+          clientConsent: true,
+        },
+      }),
+      prisma.insight.findMany({
+        orderBy: { updatedAt: "desc" },
+        select: { id: true, slug: true, title: true, status: true, updatedAt: true },
+      }),
+      prisma.landingPage.findMany({
+        orderBy: { updatedAt: "desc" },
+        select: { id: true, slug: true, headline: true, status: true, updatedAt: true },
+      }),
+    ]);
 
   async function setStatus(formData: FormData) {
     "use server";
@@ -47,6 +108,15 @@ export default async function ContentPage() {
         break;
       case "product":
         await prisma.saasProduct.update({ where: { id }, data: { status, publishedAt } });
+        break;
+      case "service":
+        await prisma.service.update({ where: { id }, data: { status, publishedAt } });
+        break;
+      case "bundle":
+        await prisma.serviceBundle.update({ where: { id }, data: { status, publishedAt } });
+        break;
+      case "endpoint":
+        await prisma.liveEndpoint.update({ where: { id }, data: { status, publishedAt } });
         break;
       case "caseStudy":
         await prisma.caseStudy.update({ where: { id }, data: { status, publishedAt } });
@@ -71,14 +141,83 @@ export default async function ContentPage() {
 
     // Push the change to the public site immediately rather than waiting for
     // the ISR window — publishing that takes five minutes to appear reads as
-    // broken and gets clicked twice.
+    // broken and gets clicked twice. The local `revalidatePath` only clears the
+    // console's cache, so the purge has to cross to the web app over HTTP.
     revalidatePath("/", "layout");
+    await purgeWebCache({ paths: ["/"] });
     redirect("/content");
   }
 
-  const groups: Array<{ kind: Kind; label: string; rows: Array<{ id: string; slug: string; title: string; status: PublishStatus; updatedAt: Date; note?: string }> }> = [
-    { kind: "solution", label: "Solutions", rows: solutions.map((s) => ({ id: s.id, slug: s.slug, title: s.name, status: s.status, updatedAt: s.updatedAt })) },
-    { kind: "product", label: "SaaS products", rows: products.map((p) => ({ id: p.id, slug: p.slug, title: p.name, status: p.status, updatedAt: p.updatedAt })) },
+  const groups: Array<{
+    kind: Kind;
+    label: string;
+    rows: Array<{
+      id: string;
+      slug: string;
+      title: string;
+      status: PublishStatus;
+      updatedAt: Date;
+      note?: string;
+    }>;
+  }> = [
+    {
+      kind: "solution",
+      label: "Solutions",
+      rows: solutions.map((s) => ({
+        id: s.id,
+        slug: s.slug,
+        title: s.name,
+        status: s.status,
+        updatedAt: s.updatedAt,
+      })),
+    },
+    {
+      kind: "product",
+      label: "SaaS products",
+      rows: products.map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.name,
+        status: p.status,
+        updatedAt: p.updatedAt,
+      })),
+    },
+    {
+      kind: "service",
+      label: "Productised services",
+      rows: services.map((s) => ({
+        id: s.id,
+        slug: s.slug,
+        title: s.name,
+        status: s.status,
+        updatedAt: s.updatedAt,
+        note: `${s.feeCurrency} ${s.flatFeeAmount.toLocaleString()}`,
+      })),
+    },
+    {
+      kind: "bundle",
+      label: "Service bundles",
+      rows: bundles.map((b) => ({
+        id: b.id,
+        slug: b.slug,
+        title: b.name,
+        status: b.status,
+        updatedAt: b.updatedAt,
+        note: `${b.feeCurrency} ${b.bundlePriceAmount.toLocaleString()}`,
+      })),
+    },
+    {
+      kind: "endpoint",
+      label: "Live endpoints (proof)",
+      rows: endpoints.map((e) => ({
+        id: e.id,
+        slug: e.slug,
+        title: e.name,
+        status: e.status,
+        updatedAt: e.updatedAt,
+        note: e.kind,
+      })),
+    },
     {
       kind: "caseStudy",
       label: "Case studies",
@@ -95,8 +234,28 @@ export default async function ContentPage() {
           : "Anonymised",
       })),
     },
-    { kind: "insight", label: "Insights", rows: insights.map((i) => ({ id: i.id, slug: i.slug, title: i.title, status: i.status, updatedAt: i.updatedAt })) },
-    { kind: "landingPage", label: "Campaign pages", rows: landingPages.map((l) => ({ id: l.id, slug: l.slug, title: l.headline, status: l.status, updatedAt: l.updatedAt })) },
+    {
+      kind: "insight",
+      label: "Insights",
+      rows: insights.map((i) => ({
+        id: i.id,
+        slug: i.slug,
+        title: i.title,
+        status: i.status,
+        updatedAt: i.updatedAt,
+      })),
+    },
+    {
+      kind: "landingPage",
+      label: "Campaign pages",
+      rows: landingPages.map((l) => ({
+        id: l.id,
+        slug: l.slug,
+        title: l.headline,
+        status: l.status,
+        updatedAt: l.updatedAt,
+      })),
+    },
   ];
 
   return (
@@ -126,7 +285,7 @@ export default async function ContentPage() {
                     </td>
                     <td className="px-5 py-3">
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-2xs font-medium uppercase ${
+                        className={`text-2xs rounded-full px-2.5 py-0.5 font-medium uppercase ${
                           row.status === "LIVE"
                             ? "bg-[var(--color-success-100)] text-[var(--color-success-500)]"
                             : "bg-[var(--bg-sunken)] text-[var(--ink-secondary)]"
@@ -135,7 +294,7 @@ export default async function ContentPage() {
                         {row.status}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-2xs text-[var(--ink-muted)]">
+                    <td className="text-2xs px-5 py-3 text-[var(--ink-muted)]">
                       {row.updatedAt.toLocaleDateString("en-GB")}
                     </td>
                     <td className="px-5 py-3 text-right">

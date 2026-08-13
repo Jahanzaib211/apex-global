@@ -1,0 +1,113 @@
+// ── module: projects ────────────────────────────────────────────────────────
+// Delivery projects for clients. Each project is scoped to one portal
+// account. Tasks roll up to the project; timesheets link to billing
+// invoice lines (a separate concern for the billing module to consume).
+
+enum ProjectStatus {
+  PLANNED
+  ACTIVE
+  WAITING
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  REVIEW
+  DONE
+}
+
+model Project {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status ProjectStatus @default(PLANNED)
+
+  name     String
+  summary  String?
+  body     String? @db.Text
+
+  portalAccountId String?
+  leadId          String?
+  leads           Lead[]   @relation("LeadProjects")
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  budgetAmount   Int?
+  budgetCurrency String @default("USD")
+
+  tasks Task[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([portalAccountId, status])
+  @@map("projects")
+}
+
+model Task {
+  id        String     @id @default(cuid())
+  projectId String
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String? @db.Text
+  status      TaskStatus @default(TODO)
+
+  // Effort estimate and actual, in hours. Kept simple — billing is a
+  // downstream concern.
+  estimatedHours Float?
+  actualHours    Float?
+
+  assigneeId String?
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId, order])
+  @@map("tasks")
+}
+
+model Timesheet {
+  id        String @id @default(cuid())
+  userId    String // core user id — operator/engineer who logged time
+  projectId String
+
+  date     DateTime
+  hours    Float
+  note     String?
+
+  // When the timesheet is billed, this points at the invoice line it
+  // rolled into. NULL means it has not been billed yet.
+  invoiceLineId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId, date])
+  @@map("timesheets")
+}
+
+model ClientApproval {
+  id        String @id @default(cuid())
+  projectId String
+
+  title       String
+  description String? @db.Text
+  status      String  @default("PENDING") // PENDING | APPROVED | CHANGES_REQUESTED
+
+  requestedById String?
+  respondedById String?
+
+  respondedAt DateTime?
+  responseNote String?
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId, status])
+  @@map("client_approvals")
+}

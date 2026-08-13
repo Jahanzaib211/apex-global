@@ -22,7 +22,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
   secondary:
     "bg-transparent text-[var(--ink-primary)] border border-[var(--border-strong)] " +
     "hover:border-[var(--ink-primary)] hover:bg-[var(--bg-sunken)]",
-  ghost: "bg-transparent text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:bg-[var(--bg-sunken)]",
+  ghost:
+    "bg-transparent text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:bg-[var(--bg-sunken)]",
   inverse:
     "bg-[var(--color-canvas-0)] text-[var(--color-navy-900)] hover:bg-[var(--color-canvas-200)] " +
     "shadow-[var(--shadow-sm)]",

@@ -1,0 +1,246 @@
+// ── module: portal ───────────────────────────────────────────────────────────
+// Customer-facing portal identity. Deliberately a separate identity space
+// from `core.User` — sharing the table would put customer credentials one
+// bad query away from operator permissions, and a customer churn event
+// would not be able to clean up without touching operator rows.
+//
+// Every query in the portal joins on `portalAccountId` so a portal user
+// never sees data belonging to another account. Enforced at the query
+// layer, not by hiding a link.
+
+enum PortalRole {
+  OWNER  // can manage account settings + invite others + see everything
+  ADMIN  // can manage users + see everything except billing ownership transfer
+  MEMBER // can see their own tickets/invoices/projects, no admin actions
+}
+
+enum PortalAccountStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+model PortalAccount {
+  id     String             @id @default(cuid())
+  slug   String             @unique // used in URLs: /portal/accounts/<slug>
+  name   String
+  status PortalAccountStatus @default(ACTIVE)
+
+  // Optional defaults applied to every user invited to this account.
+  defaultTimezone String?
+  defaultCurrency String  @default("USD")
+
+  // Link back to the original Lead/CRM contact that became this account,
+  // so the commercial history is preserved when a lead becomes a customer.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  users         PortalUser[]
+  invitations   PortalInvitation[]
+  auditLog      PortalAuditLog[]
+  documents     ClientDocument[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@map("portal_accounts")
+}
+
+model PortalUser {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+
+  // bcrypt hash. Nullable because OAuth-only users do not have a password.
+  // Verified email is required to set a password — the forgot-password
+  // flow also requires a verified email.
+  passwordHash String?
+
+  emailVerifiedAt DateTime?
+
+  // 2FA. The secret is stored AES-256-GCM sealed; never returned to the
+  // browser. `totpEnabledAt` is the truth flag — secret alone without a
+  // verified code at enable time is not enough.
+  totpSecretCiphertext String?
+  totpSecretIv         String?
+  totpSecretTag        String?
+  totpEnabledAt        DateTime?
+
+  failedLogins Int       @default(0)
+  lockedUntil  DateTime?
+  lastLoginAt  DateTime?
+  isActive     Boolean   @default(true)
+
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+  role            PortalRole    @default(MEMBER)
+
+  sessions    PortalSession[]
+  magicLinks   PortalMagicLink[]
+  passwordResets PortalPasswordReset[]
+  oauthAccounts PortalOAuthAccount[]
+  auditLog     PortalAuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([portalAccountId, role])
+  @@map("portal_users")
+}
+
+model PortalSession {
+  id           String   @id @default(cuid())
+  userId       String
+  user         PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash    String   @unique // SHA-256 of the plaintext; plaintext only in cookie
+  expiresAt    DateTime
+  lastSeenAt   DateTime @default(now())
+
+  ipAddress    String?
+  userAgent    String?
+
+  createdAt    DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("portal_sessions")
+}
+
+// One-time email link, both for sign-in and for password reset. The hash is
+// what is stored; the raw token is in the URL the user clicks.
+model PortalMagicLink {
+  id         String   @id @default(cuid())
+  email      String
+  userId     String?
+  user       PortalUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash  String   @unique
+  purpose    String   @default("sign-in") // "sign-in" | "reset"
+  expiresAt  DateTime
+  usedAt     DateTime?
+
+  ipAddress  String?
+  userAgent  String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([email, purpose, expiresAt])
+  @@map("portal_magic_links")
+}
+
+model PortalPasswordReset {
+  id         String   @id @default(cuid())
+  userId     String
+  user       PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+
+  ipAddress  String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("portal_password_resets")
+}
+
+// One row per (provider, providerAccountId). Stable across sessions so a
+// returning user is recognised. The (provider, providerAccountId) pair is
+// globally unique — that prevents accidentally creating two portal users
+// for the same Google account.
+model PortalOAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  user              PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  provider          String   // "google" | "microsoft"
+  providerAccountId String
+
+  // Tokens are AES-256-GCM sealed. Plaintext never leaves the server.
+  accessTokenCiphertext String?
+  accessTokenIv         String?
+  accessTokenTag        String?
+  refreshTokenCiphertext String?
+  refreshTokenIv         String?
+  refreshTokenTag        String?
+  expiresAt             DateTime?
+
+  scopes           String?
+  lastUsedAt       DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("portal_oauth_accounts")
+}
+
+model PortalInvitation {
+  id              String   @id @default(cuid())
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+
+  email      String
+  role       PortalRole @default(MEMBER)
+
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+
+  invitedById String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, acceptedAt])
+  @@map("portal_invitations")
+}
+
+// Shared documents and notes between the team and the client.
+// `key` is the S3 object key in the existing `apex-media` bucket.
+model ClientDocument {
+  id              String   @id @default(cuid())
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+
+  filename     String
+  key          String   @unique
+  mimeType     String
+  bytes        Int
+  title        String?
+  description  String?
+
+  uploadedByKind String  @default("team")  // "team" | "client"
+  uploadedById   String?                  // portalUserId or core User id, depending on kind
+
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, publishedAt])
+  @@map("client_documents")
+}
+
+model PortalAuditLog {
+  id              String   @id @default(cuid())
+  portalAccountId String?
+  portalAccount   PortalAccount? @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+  portalUserId    String?
+  portalUser      PortalUser? @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
+
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+
+  changes Json?
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, createdAt])
+  @@index([portalUserId, createdAt])
+  @@map("portal_audit_log")
+}

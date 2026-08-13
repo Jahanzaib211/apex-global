@@ -40,9 +40,16 @@ export interface MarkProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
   variant?: MarkVariant;
   /** Accessible label. Omit for decorative use next to the wordmark. */
   title?: string;
+  /**
+   * Add CSS life to the mark: the ribbons wake up on mount, then run a slow
+   * amber-tinged chase, and the peak pulses. Pure CSS, disabled wholesale by
+   * the global prefers-reduced-motion rule. Opt-in so the favicon, OG images
+   * and static brand surfaces stay byte-identical.
+   */
+  animated?: boolean;
 }
 
-export function Mark({ variant = "brand", title, ...props }: MarkProps) {
+export function Mark({ variant = "brand", title, animated = false, ...props }: MarkProps) {
   const palette = VARIANTS[variant];
   const decorative = !title;
 
@@ -58,9 +65,14 @@ export function Mark({ variant = "brand", title, ...props }: MarkProps) {
     >
       {title ? <title>{title}</title> : null}
       {SWEEPS.map((d, i) => (
-        <path key={d} d={d} fill={palette.sweeps[i] ?? palette.peak} />
+        <path
+          key={d}
+          d={d}
+          fill={palette.sweeps[i] ?? palette.peak}
+          className={animated ? `apex-sweep apex-sweep-${i}` : undefined}
+        />
       ))}
-      <path d={PEAK} fill={palette.peak} />
+      <path d={PEAK} fill={palette.peak} className={animated ? "apex-peak" : undefined} />
     </svg>
   );
 }
@@ -70,21 +82,34 @@ export interface LogoProps {
   /** Stacked reads better in footers; inline in headers. */
   orientation?: "inline" | "stacked";
   className?: string;
+  /** Adds live animated ribbons + pulsing peak (see Mark.animated). */
+  animated?: boolean;
 }
 
-export function Logo({ variant = "brand", orientation = "inline", className }: LogoProps) {
+export function Logo({
+  variant = "brand",
+  orientation = "inline",
+  className,
+  animated = false,
+}: LogoProps) {
   const stacked = orientation === "stacked";
-  const ink = variant === "inverse" ? "text-[var(--color-canvas-0)]" : "text-[var(--color-navy-500)]";
+  const ink =
+    variant === "inverse" ? "text-[var(--color-canvas-0)]" : "text-[var(--color-navy-500)]";
 
   return (
     <span
       className={[
         "inline-flex items-center",
         stacked ? "flex-col gap-2" : "gap-2.5",
+        animated ? "apex-logo" : "",
         className ?? "",
       ].join(" ")}
     >
-      <Mark variant={variant} className={stacked ? "h-10 w-auto" : "h-7 w-auto"} />
+      <Mark
+        variant={variant}
+        animated={animated}
+        className={stacked ? "h-10 w-auto" : "h-7 w-auto"}
+      />
       <span className={["flex flex-col leading-none", stacked ? "items-center" : ""].join(" ")}>
         <span
           className={[

@@ -7,12 +7,12 @@ Source assets live in [`brand/`](../brand/): `logo-sheet.jpeg` (logo lockups and
 
 Sampled directly from `brand/palette.jpeg` — these are the authoritative values.
 
-| Token | Hex | Role |
-|---|---|---|
-| `navy` | `#34385B` | Primary. Carries the page: headers, dark sections, body text on light |
-| `slate` | `#5C5F64` | Secondary. Muted text, borders, diagram strokes |
-| `amber` | `#FAB319` | Accent **only**. CTAs, focus rings, one highlight per view |
-| `off-white` | `#F6F8F7` | Surface. Default page background in light mode |
+| Token       | Hex       | Role                                                                  |
+| ----------- | --------- | --------------------------------------------------------------------- |
+| `navy`      | `#34385B` | Primary. Carries the page: headers, dark sections, body text on light |
+| `slate`     | `#5C5F64` | Secondary. Muted text, borders, diagram strokes                       |
+| `amber`     | `#FAB319` | Accent **only**. CTAs, focus rings, one highlight per view            |
+| `off-white` | `#F6F8F7` | Surface. Default page background in light mode                        |
 
 Ramps (`50`–`950`) are generated from these four in `packages/ui/src/tokens.css`. The base values
 above are the `500` steps for navy, slate and amber.

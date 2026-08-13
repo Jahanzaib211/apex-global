@@ -18,6 +18,10 @@ interface Props {
   interestSlug?: string;
   compact?: boolean;
   submitLabel?: string;
+  /** Override the submission endpoint — used by product pages to hit the
+   *  dedicated demo-request pipeline. */
+  endpoint?: string;
+  productSlug?: string;
 }
 
 export function LeadForm({
@@ -25,6 +29,8 @@ export function LeadForm({
   interestSlug,
   compact = false,
   submitLabel = "Send enquiry",
+  endpoint = "/api/leads",
+  productSlug,
 }: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -84,11 +90,12 @@ export function LeadForm({
       company_website: data.get("company_website") ?? "",
       interestType,
       interestSlug,
+      productSlug: productSlug ?? interestSlug,
       attribution: storedAttribution(),
     };
 
     try {
-      const res = await fetch("/api/leads", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -196,7 +203,10 @@ export function LeadForm({
       </label>
 
       {formError ? (
-        <p role="alert" className="rounded-[var(--radius-md)] bg-[var(--color-danger-100)] px-4 py-3 text-sm text-[var(--color-danger-500)]">
+        <p
+          role="alert"
+          className="rounded-[var(--radius-md)] bg-[var(--color-danger-100)] px-4 py-3 text-sm text-[var(--color-danger-500)]"
+        >
           {formError}
         </p>
       ) : null}

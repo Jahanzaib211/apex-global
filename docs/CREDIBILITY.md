@@ -13,11 +13,11 @@ it wins. Every published statement must be defensible.
 
 Every technology-proof entry and every SaaS product carries a required `origin` field:
 
-| Value | Meaning | How it renders |
-|---|---|---|
-| `BUILT_BY_APEX` | Apex designed and wrote it | "Built by Apex" |
-| `OPERATED_BY_APEX` | Apex deploys, configures, secures and runs it | "Operated by Apex" |
-| `THIRD_PARTY_OSS` | Someone else's software; we run it for clients | "Third-party open source — deployed and operated by Apex" |
+| Value              | Meaning                                        | How it renders                                            |
+| ------------------ | ---------------------------------------------- | --------------------------------------------------------- |
+| `BUILT_BY_APEX`    | Apex designed and wrote it                     | "Built by Apex"                                           |
+| `OPERATED_BY_APEX` | Apex deploys, configures, secures and runs it  | "Operated by Apex"                                        |
+| `THIRD_PARTY_OSS`  | Someone else's software; we run it for clients | "Third-party open source — deployed and operated by Apex" |
 
 Derived work additionally sets `upstreamName`, `upstreamUrl` and `upstreamLicense`. The public page
 renders the attribution inline — not in a footnote, not in a tooltip.
@@ -53,21 +53,21 @@ matching common key patterns. Any hit in a publishable record fails the build.
 
 ## 6. Permanently excluded from this site
 
-| Excluded | Why |
-|---|---|
+| Excluded                                       | Why                                                  |
+| ---------------------------------------------- | ---------------------------------------------------- |
 | The cloned third-party AGPL financial terminal | Not authored here — a clone with no authored history |
-| Ownership claims over upstream security tools | We deploy and operate them; we did not write them |
-| Trading bots and market experiments | Regulatory exposure, no client relevance |
-| Dispatch / transport / logistics material | Out of brand by decision |
-| BPO / call-centre positioning | Out of brand by decision — Apex is technology-first |
+| Ownership claims over upstream security tools  | We deploy and operate them; we did not write them    |
+| Trading bots and market experiments            | Regulatory exposure, no client relevance             |
+| Dispatch / transport / logistics material      | Out of brand by decision                             |
+| BPO / call-centre positioning                  | Out of brand by decision — Apex is technology-first  |
 
-## 7. What we *can* say, and how
+## 7. What we _can_ say, and how
 
-| Instead of | Say |
-|---|---|
-| "We are experts in cloud" | "We run a Kubernetes cluster with GitOps deployment, Prometheus/Grafana/Loki observability and nightly restore-tested backups" |
-| "Trusted by leading companies" | Named clients with recorded consent, or nothing |
-| "Enterprise-grade security" | The specific controls: RBAC, audit logging, 2FA, encrypted secrets, rate limiting |
-| "We built an AI platform" | "We built an AI agent platform on the open-source DeerFlow harness (MIT) — 35,738 lines of original work across 338 files" |
+| Instead of                     | Say                                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| "We are experts in cloud"      | "We run a Kubernetes cluster with GitOps deployment, Prometheus/Grafana/Loki observability and nightly restore-tested backups" |
+| "Trusted by leading companies" | Named clients with recorded consent, or nothing                                                                                |
+| "Enterprise-grade security"    | The specific controls: RBAC, audit logging, 2FA, encrypted secrets, rate limiting                                              |
+| "We built an AI platform"      | "We built an AI agent platform on the open-source DeerFlow harness (MIT) — 35,738 lines of original work across 338 files"     |
 
 Capability, stated precisely, is more persuasive than a superlative. It is also true.

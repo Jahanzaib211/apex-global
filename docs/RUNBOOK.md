@@ -23,17 +23,17 @@ refuses to start without them.
 
 ## Everyday commands
 
-| Task | Command |
-|---|---|
-| Run everything | `pnpm dev` |
-| Typecheck | `pnpm typecheck` |
-| Lint | `pnpm lint` |
-| Unit tests | `pnpm test` |
-| End-to-end | `pnpm test:e2e` |
-| Credibility audit | `pnpm audit:credibility` |
-| Smoke test services | `pnpm smoke` |
-| Inspect the database | `pnpm db:studio` |
-| Stop services | `pnpm services:down` |
+| Task                 | Command                  |
+| -------------------- | ------------------------ |
+| Run everything       | `pnpm dev`               |
+| Typecheck            | `pnpm typecheck`         |
+| Lint                 | `pnpm lint`              |
+| Unit tests           | `pnpm test`              |
+| End-to-end           | `pnpm test:e2e`          |
+| Credibility audit    | `pnpm audit:credibility` |
+| Smoke test services  | `pnpm smoke`             |
+| Inspect the database | `pnpm db:studio`         |
+| Stop services        | `pnpm services:down`     |
 
 ## Deploying
 
@@ -46,14 +46,14 @@ still running: nothing swaps until health checks pass.
 
 ## When something breaks
 
-| Symptom | First check |
-|---|---|
-| Site returns 5xx | `docker compose -f infra/docker-compose.yml ps` — is postgres healthy? |
-| Forms accept but no lead appears | Redis reachable? BullMQ worker running? Check the dead-letter queue |
-| Published content not visible | Revalidation failed — republish, or check the ISR webhook logs |
-| Console login fails | `AUTH_SECRET` changed, or clock skew breaking TOTP |
-| Media 404s | MinIO bucket policy, or `S3_PUBLIC_URL` pointing at the wrong host |
-| AI features error | Key expired — reconnect in Settings → Integrations and use "Test connection" |
+| Symptom                          | First check                                                                                                                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site returns 5xx                 | `docker compose -f infra/docker-compose.yml ps` — is postgres healthy?                                                                                                                          |
+| Forms accept but no lead appears | Redis reachable? BullMQ worker running? Check the dead-letter queue                                                                                                                             |
+| Published content not visible    | Cache purge failed — check the console logs for "Cache purge", confirm `REVALIDATE_SECRET` and `WEB_ORIGIN` are set in both apps, or `POST /api/revalidate` by hand (see [docs/API.md](API.md)) |
+| Console login fails              | `AUTH_SECRET` changed, or clock skew breaking TOTP                                                                                                                                              |
+| Media 404s                       | MinIO bucket policy, or `S3_PUBLIC_URL` pointing at the wrong host                                                                                                                              |
+| AI features error                | Key expired — reconnect in Settings → Integrations and use "Test connection"                                                                                                                    |
 
 ## Backups
 
@@ -71,10 +71,10 @@ BACKUP_PASSPHRASE=... ./infra/scripts/restore-db.sh .backups/apex-nightly-<stamp
 The restore script never touches the live database — it recreates a scratch one, restores into that,
 and prints row counts plus the most recent lead so you can see the data actually came back.
 
-| Restore drill | Date | Result |
-|---|---|---|
-| Initial (development database) | 2026-08-04 | Passed — 4 leads, 9 solutions, 2 case studies, 3 products, 1 user restored. Surfaced a stale draft product left behind by a slug rename; the seed now reports orphans. |
-| _(next: production, before the first campaign)_ | | |
+| Restore drill                                   | Date       | Result                                                                                                                                                                 |
+| ----------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initial (development database)                  | 2026-08-04 | Passed — 4 leads, 9 solutions, 2 case studies, 3 products, 1 user restored. Surfaced a stale draft product left behind by a slug rename; the seed now reports orphans. |
+| _(next: production, before the first campaign)_ |            |                                                                                                                                                                        |
 
 ## Rotating a secret
 

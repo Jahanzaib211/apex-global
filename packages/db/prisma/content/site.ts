@@ -1,7 +1,12 @@
 /** Settings, roles, case studies, insights, FAQs and ad landing pages. */
 
 export const settings = [
-  { key: "org.name", group: "organisation", label: "Company name", value: "Apex Global Tech Solution" },
+  {
+    key: "org.name",
+    group: "organisation",
+    label: "Company name",
+    value: "Apex Global Tech Solution",
+  },
   {
     key: "org.tagline",
     group: "organisation",
@@ -17,21 +22,59 @@ export const settings = [
   },
   { key: "org.phone", group: "contact", label: "Phone", value: "+92 42 3229 4384" },
   { key: "org.email", group: "contact", label: "Email", value: "" },
-  { key: "org.whatsapp", group: "contact", label: "WhatsApp number", value: "" },
+  { key: "org.whatsapp", group: "contact", label: "WhatsApp number", value: "923066422442" },
   {
     key: "org.address",
     group: "contact",
     label: "Registered office",
-    value: "31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan",
+    value: "31-20, Sector C-D Main Blvd, Sector M7 Lake City, Lahore, Pakistan",
   },
   { key: "org.linkedin", group: "social", label: "LinkedIn", value: "" },
+
+  // Legal identity, used by the /legal suite. Deliberately seeded empty: a
+  // made-up registration number or jurisdiction is exactly the detail that
+  // unravels in a first client review. Fill these from the console before the
+  // legal pages ship to a jurisdiction that requires them.
+  { key: "org.legalName", group: "legal", label: "Registered legal name", value: "" },
+  {
+    key: "org.registrationNumber",
+    group: "legal",
+    label: "Company registration number",
+    value: "",
+  },
+  { key: "org.vatId", group: "legal", label: "VAT / tax registration ID", value: "" },
+  {
+    key: "org.jurisdiction",
+    group: "legal",
+    label: "Governing law / jurisdiction",
+    value: "Pakistan",
+  },
+  { key: "org.disputeEmail", group: "legal", label: "DPO / legal contact email", value: "" },
+
+  // ── Live chat (self-hosted Chatwoot, "talk to a real human") ────────────
+  // The launcher renders only when both a base URL and a widget token exist,
+  // so the site ships in a graceful "no chat configured" state by default.
+  { key: "chatwoot.base_url", group: "contact", label: "Chatwoot URL", value: "" },
+  { key: "chatwoot.token", group: "contact", label: "Chatwoot widget token", value: "" },
+  { key: "chatwoot.enabled", group: "contact", label: "Enable live chat", value: false },
+  {
+    key: "chatwoot.launcher_label",
+    group: "contact",
+    label: "Chat launcher label",
+    value: "Talk to a real person",
+  },
 
   // Leadership. Deliberately seeded empty rather than with invented copy: a
   // fabricated biography is exactly the kind of detail that unravels in a
   // first conversation. The About page shows an explicit placeholder until
   // these are filled in from the console.
   { key: "leadership.ceo.name", group: "leadership", label: "CEO name", value: "Shaikh Ahmed" },
-  { key: "leadership.ceo.title", group: "leadership", label: "CEO title", value: "Chief Executive Officer" },
+  {
+    key: "leadership.ceo.title",
+    group: "leadership",
+    label: "CEO title",
+    value: "Chief Executive Officer — Apex Group of Companies",
+  },
   { key: "leadership.ceo.bio", group: "leadership", label: "CEO biography", value: "" },
   { key: "leadership.ceo.photo", group: "leadership", label: "CEO photograph URL", value: "" },
   { key: "leadership.ceo.linkedin", group: "leadership", label: "CEO LinkedIn", value: "" },
@@ -51,6 +94,50 @@ export const settings = [
   // Deliberately blank: this is what gets pasted in at deploy time, and a
   // placeholder domain shipping to production is a real failure mode.
   { key: "seo.siteUrl", group: "seo", label: "Canonical site URL", value: "" },
+
+  // ── Technology partner (ALI Technologies) ────────────────────────────────
+  // Apex is the public face of the business. ALI Technologies is the engineering
+  // and operations partner that builds and runs the platforms behind it. Both
+  // names appear on the site; neither one absorbs the other, and the
+  // relationship is declared rather than implied.
+  {
+    key: "partner.name",
+    group: "partner",
+    label: "Technology partner name",
+    value: "ALI Technologies",
+  },
+  {
+    key: "partner.tagline",
+    group: "partner",
+    label: "Partner tagline",
+    value: "Engineering, operations and platform delivery behind Apex Global Tech Solution.",
+  },
+  {
+    key: "partner.url",
+    group: "partner",
+    label: "Partner URL",
+    value: "https://alilabsx.com/",
+  },
+  {
+    key: "partner.relationship",
+    group: "partner",
+    label: "Relationship statement",
+    value:
+      "ALI Technologies is the engineering partner of Apex Global Tech Solution. Apex owns the customer relationship, the commercial contract and the brand. ALI Technologies — at alilabsx.com — designs, builds and operates the platforms and infrastructure.",
+  },
+
+  // ── Operations toggles (read by the public site + the /dev panel) ──
+  { key: "ops.maintenance_mode", group: "operations", label: "Maintenance mode", value: false },
+  {
+    key: "ops.maintenance_message",
+    group: "operations",
+    label: "Maintenance message",
+    value:
+      "We're performing scheduled maintenance. The portal will be back shortly. Existing clients can still reach support by phone.",
+  },
+  { key: "ops.public_status", group: "operations", label: "Public status", value: "operational" },
+  { key: "ops.readonly_mode", group: "operations", label: "Read-only mode", value: false },
+  { key: "ops.status_banner", group: "operations", label: "Status banner text", value: "" },
 ] as const;
 
 export const roles = [
@@ -316,5 +403,50 @@ export const landingPages = [
     ],
     campaignName: "software-dev-q3",
     solutionSlug: "software-development",
+  },
+  {
+    slug: "modular-services",
+    headline: "Fixed scope. Fixed fee. Fixed timeline.",
+    subheadline:
+      "Eight productised cloud and platform engineering engagements — Kubernetes migration, observability, security hardening, CI/CD and more. Buy one module, or assemble a bundle. Built and operated by ALI Technologies against an open-source platform stack.",
+    ctaLabel: "Discuss a modular engagement",
+    bullets: [
+      "USD 4K–18K flat fees per module, USD 17K–48K for bundles",
+      "5 days to 3 weeks, end to end — not a discovery phase",
+      "Open-source platform stack, declared upstream",
+      "Outcomes listed up-front in the scope, not negotiated at the end",
+    ],
+    campaignName: "apex-services-launch",
+    solutionSlug: "services",
+  },
+  {
+    slug: "k8s-migration",
+    headline: "A Kubernetes migration with a tested rollback",
+    subheadline:
+      "Containerise, ship to a real cluster, prove the rollback before the cutover, and hand over a system your team can extend. Three weeks, USD 18K fixed.",
+    ctaLabel: "Discuss a Kubernetes migration",
+    bullets: [
+      "Workloads containerised with production-grade images",
+      "Cluster with networking, RBAC and GitOps delivery",
+      "Rollback rehearsed before anything cuts over",
+      "A cluster your team can run without us",
+    ],
+    campaignName: "k8s-migration-q3",
+    solutionSlug: "services",
+  },
+  {
+    slug: "nova-enterprise-demo",
+    headline: "See Nova running, not a slide about it",
+    subheadline:
+      "A 30-minute walk-through of the live AI agent platform: sub-agents, sandboxes, IM integrations, the verify loop, the code review engine. Real auth, real workloads, real timing.",
+    ctaLabel: "Request a demo",
+    bullets: [
+      "Multi-agent orchestration with per-thread sandboxes",
+      "Six IM channel integrations — Telegram, Slack, Feishu, WeChat, WeCom, DingTalk",
+      "Self-verification loop with headless Chromium",
+      "35,738 lines of original work on top of the open-source DeerFlow harness",
+    ],
+    campaignName: "nova-demo-enterprise",
+    solutionSlug: "product",
   },
 ] as const;

@@ -23,16 +23,16 @@ timeline.
 
 ## Jobs
 
-| Queue | Trigger |
-|---|---|
+| Queue         | Trigger                               |
+| ------------- | ------------------------------------- |
 | `lead.enrich` | New lead → summarise, score, classify |
 
 ## Providers
 
-| id | Notes |
-|---|---|
-| `minimax` | Hosted, OpenAI-compatible chat completions |
-| `ollama` | Self-hosted. No API key — required so "your data never leaves your infrastructure" is a configuration choice, not a sales claim |
+| id        | Notes                                                                                                                           |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `minimax` | Hosted, OpenAI-compatible chat completions                                                                                      |
+| `ollama`  | Self-hosted. No API key — required so "your data never leaves your infrastructure" is a configuration choice, not a sales claim |
 
 ## Design decisions
 

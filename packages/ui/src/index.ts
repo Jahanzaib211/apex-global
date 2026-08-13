@@ -16,8 +16,4 @@ export { OriginBadge } from "./components/origin-badge";
 export type { Origin, OriginBadgeProps } from "./components/origin-badge";
 
 export { TextField, TextAreaField, SelectField, HoneypotField } from "./components/field";
-export type {
-  TextFieldProps,
-  TextAreaFieldProps,
-  SelectFieldProps,
-} from "./components/field";
+export type { TextFieldProps, TextAreaFieldProps, SelectFieldProps } from "./components/field";

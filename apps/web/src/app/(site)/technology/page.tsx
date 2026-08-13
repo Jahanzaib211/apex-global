@@ -2,7 +2,7 @@ import { ButtonLink, Card, OriginBadge, Section, SectionHeading } from "@apex/ui
 import type { Metadata } from "next";
 import { ArchitectureDiagram } from "@/components/architecture-diagram";
 import { Prose } from "@/components/prose";
-import { getTechProof } from "@/lib/content";
+import { getLiveEndpoints, getSettings, getTechProof } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -22,7 +22,15 @@ const CATEGORIES = [
 ] as const;
 
 export default async function TechnologyPage() {
-  const entries = await getTechProof();
+  const [entries, endpoints, settings] = await Promise.all([
+    getTechProof(),
+    getLiveEndpoints(),
+    getSettings(),
+  ]);
+
+  const publishedEndpoints = endpoints.filter((e) => e.isPubliclyLinkable && e.publicUrl);
+  const loopbackEndpoints = endpoints.filter((e) => !e.isPubliclyLinkable || !e.publicUrl);
+  const partner = settings["partner.name"] ?? "ALI Technologies";
 
   return (
     <>
@@ -35,6 +43,111 @@ export default async function TechnologyPage() {
           lede="This page exists for the technical person your organisation sends to check whether we know what we are doing. Every system below states whether we built it, operate it, or deploy it as third-party open source — and every figure states where it came from."
         />
       </Section>
+
+      {/* ── Live endpoints (proof) ────────────────────────────────────── */}
+      {endpoints.length > 0 ? (
+        <Section tone="raised">
+          <SectionHeading
+            eyebrow="Live endpoints"
+            title={`Endpoints operated by ${partner}`}
+            lede={`The Cloudflare tunnels and loopback services running right now. Each declares whether ${partner} built or operates it. Internal-only endpoints are listed without a public link — they exist, just not from the public internet.`}
+          />
+
+          {publishedEndpoints.length > 0 ? (
+            <>
+              <h3 className="text-2xs mt-12 font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
+                Published via Cloudflare tunnels
+              </h3>
+              <ul className="mt-6 grid gap-4 md:grid-cols-2">
+                {publishedEndpoints.map((e) => (
+                  <li
+                    key={e.slug}
+                    className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
+                          {e.kind}
+                        </p>
+                        <h4 className="mt-1 font-semibold">{e.name}</h4>
+                      </div>
+                      <OriginBadge
+                        origin={e.origin}
+                        upstreamName={e.upstreamName ?? undefined}
+                        upstreamLicense={e.upstreamLicense ?? undefined}
+                      />
+                    </div>
+                    <p className="text-sm text-[var(--ink-secondary)]">{e.summary}</p>
+                    <p className="text-2xs text-[var(--ink-muted)]">Role: {e.role}</p>
+                    <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2 text-sm">
+                      <a
+                        href={e.publicUrl!}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="inline-flex items-center gap-2 font-medium text-[var(--color-amber-700)] underline-offset-4 hover:underline"
+                      >
+                        <span
+                          aria-hidden
+                          className="h-1.5 w-1.5 rounded-full bg-[var(--color-success-500)]"
+                        />
+                        Visit ↗
+                      </a>
+                      {e.originLoopback ? (
+                        <code className="text-2xs text-[var(--ink-muted)]">{e.originLoopback}</code>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
+          {loopbackEndpoints.length > 0 ? (
+            <>
+              <h3 className="text-2xs mt-12 font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
+                Loopback services
+              </h3>
+              <p className="mt-3 max-w-3xl text-sm text-[var(--ink-secondary)]">
+                Internal services reachable only over the private mesh network. Listed so a
+                technical buyer can see what is actually running, even though the public site cannot
+                link to them.
+              </p>
+              <ul className="mt-6 grid gap-4 md:grid-cols-2">
+                {loopbackEndpoints.map((e) => (
+                  <li
+                    key={e.slug}
+                    className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-dashed border-[var(--border-strong)] bg-[var(--bg-page)] p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
+                          {e.kind}
+                        </p>
+                        <h4 className="mt-1 font-semibold">{e.name}</h4>
+                      </div>
+                      <OriginBadge
+                        origin={e.origin}
+                        upstreamName={e.upstreamName ?? undefined}
+                        upstreamLicense={e.upstreamLicense ?? undefined}
+                      />
+                    </div>
+                    <p className="text-sm text-[var(--ink-secondary)]">{e.summary}</p>
+                    <p className="text-2xs text-[var(--ink-muted)]">Role: {e.role}</p>
+                    <div className="mt-auto flex items-center gap-3 pt-2">
+                      <code className="rounded bg-[var(--bg-sunken)] px-2 py-0.5 font-mono text-xs text-[var(--ink-secondary)]">
+                        {e.originLoopback ?? "loopback only"}
+                      </code>
+                      <span className="text-2xs text-[var(--ink-muted)]">
+                        Private — not exposed
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </Section>
+      ) : null}
 
       {/* ── Architecture ─────────────────────────────────────────────── */}
       <Section tone="page">
@@ -115,7 +228,7 @@ export default async function TechnologyPage() {
                       ) : (
                         // Saying so is the point. A system we cannot show is
                         // described as private rather than left ambiguous.
-                        <p className="mt-4 text-2xs text-[var(--ink-muted)]">
+                        <p className="text-2xs mt-4 text-[var(--ink-muted)]">
                           Not publicly exposed — demonstrated privately on request.
                         </p>
                       )}
@@ -127,7 +240,7 @@ export default async function TechnologyPage() {
                           {e.technologies.map((t) => (
                             <li
                               key={t}
-                              className="rounded-full border border-[var(--border-default)] px-2.5 py-1 text-2xs text-[var(--ink-secondary)]"
+                              className="text-2xs rounded-full border border-[var(--border-default)] px-2.5 py-1 text-[var(--ink-secondary)]"
                             >
                               {t}
                             </li>
@@ -138,7 +251,7 @@ export default async function TechnologyPage() {
 
                     {e.evidence.length > 0 ? (
                       <div className="rounded-[var(--radius-md)] bg-[var(--bg-sunken)] p-6">
-                        <h4 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                        <h4 className="text-2xs font-semibold tracking-[0.18em] text-[var(--ink-muted)] uppercase">
                           Evidence
                         </h4>
                         <dl className="mt-4 flex flex-col gap-5">
@@ -152,7 +265,7 @@ export default async function TechnologyPage() {
                               </dt>
                               {/* The source is the point. A figure without one
                                   does not get published. */}
-                              <p className="mt-1 text-2xs text-[var(--ink-muted)]">
+                              <p className="text-2xs mt-1 text-[var(--ink-muted)]">
                                 Source: {ev.source}
                               </p>
                             </div>
@@ -171,10 +284,7 @@ export default async function TechnologyPage() {
       {/* ── The honesty note ─────────────────────────────────────────── */}
       <Section tone="raised">
         <div className="max-w-3xl">
-          <SectionHeading
-            eyebrow="A note on attribution"
-            title="What we built, and what we run"
-          />
+          <SectionHeading eyebrow="A note on attribution" title="What we built, and what we run" />
           <div className="mt-6 flex flex-col gap-5 text-[1.0625rem] leading-[1.75] text-[var(--ink-secondary)]">
             <p>
               Every technology company stands on open source. The difference between suppliers is

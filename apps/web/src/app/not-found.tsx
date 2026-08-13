@@ -8,8 +8,8 @@ export default function NotFound() {
         <p className="font-display text-6xl font-semibold text-[var(--color-amber-500)]">404</p>
         <h1 className="mt-6 text-3xl">This page does not exist</h1>
         <p className="mt-4 text-[var(--ink-secondary)]">
-          The link may be out of date, or the page may have moved. Everything we publish is reachable
-          from the navigation.
+          The link may be out of date, or the page may have moved. Everything we publish is
+          reachable from the navigation.
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink href="/">Back to home</ButtonLink>

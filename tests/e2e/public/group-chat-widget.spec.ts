@@ -14,11 +14,31 @@ import { test, expect } from "@playwright/test";
 const CHAT_HOST = "https://chat.apexgroupcompanies.com";
 
 const SITES = [
-  { name: "Apex Tech", url: "https://tech.apexgroupcompanies.com", token: "BwtQt74nqfPep16bMSHJrXZB" },
-  { name: "Apex Group", url: "https://apex.apexgroupcompanies.com", token: "8ifuvAsh77ZAc3CfAV1vv29z" },
-  { name: "Apex Holdings", url: "https://holdings.apexgroupcompanies.com", token: "DCBe85BZciTqg3GtMZqM8Lkc" },
-  { name: "Apex Outsourcing", url: "https://outsourcing.apexgroupcompanies.com", token: "HCkV3Ez6Njd3XpYhgXiaw6nr" },
-  { name: "Apex Tours", url: "https://tours.apexgroupcompanies.com", token: "kzvNNCuZqvKhTu9Pb3hsGiut" },
+  {
+    name: "Apex Tech",
+    url: "https://tech.apexgroupcompanies.com",
+    token: "BwtQt74nqfPep16bMSHJrXZB",
+  },
+  {
+    name: "Apex Group",
+    url: "https://apex.apexgroupcompanies.com",
+    token: "8ifuvAsh77ZAc3CfAV1vv29z",
+  },
+  {
+    name: "Apex Holdings",
+    url: "https://holdings.apexgroupcompanies.com",
+    token: "DCBe85BZciTqg3GtMZqM8Lkc",
+  },
+  {
+    name: "Apex Outsourcing",
+    url: "https://outsourcing.apexgroupcompanies.com",
+    token: "HCkV3Ez6Njd3XpYhgXiaw6nr",
+  },
+  {
+    name: "Apex Tours",
+    url: "https://tours.apexgroupcompanies.com",
+    token: "kzvNNCuZqvKhTu9Pb3hsGiut",
+  },
 ];
 
 for (const site of SITES) {
@@ -61,7 +81,9 @@ for (const site of SITES) {
       } else {
         // Older widget builds keep the token on the SDK global instead.
         const token = await page.evaluate(
-          () => (window as unknown as { $chatwoot?: { websiteToken?: string } }).$chatwoot?.websiteToken ?? null,
+          () =>
+            (window as unknown as { $chatwoot?: { websiteToken?: string } }).$chatwoot
+              ?.websiteToken ?? null,
         );
         expect(token, `${site.name} must use its own inbox token`).toBe(site.token);
       }

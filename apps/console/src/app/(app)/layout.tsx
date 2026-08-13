@@ -2,21 +2,15 @@ import { Logo } from "@apex/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUser, logout } from "@/lib/auth";
+import { modules } from "@apex/module-kit/registry";
 
 /**
- * Console navigation is built from the module registry's permission keys, so a
- * user only sees what they can actually use. Hiding a link is presentation —
- * the enforcement is in each server action.
+ * Console navigation is built from the module registry, so a user only sees the
+ * entries their permissions grant. Hiding a link is presentation — the
+ * enforcement is in each server action. Adding a module with nav + permission
+ * automatically surfaces it here; nothing is hard-coded.
  */
-const NAV = [
-  { label: "Overview", href: "/", permission: "core:read" },
-  { label: "Leads", href: "/leads", permission: "crm:read" },
-  // SaaS products are managed under Content alongside every other publishable
-  // record — a separate Products tab would be a nav item pointing at nothing.
-  { label: "Content", href: "/content", permission: "cms:read" },
-  { label: "Settings", href: "/settings", permission: "core:admin" },
-  { label: "Audit log", href: "/audit", permission: "core:admin" },
-];
+const NAV = modules.flatMap((m) => m.nav).filter((item) => Boolean(item.href));
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
@@ -36,7 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5">
           <div className="flex items-center gap-8">
             <Link href="/" aria-label="Apex Console">
-              <Logo />
+              <Logo animated />
             </Link>
             <nav aria-label="Console" className="hidden items-center gap-1 md:flex">
               {visible.map((item) => (
@@ -52,7 +46,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-[var(--ink-secondary)] sm:inline">{user.name}</span>
+            <span className="hidden text-sm text-[var(--ink-secondary)] sm:inline">
+              {user.name}
+            </span>
             <form action={signOut}>
               <button
                 type="submit"
@@ -64,7 +60,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        <nav aria-label="Console mobile" className="scroll-x flex gap-1 border-t border-[var(--border-subtle)] px-5 py-2 md:hidden">
+        <nav
+          aria-label="Console mobile"
+          className="scroll-x flex gap-1 border-t border-[var(--border-subtle)] px-5 py-2 md:hidden"
+        >
           {visible.map((item) => (
             <Link
               key={item.href}

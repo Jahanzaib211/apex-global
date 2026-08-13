@@ -61,7 +61,7 @@ export default async function InsightPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Section tone="page" className="pb-10 pt-16 md:pb-12 md:pt-20">
+      <Section tone="page" className="pt-16 pb-10 md:pt-20 md:pb-12">
         <div className="mx-auto max-w-[var(--container-prose)]">
           <nav aria-label="Breadcrumb" className="mb-8">
             <Link
@@ -72,7 +72,7 @@ export default async function InsightPage({ params }: Props) {
             </Link>
           </nav>
 
-          <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--color-amber-700)]">
+          <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--color-amber-700)] uppercase">
             {insight.category}
           </p>
           <h1 className="mt-4 text-3xl md:text-4xl">{insight.title}</h1>

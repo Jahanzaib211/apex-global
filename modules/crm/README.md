@@ -10,12 +10,12 @@ judged — and it cannot be reconstructed afterwards.
 
 ## Data model
 
-| Entity | Notes |
-|---|---|
-| `Lead` | The enquiry. `stage` drives the pipeline: `NEW → QUALIFIED → OPPORTUNITY → CUSTOMER` (or `LOST`). |
-| `Attribution` | One per lead, written in the same transaction. `utm_*`, `gclid`, `fbclid`, referrer, landing path, country, consent state, hashed IP. |
-| `LeadActivity` | Timeline: stage changes, assignment, notes, AI summaries. |
-| `CampaignSpend` | Spend per platform/campaign/period, so cost can be divided by outcomes. |
+| Entity          | Notes                                                                                                                                 |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `Lead`          | The enquiry. `stage` drives the pipeline: `NEW → QUALIFIED → OPPORTUNITY → CUSTOMER` (or `LOST`).                                     |
+| `Attribution`   | One per lead, written in the same transaction. `utm_*`, `gclid`, `fbclid`, referrer, landing path, country, consent state, hashed IP. |
+| `LeadActivity`  | Timeline: stage changes, assignment, notes, AI summaries.                                                                             |
+| `CampaignSpend` | Spend per platform/campaign/period, so cost can be divided by outcomes.                                                               |
 
 ## Permissions
 
@@ -27,9 +27,9 @@ judged — and it cannot be reconstructed afterwards.
 
 ## Jobs
 
-| Queue | Trigger |
-|---|---|
-| `lead.notify` | New lead → email / WhatsApp / Telegram |
+| Queue             | Trigger                                                       |
+| ----------------- | ------------------------------------------------------------- |
+| `lead.notify`     | New lead → email / WhatsApp / Telegram                        |
 | `lead.conversion` | New lead → server-side conversion to Meta CAPI and Google Ads |
 
 **Neither runs as a queue yet.** `lead.notify` exists in substance —

@@ -53,7 +53,10 @@ export const crm = defineModule({
   ],
   jobs: [
     { name: "lead.notify", description: "Email/WhatsApp notification on a new lead" },
-    { name: "lead.conversion", description: "Server-side conversion delivery to Meta and Google Ads" },
+    {
+      name: "lead.conversion",
+      description: "Server-side conversion delivery to Meta and Google Ads",
+    },
   ],
 });
 
@@ -88,8 +91,12 @@ export const billing = defineModule({
   id: "billing",
   name: "Billing",
   description: "Quotes, invoices, payments, subscriptions and dunning.",
-  status: "planned",
+  status: "active",
   dependsOn: ["core", "crm"],
+  nav: [
+    { label: "Quotes", href: "/billing/quotes", permission: "billing:read", icon: "file" },
+    { label: "Invoices", href: "/billing/invoices", permission: "billing:read", icon: "receipt" },
+  ],
   permissions: [
     { key: "billing:read", label: "View invoices and payments" },
     { key: "billing:write", label: "Create and send invoices" },
@@ -101,8 +108,12 @@ export const support = defineModule({
   id: "support",
   name: "Support",
   description: "Tickets, response targets, queues and knowledge base.",
-  status: "planned",
+  status: "active",
   dependsOn: ["core", "crm"],
+  nav: [
+    { label: "Tickets", href: "/support/inbox", permission: "support:read", icon: "inbox" },
+    { label: "Knowledge base", href: "/support/kb", permission: "support:read", icon: "book" },
+  ],
   permissions: [
     { key: "support:read", label: "View tickets" },
     { key: "support:write", label: "Respond to and resolve tickets" },
@@ -114,8 +125,9 @@ export const projects = defineModule({
   id: "projects",
   name: "Projects",
   description: "Delivery projects, tasks, timesheets and client approvals.",
-  status: "planned",
+  status: "active",
   dependsOn: ["core", "crm"],
+  nav: [{ label: "Projects", href: "/projects", permission: "projects:read", icon: "kanban" }],
   permissions: [
     { key: "projects:read", label: "View projects and tasks" },
     { key: "projects:write", label: "Manage projects, tasks and timesheets" },
@@ -139,24 +151,57 @@ export const hr = defineModule({
 export const marketing = defineModule({
   id: "marketing",
   name: "Marketing",
-  description: "Content calendar, campaigns and ad spend reconciled against outcomes.",
-  status: "planned",
+  description: "Campaigns, ad spend and attribution reporting — the spend-to-revenue join.",
+  status: "active",
   dependsOn: ["core", "crm", "cms"],
+  nav: [
+    {
+      label: "Campaigns",
+      href: "/marketing/campaigns",
+      permission: "marketing:read",
+      icon: "megaphone",
+    },
+    {
+      label: "Attribution",
+      href: "/marketing/attribution",
+      permission: "marketing:read",
+      icon: "chart",
+    },
+  ],
   permissions: [
     { key: "marketing:read", label: "View campaigns and attribution reporting" },
-    { key: "marketing:write", label: "Manage campaigns and the content calendar" },
+    { key: "marketing:write", label: "Manage campaigns and the ad spend log" },
+  ],
+  jobs: [
+    { name: "adspend.sync", description: "Sync ad spend from connected platforms" },
+    { name: "attribution.rebuild", description: "Recompute attribution roll-ups for campaigns" },
   ],
 });
 
 export const clientPortal = defineModule({
   id: "client-portal",
   name: "Client portal",
-  description: "Customer accounts: tickets, invoices, documents and project status.",
-  status: "planned",
+  description:
+    "Customer accounts: tickets, invoices, documents and project status. Path-based at /portal/*.",
+  status: "active",
   dependsOn: ["core", "billing", "support", "projects"],
+  nav: [{ label: "Accounts", href: "/accounts", permission: "portal:read", icon: "users" }],
   permissions: [
     { key: "portal:read", label: "View portal accounts" },
     { key: "portal:admin", label: "Manage portal access and entitlements" },
+  ],
+});
+
+export const partner = defineModule({
+  id: "partner",
+  name: "Engineering partner",
+  description:
+    "Settings and integrations that describe the relationship between Apex and the engineering partner.",
+  status: "active",
+  dependsOn: ["core"],
+  permissions: [
+    { key: "partner:read", label: "View partner settings and integrations" },
+    { key: "partner:write", label: "Manage partner settings and integrations" },
   ],
 });
 
@@ -166,6 +211,7 @@ export const modules: ApexModule[] = [
   crm,
   saas,
   aiAssist,
+  partner,
   billing,
   support,
   projects,

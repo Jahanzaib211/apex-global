@@ -36,7 +36,7 @@ function FieldShell({ id, label, hint, error, required, children, className }: F
             *
           </span>
         ) : (
-          <span className="ml-1.5 text-2xs font-normal text-[var(--ink-muted)]">optional</span>
+          <span className="text-2xs ml-1.5 font-normal text-[var(--ink-muted)]">optional</span>
         )}
       </label>
       {children}
@@ -98,8 +98,10 @@ export function TextField({
   );
 }
 
-export interface TextAreaFieldProps
-  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id"> {
+export interface TextAreaFieldProps extends Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "id"
+> {
   label: string;
   hint?: string;
   error?: string;

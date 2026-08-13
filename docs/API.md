@@ -19,27 +19,27 @@ the drift the rule above exists to prevent. The count and the inventory now matc
 
 ## Inventory
 
-| Route | Method | Auth | Caller |
-|---|---|---|---|
-| `/api/health` | GET | none | `scripts/smoke-test.mjs`, deploy workflow |
-| `/api/leads` | POST | none — honeypot, rate limit, Turnstile | `components/lead-form.tsx` |
-| `/api/demo-request` | POST | none — honeypot, rate limit, Turnstile | `(site)/saas/[slug]/page.tsx` |
-| `/api/leads/partner` | POST | HMAC `x-apex-signature` + `x-apex-site` | `lib/apex-lead.ts` in the four sibling sites |
-| `/api/revalidate` | POST | `x-revalidate-secret` | `apps/console/src/lib/revalidate.ts` |
-| `/api/webhooks/hyperswitch` | POST | HMAC `x-webhook-signature` | Hyperswitch gateway |
-| `/api/webhooks/twenty` | POST | HMAC `x-twenty-signature` | Twenty CRM |
-| `/api/portal/auth/signup` | POST | none | `(unauth)/signup/signup-form.tsx` |
-| `/api/portal/auth/login` | POST | none — issues the session | `(unauth)/login/login-form.tsx` |
-| `/api/portal/auth/logout` | POST | session cookie + CSRF pair | `(protected)/layout.tsx` sign-out |
-| `/api/portal/auth/forgot-password` | POST | none — rate limited per email | `(unauth)/forgot-password/forgot-form.tsx` |
-| `/api/portal/auth/reset-password` | POST | bearer-of-token | `(unauth)/reset-password/reset-form.tsx` |
-| `/api/portal/auth/accept-invitation` | POST | bearer-of-token | programmatic; the page calls the lib directly |
-| `/api/portal/auth/oauth/unlink/[provider]` | POST | session cookie | `(protected)/account/page.tsx` |
-| `/portal/api/documents/[id]` | GET | session cookie | `(protected)/documents/page.tsx` |
-| `/portal/invoices/[id]/pay` | POST | session cookie | `(protected)/invoices/[id]/page.tsx` |
-| `/portal/invoices/[id]/pay/return` | GET | session cookie | the Hyperswitch redirect, returning the customer |
-| `/portal/auth/[provider]/start` | GET | none — entry point | login page, account page, invitation page |
-| `/portal/auth/[provider]/callback` | GET | signed state + nonce cookie | the OAuth provider |
+| Route                                      | Method | Auth                                    | Caller                                           |
+| ------------------------------------------ | ------ | --------------------------------------- | ------------------------------------------------ |
+| `/api/health`                              | GET    | none                                    | `scripts/smoke-test.mjs`, deploy workflow        |
+| `/api/leads`                               | POST   | none — honeypot, rate limit, Turnstile  | `components/lead-form.tsx`                       |
+| `/api/demo-request`                        | POST   | none — honeypot, rate limit, Turnstile  | `(site)/saas/[slug]/page.tsx`                    |
+| `/api/leads/partner`                       | POST   | HMAC `x-apex-signature` + `x-apex-site` | `lib/apex-lead.ts` in the four sibling sites     |
+| `/api/revalidate`                          | POST   | `x-revalidate-secret`                   | `apps/console/src/lib/revalidate.ts`             |
+| `/api/webhooks/hyperswitch`                | POST   | HMAC `x-webhook-signature`              | Hyperswitch gateway                              |
+| `/api/webhooks/twenty`                     | POST   | HMAC `x-twenty-signature`               | Twenty CRM                                       |
+| `/api/portal/auth/signup`                  | POST   | none                                    | `(unauth)/signup/signup-form.tsx`                |
+| `/api/portal/auth/login`                   | POST   | none — issues the session               | `(unauth)/login/login-form.tsx`                  |
+| `/api/portal/auth/logout`                  | POST   | session cookie + CSRF pair              | `(protected)/layout.tsx` sign-out                |
+| `/api/portal/auth/forgot-password`         | POST   | none — rate limited per email           | `(unauth)/forgot-password/forgot-form.tsx`       |
+| `/api/portal/auth/reset-password`          | POST   | bearer-of-token                         | `(unauth)/reset-password/reset-form.tsx`         |
+| `/api/portal/auth/accept-invitation`       | POST   | bearer-of-token                         | programmatic; the page calls the lib directly    |
+| `/api/portal/auth/oauth/unlink/[provider]` | POST   | session cookie                          | `(protected)/account/page.tsx`                   |
+| `/portal/api/documents/[id]`               | GET    | session cookie                          | `(protected)/documents/page.tsx`                 |
+| `/portal/invoices/[id]/pay`                | POST   | session cookie                          | `(protected)/invoices/[id]/page.tsx`             |
+| `/portal/invoices/[id]/pay/return`         | GET    | session cookie                          | the Hyperswitch redirect, returning the customer |
+| `/portal/auth/[provider]/start`            | GET    | none — entry point                      | login page, account page, invitation page        |
+| `/portal/auth/[provider]/callback`         | GET    | signed state + nonce cookie             | the OAuth provider                               |
 
 Route groups do not appear in URLs. `(portal)/portal/(protected)/invoices/[id]/pay/route.ts` serves
 `/portal/invoices/<id>/pay`, and the OAuth callback file resolves to `/portal/auth/<provider>/callback`
@@ -50,12 +50,12 @@ sends every sign-in to a 404 after consent.
 
 Four mechanisms, easy to confuse and worth naming separately.
 
-| Mechanism | Used by | How it works |
-|---|---|---|
-| Portal session cookie | portal routes | `apex_portal_session`, httpOnly, checked in-handler by `lib/portal/auth.ts` |
-| Bearer-of-token | invitation, password reset | possession of a token whose SHA-256 hash is stored; no session needed |
-| Webhook HMAC | the two webhook receivers | signature over the raw body, refused outright when no secret is configured |
-| Shared secret | `/api/revalidate` | `x-revalidate-secret`, compared in constant time |
+| Mechanism             | Used by                    | How it works                                                                |
+| --------------------- | -------------------------- | --------------------------------------------------------------------------- |
+| Portal session cookie | portal routes              | `apex_portal_session`, httpOnly, checked in-handler by `lib/portal/auth.ts` |
+| Bearer-of-token       | invitation, password reset | possession of a token whose SHA-256 hash is stored; no session needed       |
+| Webhook HMAC          | the two webhook receivers  | signature over the raw body, refused outright when no secret is configured  |
+| Shared secret         | `/api/revalidate`          | `x-revalidate-secret`, compared in constant time                            |
 
 **`apps/web/src/middleware.ts` is a maintenance-mode gate, not an auth gate.** Its `PROTECTED_PATHS`
 list means "exempt from the maintenance redirect" — the opposite of the usual reading — and it never
@@ -108,11 +108,11 @@ public key in any client bundle, because nothing in a browser is meant to reach 
 
 Three headers are required:
 
-| Header | Meaning |
-|---|---|
-| `x-apex-site` | which property: `tech`, `apex-group`, `apex-holdings`, `apex-outsourcing`, `apex-tours` |
-| `x-apex-timestamp` | unix seconds, refused beyond ±300 s (`SIGNATURE_TOLERANCE_SECONDS`) |
-| `x-apex-signature` | HMAC-SHA256, hex, keyed on `PARTNER_LEAD_SECRET` |
+| Header             | Meaning                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| `x-apex-site`      | which property: `tech`, `apex-group`, `apex-holdings`, `apex-outsourcing`, `apex-tours` |
+| `x-apex-timestamp` | unix seconds, refused beyond ±300 s (`SIGNATURE_TOLERANCE_SECONDS`)                     |
+| `x-apex-signature` | HMAC-SHA256, hex, keyed on `PARTNER_LEAD_SECRET`                                        |
 
 **The signed string is `timestamp.site.rawBody`, not the body alone** — see
 `lib/partner-signature.ts`. Signing only the body would leave `x-apex-site` unauthenticated, and a
@@ -124,7 +124,7 @@ The body is `lead-schema.ts` minus `turnstileToken` — there is no browser to c
 the honeypot. Everything lands through the same `ingestLead()` as the public forms, so the four
 sites get identical dedupe, attribution and Twenty sync. The lead's `sourceSite` is taken from the
 header, and the dedupe key is `sourceSite:email:day` rather than `email:day`, so the same person
-enquiring at tours *and* at tech on one day is two leads with two intents, not one collapsed row.
+enquiring at tours _and_ at tech on one day is two leads with two intents, not one collapsed row.
 
 `201 {ok, id, wasNew}` · `400` unknown site or malformed body · `401` bad, missing or stale
 signature · `422 {error, fields}` · `500` · `503` when `PARTNER_LEAD_SECRET` is unset — the endpoint
@@ -165,10 +165,10 @@ configured, so an unconfigured deployment would take an anonymous POST and act o
 an invoice `PAID` or move a lead to `CUSTOMER`. An unconfigured webhook is a broken webhook, not an
 open one, and both now answer `503` rather than trusting the body.
 
-| Route | Header | Secret | Effect |
-|---|---|---|---|
+| Route                       | Header                | Secret                                                 | Effect                                    |
+| --------------------------- | --------------------- | ------------------------------------------------------ | ----------------------------------------- |
 | `/api/webhooks/hyperswitch` | `x-webhook-signature` | `HYPERSWITCH_WEBHOOK_SECRET` or the integration config | maps payment status onto `Invoice.status` |
-| `/api/webhooks/twenty` | `x-twenty-signature` | `TWENTY_WEBHOOK_SECRET` | maps CRM stage onto `Lead.stage` |
+| `/api/webhooks/twenty`      | `x-twenty-signature`  | `TWENTY_WEBHOOK_SECRET`                                | maps CRM stage onto `Lead.stage`          |
 
 `200 {received: true}` · `400` malformed · `401` bad signature · `503` not configured
 
@@ -280,9 +280,9 @@ homepage — and a cached homepage returns 200 long after the database has gone.
 
 ## Testing
 
-| Suite | Command | Covers |
-|---|---|---|
-| Unit | `pnpm test` | redirect URI and invitation URL builders, form guards |
-| API routes | `pnpm test:e2e --project=public-desktop` | `tests/e2e/public/api-routes.spec.ts` |
-| Portal flows | `pnpm test:e2e --project=portal` | sign-in, sign-out through the route, invitation page |
-| Smoke | `pnpm smoke` | homepage, health, lead validation against a running origin |
+| Suite        | Command                                  | Covers                                                     |
+| ------------ | ---------------------------------------- | ---------------------------------------------------------- |
+| Unit         | `pnpm test`                              | redirect URI and invitation URL builders, form guards      |
+| API routes   | `pnpm test:e2e --project=public-desktop` | `tests/e2e/public/api-routes.spec.ts`                      |
+| Portal flows | `pnpm test:e2e --project=portal`         | sign-in, sign-out through the route, invitation page       |
+| Smoke        | `pnpm smoke`                             | homepage, health, lead validation against a running origin |

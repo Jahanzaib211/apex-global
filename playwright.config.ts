@@ -35,9 +35,19 @@ export default defineConfig({
       use: { ...devices["Pixel 7"] },
     },
     {
+      name: "portal",
+      testMatch: /portal\/.*\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
       name: "console",
       testMatch: /console\/.*\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: CONSOLE_URL },
+    },
+    {
+      name: "surfaces",
+      testMatch: /surfaces\/.*\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 

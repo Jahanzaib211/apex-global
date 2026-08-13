@@ -37,8 +37,7 @@ interface SmtpConfig {
 function loadSmtpConfig(): SmtpConfig | null {
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT ?? 587);
-  const from =
-    process.env.SMTP_FROM ?? "Apex Global Tech Solution <no-reply@apexglobal.example>";
+  const from = process.env.SMTP_FROM ?? "Apex Global Tech Solution <no-reply@apexglobal.example>";
   if (!host) return null;
   return {
     host,
@@ -50,7 +49,10 @@ function loadSmtpConfig(): SmtpConfig | null {
 }
 
 class SmtpMailer implements Mailer {
-  constructor(private readonly transporter: Transporter, private readonly from: string) {}
+  constructor(
+    private readonly transporter: Transporter,
+    private readonly from: string,
+  ) {}
 
   async send(input: SendInput): Promise<void> {
     await this.transporter.sendMail({

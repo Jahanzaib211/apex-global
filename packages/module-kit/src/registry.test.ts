@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  assertDependencies,
-  defineModule,
-  navigationFor,
-  permissionCatalogue,
-} from "./index";
+import { assertDependencies, defineModule, navigationFor, permissionCatalogue } from "./index";
 import { modules } from "./registry";
 
 describe("defineModule", () => {

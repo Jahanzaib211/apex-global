@@ -121,6 +121,54 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.QuoteScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  status: 'status',
+  customerName: 'customerName',
+  customerEmail: 'customerEmail',
+  companyName: 'companyName',
+  lineItems: 'lineItems',
+  subtotalAmount: 'subtotalAmount',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  notes: 'notes',
+  validUntil: 'validUntil',
+  leadId: 'leadId',
+  serviceSlug: 'serviceSlug',
+  productSlug: 'productSlug',
+  acceptedAt: 'acceptedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvoiceScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  status: 'status',
+  customerName: 'customerName',
+  customerEmail: 'customerEmail',
+  companyName: 'companyName',
+  subtotalAmount: 'subtotalAmount',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  notes: 'notes',
+  lineItems: 'lineItems',
+  quoteId: 'quoteId',
+  leadId: 'leadId',
+  serviceSlug: 'serviceSlug',
+  productSlug: 'productSlug',
+  paymentProvider: 'paymentProvider',
+  paymentRef: 'paymentRef',
+  paidAt: 'paidAt',
+  dueDate: 'dueDate',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SolutionScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -281,6 +329,7 @@ exports.Prisma.FaqScalarFieldEnum = {
   scope: 'scope',
   solutionId: 'solutionId',
   productId: 'productId',
+  serviceId: 'serviceId',
   status: 'status'
 };
 
@@ -312,6 +361,78 @@ exports.Prisma.PageScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ServiceScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  order: 'order',
+  name: 'name',
+  tagline: 'tagline',
+  summary: 'summary',
+  body: 'body',
+  icon: 'icon',
+  flatFeeAmount: 'flatFeeAmount',
+  feeCurrency: 'feeCurrency',
+  timelineDays: 'timelineDays',
+  timelineLabel: 'timelineLabel',
+  category: 'category',
+  origin: 'origin',
+  upstreamName: 'upstreamName',
+  upstreamUrl: 'upstreamUrl',
+  upstreamLicense: 'upstreamLicense',
+  deliverables: 'deliverables',
+  outcomes: 'outcomes',
+  technologies: 'technologies',
+  isBundleOnly: 'isBundleOnly',
+  bundleSlugs: 'bundleSlugs',
+  seoId: 'seoId',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ServiceBundleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  order: 'order',
+  name: 'name',
+  tagline: 'tagline',
+  summary: 'summary',
+  body: 'body',
+  serviceSlugs: 'serviceSlugs',
+  bundlePriceAmount: 'bundlePriceAmount',
+  sumPriceAmount: 'sumPriceAmount',
+  feeCurrency: 'feeCurrency',
+  bestFor: 'bestFor',
+  outcomes: 'outcomes',
+  seoId: 'seoId',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LiveEndpointScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  order: 'order',
+  name: 'name',
+  kind: 'kind',
+  publicUrl: 'publicUrl',
+  originLoopback: 'originLoopback',
+  summary: 'summary',
+  role: 'role',
+  origin: 'origin',
+  upstreamName: 'upstreamName',
+  upstreamUrl: 'upstreamUrl',
+  upstreamLicense: 'upstreamLicense',
+  isPubliclyLinkable: 'isPubliclyLinkable',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SeoScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -328,6 +449,7 @@ exports.Prisma.UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   image: 'image',
   emailVerified: 'emailVerified',
+  emailVerifiedAt: 'emailVerifiedAt',
   totpSecret: 'totpSecret',
   totpEnabledAt: 'totpEnabledAt',
   lastLoginAt: 'lastLoginAt',
@@ -415,6 +537,29 @@ exports.Prisma.IntegrationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PartnerIntegrationScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  label: 'label',
+  isEnabled: 'isEnabled',
+  secretCiphertext: 'secretCiphertext',
+  secretIv: 'secretIv',
+  secretTag: 'secretTag',
+  lastFour: 'lastFour',
+  webhookCiphertext: 'webhookCiphertext',
+  webhookIv: 'webhookIv',
+  webhookTag: 'webhookTag',
+  webhookLastFour: 'webhookLastFour',
+  config: 'config',
+  lastTestedAt: 'lastTestedAt',
+  lastTestOk: 'lastTestOk',
+  lastTestNote: 'lastTestNote',
+  lastEventAt: 'lastEventAt',
+  lastEventKind: 'lastEventKind',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.FeatureFlagScalarFieldEnum = {
   id: 'id',
   key: 'key',
@@ -457,6 +602,7 @@ exports.Prisma.LeadScalarFieldEnum = {
   timeline: 'timeline',
   message: 'message',
   sourceType: 'sourceType',
+  sourceSite: 'sourceSite',
   ownerId: 'ownerId',
   qualifiedAt: 'qualifiedAt',
   convertedAt: 'convertedAt',
@@ -523,6 +669,234 @@ exports.Prisma.CampaignSpendScalarFieldEnum = {
   source: 'source',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CampaignScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  name: 'name',
+  channel: 'channel',
+  objective: 'objective',
+  landingPath: 'landingPath',
+  budgetAmount: 'budgetAmount',
+  budgetCurrency: 'budgetCurrency',
+  interestSlug: 'interestSlug',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AttributionReportScalarFieldEnum = {
+  id: 'id',
+  campaignSlug: 'campaignSlug',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  leads: 'leads',
+  qualified: 'qualified',
+  opportunities: 'opportunities',
+  customers: 'customers',
+  revenueAmount: 'revenueAmount',
+  revenueCurrency: 'revenueCurrency',
+  spendAmount: 'spendAmount',
+  spendCurrency: 'spendCurrency',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.WebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  eventType: 'eventType',
+  providerEventId: 'providerEventId',
+  responseStatus: 'responseStatus',
+  signatureOk: 'signatureOk',
+  payloadSummary: 'payloadSummary',
+  payloadBytes: 'payloadBytes',
+  sourceIp: 'sourceIp',
+  userAgent: 'userAgent',
+  handledAs: 'handledAs',
+  error: 'error',
+  receivedAt: 'receivedAt'
+};
+
+exports.Prisma.PortalAccountScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  status: 'status',
+  defaultTimezone: 'defaultTimezone',
+  defaultCurrency: 'defaultCurrency',
+  leadId: 'leadId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PortalUserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  passwordHash: 'passwordHash',
+  emailVerifiedAt: 'emailVerifiedAt',
+  totpSecretCiphertext: 'totpSecretCiphertext',
+  totpSecretIv: 'totpSecretIv',
+  totpSecretTag: 'totpSecretTag',
+  totpEnabledAt: 'totpEnabledAt',
+  failedLogins: 'failedLogins',
+  lockedUntil: 'lockedUntil',
+  lastLoginAt: 'lastLoginAt',
+  isActive: 'isActive',
+  portalAccountId: 'portalAccountId',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PortalSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  lastSeenAt: 'lastSeenAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PortalMagicLinkScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  purpose: 'purpose',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PortalPasswordResetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PortalOAuthAccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  provider: 'provider',
+  providerAccountId: 'providerAccountId',
+  accessTokenCiphertext: 'accessTokenCiphertext',
+  accessTokenIv: 'accessTokenIv',
+  accessTokenTag: 'accessTokenTag',
+  refreshTokenCiphertext: 'refreshTokenCiphertext',
+  refreshTokenIv: 'refreshTokenIv',
+  refreshTokenTag: 'refreshTokenTag',
+  expiresAt: 'expiresAt',
+  scopes: 'scopes',
+  lastUsedAt: 'lastUsedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PortalInvitationScalarFieldEnum = {
+  id: 'id',
+  portalAccountId: 'portalAccountId',
+  email: 'email',
+  role: 'role',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  invitedById: 'invitedById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ClientDocumentScalarFieldEnum = {
+  id: 'id',
+  portalAccountId: 'portalAccountId',
+  filename: 'filename',
+  key: 'key',
+  mimeType: 'mimeType',
+  bytes: 'bytes',
+  title: 'title',
+  description: 'description',
+  uploadedByKind: 'uploadedByKind',
+  uploadedById: 'uploadedById',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PortalAuditLogScalarFieldEnum = {
+  id: 'id',
+  portalAccountId: 'portalAccountId',
+  portalUserId: 'portalUserId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  summary: 'summary',
+  changes: 'changes',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  name: 'name',
+  summary: 'summary',
+  body: 'body',
+  portalAccountId: 'portalAccountId',
+  leadId: 'leadId',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  budgetAmount: 'budgetAmount',
+  budgetCurrency: 'budgetCurrency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TaskScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  estimatedHours: 'estimatedHours',
+  actualHours: 'actualHours',
+  assigneeId: 'assigneeId',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TimesheetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  date: 'date',
+  hours: 'hours',
+  note: 'note',
+  invoiceLineId: 'invoiceLineId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ClientApprovalScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  requestedById: 'requestedById',
+  respondedById: 'respondedById',
+  respondedAt: 'respondedAt',
+  responseNote: 'responseNote',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SaasProductScalarFieldEnum = {
@@ -631,17 +1005,60 @@ exports.Prisma.DemoRequestScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TicketScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  status: 'status',
+  priority: 'priority',
+  title: 'title',
+  body: 'body',
+  portalAccountId: 'portalAccountId',
+  leadId: 'leadId',
+  openedById: 'openedById',
+  assigneeId: 'assigneeId',
+  tags: 'tags',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  resolvedAt: 'resolvedAt',
+  closedAt: 'closedAt'
+};
+
+exports.Prisma.TicketCommentScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  authorKind: 'authorKind',
+  authorId: 'authorId',
+  body: 'body',
+  isInternal: 'isInternal',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.KbArticleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  status: 'status',
+  title: 'title',
+  excerpt: 'excerpt',
+  body: 'body',
+  category: 'category',
+  tags: 'tags',
+  portalAccountId: 'portalAccountId',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -650,16 +1067,34 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.QuoteStatus = exports.$Enums.QuoteStatus = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  PROCESSING: 'PROCESSING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+  OVERDUE: 'OVERDUE'
+};
+
 exports.PublishStatus = exports.$Enums.PublishStatus = {
   DRAFT: 'DRAFT',
   LIVE: 'LIVE',
@@ -691,7 +1126,51 @@ exports.LeadSourceType = exports.$Enums.LeadSourceType = {
   MANUAL: 'MANUAL'
 };
 
+exports.PortalAccountStatus = exports.$Enums.PortalAccountStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  CLOSED: 'CLOSED'
+};
+
+exports.PortalRole = exports.$Enums.PortalRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+};
+
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  PLANNED: 'PLANNED',
+  ACTIVE: 'ACTIVE',
+  WAITING: 'WAITING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.TaskStatus = exports.$Enums.TaskStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  BLOCKED: 'BLOCKED',
+  REVIEW: 'REVIEW',
+  DONE: 'DONE'
+};
+
+exports.TicketStatus = exports.$Enums.TicketStatus = {
+  OPEN: 'OPEN',
+  WAITING: 'WAITING',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+};
+
+exports.TicketPriority = exports.$Enums.TicketPriority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
+
 exports.Prisma.ModelName = {
+  Quote: 'Quote',
+  Invoice: 'Invoice',
   Solution: 'Solution',
   Industry: 'Industry',
   CaseStudy: 'CaseStudy',
@@ -704,6 +1183,9 @@ exports.Prisma.ModelName = {
   Faq: 'Faq',
   LandingPage: 'LandingPage',
   Page: 'Page',
+  Service: 'Service',
+  ServiceBundle: 'ServiceBundle',
+  LiveEndpoint: 'LiveEndpoint',
   Seo: 'Seo',
   User: 'User',
   Role: 'Role',
@@ -714,12 +1196,29 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   Setting: 'Setting',
   Integration: 'Integration',
+  PartnerIntegration: 'PartnerIntegration',
   FeatureFlag: 'FeatureFlag',
   MediaAsset: 'MediaAsset',
   Lead: 'Lead',
   Attribution: 'Attribution',
   LeadActivity: 'LeadActivity',
   CampaignSpend: 'CampaignSpend',
+  Campaign: 'Campaign',
+  AttributionReport: 'AttributionReport',
+  WebhookEvent: 'WebhookEvent',
+  PortalAccount: 'PortalAccount',
+  PortalUser: 'PortalUser',
+  PortalSession: 'PortalSession',
+  PortalMagicLink: 'PortalMagicLink',
+  PortalPasswordReset: 'PortalPasswordReset',
+  PortalOAuthAccount: 'PortalOAuthAccount',
+  PortalInvitation: 'PortalInvitation',
+  ClientDocument: 'ClientDocument',
+  PortalAuditLog: 'PortalAuditLog',
+  Project: 'Project',
+  Task: 'Task',
+  Timesheet: 'Timesheet',
+  ClientApproval: 'ClientApproval',
   SaasProduct: 'SaasProduct',
   ProductFeature: 'ProductFeature',
   ProductScreenshot: 'ProductScreenshot',
@@ -727,7 +1226,10 @@ exports.Prisma.ModelName = {
   PlanFeature: 'PlanFeature',
   ProductIntegration: 'ProductIntegration',
   DocPage: 'DocPage',
-  DemoRequest: 'DemoRequest'
+  DemoRequest: 'DemoRequest',
+  Ticket: 'Ticket',
+  TicketComment: 'TicketComment',
+  KbArticle: 'KbArticle'
 };
 
 /**

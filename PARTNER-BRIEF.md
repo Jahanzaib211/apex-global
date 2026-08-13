@@ -1,9 +1,9 @@
 # Apex Global Tech Solution — What We're Building
 
-*A plain-language brief. No technical background needed.*
+_A plain-language brief. No technical background needed._
 
-**Updated:** 3 August 2026 — *replaces the earlier version, which described Apex as a local services
-business. The positioning has changed. Please read this one instead.*
+**Updated:** 3 August 2026 — _replaces the earlier version, which described Apex as a local services
+business. The positioning has changed. Please read this one instead._
 
 ---
 
@@ -23,7 +23,7 @@ Growth means more customers on software that already exists, and the business is
 annual revenue.
 
 Apex will do both — technology services fund us and prove our capability, while SaaS products build
-the long-term value. But the *identity* is technology and SaaS, and everything on the website will
+the long-term value. But the _identity_ is technology and SaaS, and everything on the website will
 say so.
 
 **One consequence you should know about:** the call-centre and BPO side is coming off the website
@@ -71,7 +71,7 @@ That's deliberate. It makes people stop scrolling, and it signals that we can ac
 Most people who click an ad are on a phone, often on a weak connection. Every extra second of loading
 loses roughly a fifth of the people who clicked — people we already paid for.
 
-So the graphics load *after* the page is already usable, and switch off entirely on weak phones.
+So the graphics load _after_ the page is already usable, and switch off entirely on weak phones.
 **If a visual effect ever slows the page down, the effect gets removed.** That rule is not
 negotiable, and it's checked automatically every time we change the site.
 
@@ -138,7 +138,7 @@ language we invented. It's what we operate every day, and now we can show it.
 
 ---
 
-## What we are deliberately *not* claiming
+## What we are deliberately _not_ claiming
 
 I want to be direct about this, because it protects us.
 
@@ -150,7 +150,7 @@ The reason is simple: the technical person a client sends to check us out can ve
 five minutes, and getting caught inflating a portfolio costs far more than the contract it wins.
 
 This isn't just a promise — it's built into the system. Every item on the website has to be marked as
-either *built by Apex*, *operated by Apex*, or *third-party software we run*, and the website
+either _built by Apex_, _operated by Apex_, or _third-party software we run_, and the website
 refuses to publish anything that isn't labelled. Client names can't appear without recorded written
 permission. Statistics need a traceable source. Phrases like "100% secure" are blocked outright.
 

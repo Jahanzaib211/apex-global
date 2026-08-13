@@ -76,7 +76,7 @@ export async function SiteFooter() {
             worldwide.
           </p>
           <div className="flex flex-col gap-3">
-            <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-400)]">
+            <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-400)] uppercase">
               Follow us
             </h2>
             <ul className="flex items-center gap-5" aria-label="Social">
@@ -99,7 +99,7 @@ export async function SiteFooter() {
         </div>
 
         <nav aria-label="Solutions" className="flex flex-col gap-3">
-          <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-400)]">
+          <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-400)] uppercase">
             Solutions
           </h2>
           <ul className="flex flex-col gap-2 text-sm">
@@ -116,7 +116,7 @@ export async function SiteFooter() {
         </nav>
 
         <nav aria-label="Company" className="flex flex-col gap-3">
-          <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-400)]">
+          <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-400)] uppercase">
             Company
           </h2>
           <ul className="flex flex-col gap-2 text-sm">
@@ -131,7 +131,7 @@ export async function SiteFooter() {
         </nav>
 
         <nav aria-label="Group" className="flex flex-col gap-3">
-          <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-400)]">
+          <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-400)] uppercase">
             Group
           </h2>
           <ul className="flex flex-col gap-2 text-sm">
@@ -152,7 +152,7 @@ export async function SiteFooter() {
         </nav>
 
         <div className="flex flex-col gap-3">
-          <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-400)]">
+          <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-400)] uppercase">
             Contact
           </h2>
           <ul className="flex flex-col gap-2 text-sm">

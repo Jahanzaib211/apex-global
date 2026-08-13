@@ -102,7 +102,8 @@ Work runs in per-thread sandboxes, so an agent editing one project cannot reach 
       },
       {
         title: "Per-thread sandboxes",
-        description: "Every conversation gets an isolated execution environment with its own filesystem.",
+        description:
+          "Every conversation gets an isolated execution environment with its own filesystem.",
         benefit: "One task cannot damage another, or the host.",
         isShipped: true,
       },

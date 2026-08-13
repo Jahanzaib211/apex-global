@@ -88,7 +88,7 @@ export default async function CaseStudyPage({ params }: Props) {
               <div key={m.id}>
                 <dd className="font-display text-3xl font-semibold">{m.value}</dd>
                 <dt className="mt-1 text-sm text-[var(--ink-secondary)]">{m.label}</dt>
-                <p className="mt-1 text-2xs text-[var(--ink-muted)]">Source: {m.source}</p>
+                <p className="text-2xs mt-1 text-[var(--ink-muted)]">Source: {m.source}</p>
               </div>
             ))}
           </dl>
@@ -111,7 +111,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
           {study.lessons ? (
             <div className="rounded-[var(--radius-lg)] bg-[var(--bg-sunken)] p-7">
-              <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--color-amber-700)]">
+              <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
                 What we took from it
               </h2>
               <Prose text={study.lessons} className="mt-3" />
@@ -121,14 +121,14 @@ export default async function CaseStudyPage({ params }: Props) {
 
         {study.technologies.length > 0 ? (
           <div className="mt-14 max-w-3xl border-t border-[var(--border-subtle)] pt-8">
-            <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+            <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--ink-muted)] uppercase">
               Technologies
             </h2>
             <ul className="mt-4 flex flex-wrap gap-2">
               {study.technologies.map((t) => (
                 <li
                   key={t}
-                  className="rounded-full border border-[var(--border-default)] px-2.5 py-1 text-2xs text-[var(--ink-secondary)]"
+                  className="text-2xs rounded-full border border-[var(--border-default)] px-2.5 py-1 text-[var(--ink-secondary)]"
                 >
                   {t}
                 </li>

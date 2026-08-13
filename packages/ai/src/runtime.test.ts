@@ -58,7 +58,9 @@ describe("resolveProvider", () => {
 
   it("allows self-hosted Ollama without a stored credential", () => {
     // Requiring a key here would make the private-inference path unreachable.
-    const resolved = resolveProvider([row({ provider: "ollama", config: { model: "llama3.1:8b" } })]);
+    const resolved = resolveProvider([
+      row({ provider: "ollama", config: { model: "llama3.1:8b" } }),
+    ]);
     expect(resolved?.id).toBe("ollama");
     expect(resolved?.apiKey).toBe("");
     expect(resolved?.model).toBe("llama3.1:8b");

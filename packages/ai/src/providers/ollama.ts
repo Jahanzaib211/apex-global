@@ -45,7 +45,10 @@ export const ollama: AiProvider = {
               ...(request.system ? [{ role: "system", content: request.system }] : []),
               { role: "user", content: request.prompt },
             ],
-            options: { temperature: request.temperature ?? 0.3, num_predict: request.maxTokens ?? 1024 },
+            options: {
+              temperature: request.temperature ?? 0.3,
+              num_predict: request.maxTokens ?? 1024,
+            },
           }),
           signal,
         }),
@@ -64,7 +67,8 @@ export const ollama: AiProvider = {
     }
 
     const body = (await response.json()) as OllamaResponse;
-    if (body.error) throw new AiError(`Ollama error: ${body.error}`, this.id, response.status, false);
+    if (body.error)
+      throw new AiError(`Ollama error: ${body.error}`, this.id, response.status, false);
 
     const text = body.message?.content;
     if (!text) throw new AiError("Ollama returned no content", this.id, response.status, true);

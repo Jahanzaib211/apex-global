@@ -1,1 +1,41 @@
 @import "@apex/ui/styles.css";
+
+/* Chatwoot window sizing.
+ *
+ * The self-hosted widget renders a 400×~640 window docked to the bottom-right
+ * corner, which would sit on top of the launcher button when open. Shrink the
+ * holder and dock it just above the launcher so both controls stay reachable.
+ * Height is viewport-relative: on short screens the window shrinks (instead of
+ * clipping) so it never pokes off the top edge, and a max-height guard keeps it
+ * clear of the launcher at the bottom.
+ */
+#cw-widget-holder.woot-widget-holder {
+  width: 340px !important;
+  height: clamp(340px, 68vh, 520px) !important;
+  max-height: calc(100vh - 132px) !important;
+  top: auto !important;
+  bottom: 100px !important;
+  left: auto !important;
+  right: 24px !important;
+  z-index: 2147483000;
+}
+
+#cw-widget-holder.woot-widget-holder.has-unread-view {
+  height: clamp(340px, 68vh, 520px) !important;
+  max-height: calc(100vh - 132px) !important;
+  bottom: 100px !important;
+}
+
+@media (max-width: 480px) {
+  #cw-widget-holder.woot-widget-holder {
+    width: calc(100vw - 32px) !important;
+    right: 16px !important;
+    bottom: 96px !important;
+    max-height: calc(100vh - 120px) !important;
+  }
+
+  #cw-widget-holder.woot-widget-holder.has-unread-view {
+    max-height: calc(100vh - 120px) !important;
+    bottom: 96px !important;
+  }
+}

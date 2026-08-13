@@ -16,7 +16,9 @@ test.describe("console auth", () => {
     await expect(page).toHaveURL(/\/login\?next=%2Fleads/);
   });
 
-  test("rejects a wrong password without revealing whether the account exists", async ({ page }) => {
+  test("rejects a wrong password without revealing whether the account exists", async ({
+    page,
+  }) => {
     await page.goto("/login");
     await page.getByLabel("Email").fill(EMAIL);
     await page.getByLabel("Password").fill("definitely-not-the-password");

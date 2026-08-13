@@ -41,8 +41,7 @@ export async function hashPassword(plain: string): Promise<string> {
 }
 
 export type LoginResult =
-  | { ok: true }
-  | { ok: false; reason: "invalid" | "locked" | "inactive"; message: string };
+  { ok: true } | { ok: false; reason: "invalid" | "locked" | "inactive"; message: string };
 
 export async function login(email: string, password: string): Promise<LoginResult> {
   const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
@@ -140,7 +139,9 @@ export const currentUser = cache(async (): Promise<SessionUser | null> => {
 
   const user = await prisma.user.findFirst({
     where: { id: userId, isActive: true },
-    include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+    include: {
+      roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
+    },
   });
   if (!user) return null;
 

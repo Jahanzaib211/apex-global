@@ -43,6 +43,11 @@ export default async function AboutPage() {
   const ceoBio = settings["leadership.ceo.bio"];
   const liveSystems = techProof.filter((t) => t.isPubliclyReachable).length;
 
+  const partnerName = settings["partner.name"];
+  const partnerUrl = settings["partner.url"];
+  const partnerTagline = settings["partner.tagline"];
+  const partnerRelationship = settings["partner.relationship"];
+
   return (
     <>
       <Section tone="inverse" grid className="py-20 md:py-24">
@@ -121,7 +126,7 @@ export default async function AboutPage() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xs uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+              <div className="text-2xs flex h-full w-full items-center justify-center tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                 Photograph
                 <br />
                 pending
@@ -138,19 +143,87 @@ export default async function AboutPage() {
                 {ceoBio}
               </p>
             ) : (
-              /* No invented biography. A fabricated background is exactly the
-                 detail that unravels in a first conversation, so the page says
-                 what is true — that it is not written yet. Fill it in from
-                 Settings → Leadership. */
-              <p className="mt-5 rounded-[var(--radius-md)] border border-dashed border-[var(--border-strong)] p-5 text-sm text-[var(--ink-muted)]">
-                Biography to be supplied. This section is intentionally blank rather than filled
-                with generic copy — it will carry {ceoName}&apos;s own account of what Apex is
-                building and why.
-              </p>
+              /* Leadership voice: the group's manifesto, kept current here.
+                 It replaces generic filler on purpose — a fabricated
+                 biography would unravel in the first conversation. */
+              <div className="mt-5 flex flex-col gap-5 text-[1.0625rem] leading-[1.75] text-[var(--ink-secondary)]">
+                <p>
+                  Apex Group of Companies is a portfolio of operating companies — technology, cloud,
+                  tours, outsourcing and holdings — bound by one principle: ownership of what we
+                  run. Each company operates production platforms that the group itself designs,
+                  builds and maintains. We expose our systems to public scrutiny not as a marketing
+                  posture, but because a company that cannot be challenged cannot be trusted. Every
+                  claim we make is one of our live endpoints.
+                </p>
+                <p>
+                  Our clients receive a single professional relationship, managed with institutional
+                  rigour. Engineering delivery is supported by ALI Technologies, the group&rsquo;s
+                  long-standing engineering partner, under terms that are transparent to every
+                  stakeholder. The commercial commitment, however, is made by Apex alone, and it is
+                  honoured in the same way in every market and every timezone.
+                </p>
+                <p>
+                  The group&rsquo;s standard does not vary by geography, client size or vertical.
+                  The framework we operate — engineering, security, data, reporting — is identical
+                  at our strongest and our smallest engagements. That is the basis of our global
+                  practice, and the only basis on which we will represent ourselves.
+                </p>
+              </div>
             )}
           </div>
         </div>
       </Section>
+
+      {/* ── Partner ───────────────────────────────────────────────────── */}
+      {partnerName ? (
+        <Section tone="page">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-20">
+            <div>
+              <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
+                Engineering partner
+              </p>
+              <h2 className="mt-3 text-2xl">
+                {partnerUrl ? (
+                  <a
+                    href={partnerUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {partnerName}
+                  </a>
+                ) : (
+                  partnerName
+                )}
+              </h2>
+              {partnerTagline ? (
+                <p className="mt-3 text-[var(--ink-secondary)]">{partnerTagline}</p>
+              ) : null}
+              {partnerUrl ? (
+                <a
+                  href={partnerUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="mt-5 inline-flex h-10 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 text-sm font-medium transition-colors hover:border-[var(--border-strong)]"
+                >
+                  {partnerName} ↗
+                </a>
+              ) : null}
+            </div>
+
+            {partnerRelationship ? (
+              <div className="max-w-[var(--container-prose)]">
+                <h3 className="text-2xs font-semibold tracking-[0.18em] text-[var(--ink-muted)] uppercase">
+                  How the two companies relate
+                </h3>
+                <p className="mt-4 text-[1.0625rem] leading-[1.75] text-[var(--ink-secondary)]">
+                  {partnerRelationship}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        </Section>
+      ) : null}
 
       {/* ── Values ───────────────────────────────────────────────────── */}
       <Section tone="page">

@@ -25,8 +25,10 @@ export function Card({
           : "border-[var(--border-default)] bg-[var(--bg-raised)]",
         interactive &&
           "transition-[border-color,box-shadow,transform] duration-[var(--duration-base)] " +
-            "ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] " +
-            (inverse ? "hover:border-[var(--color-amber-500)]/40" : "hover:border-[var(--border-strong)]"),
+            "ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]" +
+            (inverse
+              ? "hover:border-[var(--color-amber-500)]/40"
+              : "hover:border-[var(--border-strong)]"),
         className,
       )}
     >

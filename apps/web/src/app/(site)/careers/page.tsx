@@ -57,7 +57,7 @@ export default async function CareersPage() {
                 {jobs.map((j) => (
                   <li key={j.slug}>
                     <Card as="article" className="flex flex-col gap-3 p-7">
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-2xs uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+                      <div className="text-2xs flex flex-wrap items-center gap-x-3 gap-y-1 tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                         <span>{j.team}</span>
                         <span aria-hidden>·</span>
                         <span>{j.location}</span>

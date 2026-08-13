@@ -11,17 +11,17 @@ are a local shop.
 
 ## Page inventory and intent
 
-| Page type | Intent | Primary schema |
-|---|---|---|
-| Home | Brand, orientation | `Organization`, `WebSite` |
-| SaaS product | Product evaluation, trial | `SoftwareApplication`, `Offer`, `FAQPage` |
-| Solution (×9) | Service research | `Service`, `FAQPage` |
-| Industry | Vertical fit | `Service`, `BreadcrumbList` |
-| Case study | Proof, comparison | `Article`, `BreadcrumbList` |
-| Technology | Technical due diligence | `Article` |
-| Insight | Top-of-funnel discovery | `Article`, `Person` |
-| Landing page (`/lp/*`) | Paid conversion only | none — `noindex` |
-| Careers | Recruitment | `JobPosting` |
+| Page type              | Intent                    | Primary schema                            |
+| ---------------------- | ------------------------- | ----------------------------------------- |
+| Home                   | Brand, orientation        | `Organization`, `WebSite`                 |
+| SaaS product           | Product evaluation, trial | `SoftwareApplication`, `Offer`, `FAQPage` |
+| Solution (×9)          | Service research          | `Service`, `FAQPage`                      |
+| Industry               | Vertical fit              | `Service`, `BreadcrumbList`               |
+| Case study             | Proof, comparison         | `Article`, `BreadcrumbList`               |
+| Technology             | Technical due diligence   | `Article`                                 |
+| Insight                | Top-of-funnel discovery   | `Article`, `Person`                       |
+| Landing page (`/lp/*`) | Paid conversion only      | none — `noindex`                          |
+| Careers                | Recruitment               | `JobPosting`                              |
 
 Landing pages are excluded from the sitemap and marked `noindex`: they exist for ad traffic, they
 duplicate solution-page content, and letting them into the index competes with the pages that should

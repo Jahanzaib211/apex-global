@@ -41,7 +41,13 @@ describe("OriginBadge", () => {
   });
 
   it("marks outbound upstream links as untrusted", () => {
-    render(<OriginBadge origin="BUILT_BY_APEX" upstreamName="Upstream" upstreamUrl="https://example.com" />);
+    render(
+      <OriginBadge
+        origin="BUILT_BY_APEX"
+        upstreamName="Upstream"
+        upstreamUrl="https://example.com"
+      />,
+    );
     const rel = screen.getByRole("link", { name: "Upstream" }).getAttribute("rel") ?? "";
     expect(rel).toContain("noopener");
     expect(rel).toContain("nofollow");

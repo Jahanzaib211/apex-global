@@ -13,7 +13,7 @@ const STAGES = ["NEW", "QUALIFIED", "OPPORTUNITY", "CUSTOMER", "LOST"] as const;
  * in apps/web/src/lib/ingest-lead.ts, which is what actually writes the value.
  */
 const SITES: Record<string, string> = {
-  "tech": "Apex Tech",
+  tech: "Apex Tech",
   "apex-group": "Group",
   "apex-holdings": "Holdings",
   "apex-outsourcing": "Outsourcing",
@@ -122,7 +122,7 @@ export default async function LeadsPage({ searchParams }: Props) {
           more than one site is actually feeding the pipeline. */}
       {siteCounts.length > 1 ? (
         <nav className="flex flex-wrap items-center gap-1" aria-label="Filter by site">
-          <span className="mr-1 text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+          <span className="text-2xs mr-1 tracking-[0.12em] text-[var(--ink-muted)] uppercase">
             Site
           </span>
           <Link
@@ -154,7 +154,7 @@ export default async function LeadsPage({ searchParams }: Props) {
       <div className="scroll-x rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)]">
         <table className="w-full min-w-[52rem] text-sm">
           <thead>
-            <tr className="border-b border-[var(--border-subtle)] text-left text-2xs uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+            <tr className="text-2xs border-b border-[var(--border-subtle)] text-left tracking-[0.12em] text-[var(--ink-muted)] uppercase">
               <th className="px-5 py-3 font-semibold">Name</th>
               <th className="px-5 py-3 font-semibold">Site</th>
               <th className="px-5 py-3 font-semibold">Company</th>
@@ -169,13 +169,16 @@ export default async function LeadsPage({ searchParams }: Props) {
             {leads.map((lead) => (
               <tr key={lead.id} className="transition-colors hover:bg-[var(--bg-sunken)]">
                 <td className="px-5 py-3">
-                  <Link href={`/leads/${lead.id}`} className="font-medium underline-offset-4 hover:underline">
+                  <Link
+                    href={`/leads/${lead.id}`}
+                    className="font-medium underline-offset-4 hover:underline"
+                  >
                     {lead.name}
                   </Link>
                   <p className="text-xs text-[var(--ink-muted)]">{lead.email}</p>
                 </td>
                 <td className="px-5 py-3">
-                  <span className="whitespace-nowrap rounded-full border border-[var(--border-default)] px-2 py-0.5 text-xs text-[var(--ink-secondary)]">
+                  <span className="rounded-full border border-[var(--border-default)] px-2 py-0.5 text-xs whitespace-nowrap text-[var(--ink-secondary)]">
                     {SITES[lead.sourceSite] ?? lead.sourceSite}
                   </span>
                 </td>
@@ -185,18 +188,24 @@ export default async function LeadsPage({ searchParams }: Props) {
                     <p className="text-xs text-[var(--ink-muted)]">{lead.country}</p>
                   ) : null}
                 </td>
-                <td className="px-5 py-3 text-[var(--ink-secondary)]">{lead.interestSlug ?? "—"}</td>
+                <td className="px-5 py-3 text-[var(--ink-secondary)]">
+                  {lead.interestSlug ?? "—"}
+                </td>
                 <td className="px-5 py-3 text-[var(--ink-secondary)]">
                   {lead.attribution?.utmSource ?? "direct"}
                   {lead.attribution?.utmCampaign ? (
-                    <p className="text-xs text-[var(--ink-muted)]">{lead.attribution.utmCampaign}</p>
+                    <p className="text-xs text-[var(--ink-muted)]">
+                      {lead.attribution.utmCampaign}
+                    </p>
                   ) : null}
                 </td>
                 <td className="px-5 py-3 text-[var(--ink-secondary)]">
-                  {lead.owner?.name ?? <span className="text-[var(--color-amber-700)]">Unassigned</span>}
+                  {lead.owner?.name ?? (
+                    <span className="text-[var(--color-amber-700)]">Unassigned</span>
+                  )}
                 </td>
                 <td className="px-5 py-3">
-                  <span className="rounded-full bg-[var(--bg-sunken)] px-2.5 py-0.5 text-2xs font-medium uppercase">
+                  <span className="text-2xs rounded-full bg-[var(--bg-sunken)] px-2.5 py-0.5 font-medium uppercase">
                     {lead.stage}
                   </span>
                 </td>

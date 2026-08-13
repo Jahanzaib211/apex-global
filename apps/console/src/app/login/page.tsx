@@ -33,7 +33,7 @@ export default async function LoginPage({ searchParams }: Props) {
     <main className="flex min-h-dvh items-center justify-center bg-[var(--bg-page)] p-6">
       <div className="w-full max-w-sm">
         <div className="mb-9 flex justify-center">
-          <Logo orientation="stacked" />
+          <Logo orientation="stacked" animated />
         </div>
 
         <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-8 shadow-[var(--shadow-md)]">

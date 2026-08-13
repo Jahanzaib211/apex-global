@@ -31,11 +31,10 @@ export function Section({
   children,
 }: SectionProps) {
   return (
-    <Tag
-      id={id}
-      className={cn("relative isolate py-20 md:py-28", TONES[tone], className)}
-    >
-      {grid ? <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 -z-10" /> : null}
+    <Tag id={id} className={cn("relative isolate py-20 md:py-28", TONES[tone], className)}>
+      {grid ? (
+        <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 -z-10" />
+      ) : null}
       <div className={cn("container-page", innerClassName)}>{children}</div>
     </Tag>
   );
@@ -73,7 +72,7 @@ export function SectionHeading({
       {eyebrow ? (
         <span
           className={cn(
-            "inline-flex items-center gap-2 text-2xs font-semibold tracking-[0.18em] uppercase",
+            "text-2xs inline-flex items-center gap-2 font-semibold tracking-[0.18em] uppercase",
             inverse ? "text-[var(--color-amber-400)]" : "text-[var(--color-amber-700)]",
           )}
         >

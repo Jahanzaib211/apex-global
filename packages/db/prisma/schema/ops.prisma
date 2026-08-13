@@ -1,0 +1,45 @@
+// ── module: ops ─────────────────────────────────────────────────────────────
+// Operational telemetry that the /dev panel reads from. WebhookEvent is
+// append-only — every inbound webhook from Hyperswitch, Twenty, Stripe,
+// etc. lands here so an operator can replay, audit, or trace a payment.
+
+model WebhookEvent {
+  id            String   @id @default(cuid())
+
+  /** Provider that delivered the webhook (e.g. "hyperswitch", "twenty-crm"). */
+  provider      String
+  /** Event type from the provider (e.g. "payment.succeeded"). */
+  eventType     String
+
+  /** Provider's own event id, used for idempotent processing. */
+  providerEventId String?
+
+  /** HTTP status we returned to the provider. */
+  responseStatus Int
+
+  /** Was the HMAC signature on the request valid? */
+  signatureOk   Boolean  @default(false)
+
+  /** Summary of the payload (truncated) so the operator can scan without opening JSON. */
+  payloadSummary String  @db.Text
+
+  /** Raw payload, kept for the operator "view" action. Capped at 64KB. */
+  payloadBytes Bytes?
+
+  /** Source IP and user agent from the request. */
+  sourceIp     String?
+  userAgent    String?
+
+  /** What we did with the event — links to any reconciliation we performed. */
+  handledAs     String?  // "invoice.paid" | "invoice.failed" | "lead.stage_changed" | "ignored"
+
+  /** Free-form notes for failure investigation. */
+  error         String?
+
+  receivedAt    DateTime @default(now())
+
+  @@index([provider, eventType, receivedAt])
+  @@index([providerEventId])
+  @@index([receivedAt])
+  @@map("webhook_events")
+}

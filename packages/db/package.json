@@ -24,7 +24,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf .turbo node_modules generated",
-    "seed:admin": "dotenv -e ../../.env -- tsx prisma/seed-admin.ts"
+    "seed:admin": "dotenv -e ../../.env -- tsx prisma/seed-admin.ts",
+    "provision:master": "dotenv -e ../../.env -- tsx prisma/provision-master-admin.ts",
+    "invite": "dotenv -e ../../.env -- tsx prisma/invite-portal-user.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
@@ -32,6 +34,8 @@
   },
   "devDependencies": {
     "@apex/config": "workspace:*",
+    "@prisma/engines": "6.19.0",
+    "@prisma/engines-version": "7.1.1-3.c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.2",
     "dotenv-cli": "^8.0.0",

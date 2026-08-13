@@ -1,12 +1,17 @@
 import { ButtonLink, Card, OriginBadge, Section, SectionHeading, Stat } from "@apex/ui";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
+import { RepoGraph } from "@/components/repo-graph";
+import { TechStackMarquee } from "@/components/tech-stack-marquee";
 import {
   displayClient,
   getCaseStudies,
   getIndustries,
   getInsights,
   getProducts,
+  getServiceBundles,
+  getServices,
+  getSettings,
   getSolutions,
   getTechProof,
 } from "@/lib/content";
@@ -34,14 +39,31 @@ const WHY = [
 ];
 
 export default async function HomePage() {
-  const [solutions, products, techProof, industries, caseStudies, insights] = await Promise.all([
+  const [
+    solutions,
+    products,
+    services,
+    bundles,
+    techProof,
+    industries,
+    caseStudies,
+    insights,
+    settings,
+  ] = await Promise.all([
     getSolutions(),
     getProducts(),
+    getServices(),
+    getServiceBundles(),
     getTechProof(),
     getIndustries(),
     getCaseStudies(),
     getInsights(),
+    getSettings(),
   ]);
+
+  const partner = settings["partner.name"] ?? "ALI Technologies";
+  const featuredServices = services.slice(0, 4);
+  const featuredBundle = bundles.find((b) => b.slug === "growth") ?? bundles[0];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -61,6 +83,104 @@ export default async function HomePage() {
       />
 
       <Hero />
+
+      {/* ── The stack we operate, scrolling ─────────────────────────── */}
+      <TechStackMarquee />
+
+      {/* ── Partner strip ───────────────────────────────────────────── */}
+      <Section tone="raised" className="py-12 md:py-14">
+        <div className="grid items-center gap-8 md:grid-cols-[1fr_auto] md:gap-12">
+          <div>
+            <h2 className="text-2xs font-semibold tracking-[0.18em] text-[var(--color-amber-700)] uppercase">
+              Powered by {partner}
+            </h2>
+            <p className="mt-3 max-w-3xl text-[var(--ink-secondary)]">
+              {settings["partner.relationship"]}
+            </p>
+          </div>
+          {settings["partner.url"] ? (
+            <a
+              href={settings["partner.url"]}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="inline-flex h-11 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 text-sm font-medium transition-colors hover:border-[var(--border-strong)]"
+            >
+              {partner} ↗
+            </a>
+          ) : null}
+        </div>
+      </Section>
+
+      {/* ── The whole repository, as a graph ─────────────────────────── */}
+      <Section tone="inverse" id="code-graph">
+        <SectionHeading
+          inverse
+          align="center"
+          eyebrow="The code that runs this site"
+          title="Everything is alive. This is the source."
+          lede="Every symbol below is real, and every edge is a real dependency — parsed from the repository that builds this website, not a marketing mockup. Hover to trace a neighbourhood, click a node to read that file's actual source."
+        />
+        <div className="mt-10">
+          <RepoGraph />
+        </div>
+      </Section>
+
+      {/* ── Modular services (the headline offering) ───────────────── */}
+      {featuredServices.length > 0 ? (
+        <Section tone="page" id="services">
+          <SectionHeading
+            eyebrow="Productised services"
+            title="Fixed scope. Fixed fee. Fixed timeline."
+            lede={`Eight independently purchasable engineering modules — built and operated by ${partner} against an open-source platform stack. Buy one, or assemble a bundle.`}
+          />
+
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {featuredServices.map((s) => (
+              <Card key={s.slug} as="article" interactive className="flex flex-col gap-3 p-6">
+                <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--color-amber-700)] uppercase">
+                  {s.timelineLabel}
+                </p>
+                <h3 className="text-lg font-semibold">{s.name}</h3>
+                <p className="text-sm text-[var(--ink-secondary)]">{s.tagline}</p>
+                <p className="font-display text-xl font-semibold text-[var(--ink-primary)]">
+                  USD {s.flatFeeAmount.toLocaleString()}
+                </p>
+                <div className="mt-auto flex items-center gap-4">
+                  <Link
+                    href={`/services/${s.slug}`}
+                    className="text-sm font-medium underline-offset-4 hover:underline"
+                  >
+                    Scope →
+                  </Link>
+                  {s.slug === "architecture-design" ? (
+                    <Link
+                      href="/campaigns/module-1-architecture-design"
+                      className="text-sm font-medium text-[var(--color-amber-700)] underline-offset-4 hover:underline"
+                    >
+                      Watch us build it →
+                    </Link>
+                  ) : null}
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <ButtonLink href="/services" size="lg">
+              All eight modules
+            </ButtonLink>
+            {featuredBundle ? (
+              <Link
+                href={`/services/bundles/${featuredBundle.slug}`}
+                className="text-sm font-medium underline-offset-4 hover:underline"
+              >
+                See the {featuredBundle.name} bundle (USD{" "}
+                {featuredBundle.bundlePriceAmount.toLocaleString()}) →
+              </Link>
+            ) : null}
+          </div>
+        </Section>
+      ) : null}
 
       {/* ── Trusted technology partner ─────────────────────────────────── */}
       <Section tone="raised" className="py-16 md:py-20">
@@ -102,14 +222,12 @@ export default async function HomePage() {
 
         {/* One live product must not sit in a two-column grid with a hole
             beside it — an empty cell reads as something failing to load. */}
-        <div
-          className={`mt-12 grid gap-6 ${products.length > 1 ? "md:grid-cols-2" : "max-w-3xl"}`}
-        >
+        <div className={`mt-12 grid gap-6 ${products.length > 1 ? "md:grid-cols-2" : "max-w-3xl"}`}>
           {products.map((p) => (
             <Card key={p.slug} as="article" interactive className="flex flex-col gap-4 p-8">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+                  <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                     {p.category}
                   </p>
                   <h3 className="mt-2 text-2xl">{p.name}</h3>
@@ -197,7 +315,7 @@ export default async function HomePage() {
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {techProof.slice(0, 6).map((t) => (
             <Card key={t.slug} as="article" inverse className="flex flex-col gap-3">
-              <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--color-amber-400)]">
+              <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--color-amber-400)] uppercase">
                 {t.category}
               </p>
               <h3 className="text-lg font-semibold text-[var(--color-canvas-100)]">{t.title}</h3>
@@ -266,7 +384,7 @@ export default async function HomePage() {
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {caseStudies.map((c) => (
             <Card key={c.slug} as="article" interactive className="flex flex-col gap-4 p-8">
-              <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+              <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                 {displayClient(c)}
               </p>
               <h3 className="text-xl">{c.title}</h3>
@@ -298,7 +416,7 @@ export default async function HomePage() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {insights.slice(0, 3).map((i) => (
             <article key={i.slug} className="flex flex-col gap-3">
-              <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--color-amber-700)]">
+              <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--color-amber-700)] uppercase">
                 {i.category}
               </p>
               <h3 className="text-lg font-semibold">
@@ -307,7 +425,7 @@ export default async function HomePage() {
                 </Link>
               </h3>
               <p className="text-sm text-[var(--ink-secondary)]">{i.excerpt}</p>
-              <p className="mt-auto pt-2 text-2xs text-[var(--ink-muted)]">
+              <p className="text-2xs mt-auto pt-2 text-[var(--ink-muted)]">
                 {i.readingMinutes} min read
               </p>
             </article>

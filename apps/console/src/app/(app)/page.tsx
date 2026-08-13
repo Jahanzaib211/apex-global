@@ -81,7 +81,7 @@ export default async function OverviewPage() {
                         {lead.attribution?.utmCampaign ? ` · ${lead.attribution.utmCampaign}` : ""}
                       </p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-[var(--bg-sunken)] px-2.5 py-0.5 text-2xs font-medium uppercase tracking-wide">
+                    <span className="text-2xs shrink-0 rounded-full bg-[var(--bg-sunken)] px-2.5 py-0.5 font-medium tracking-wide uppercase">
                       {lead.stage}
                     </span>
                   </Link>

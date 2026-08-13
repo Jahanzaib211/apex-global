@@ -55,15 +55,15 @@ export const NAV = [
  * `self` marks the entry for the site doing the rendering, which links to `/`
  * rather than out to itself.
  *
- * Apex Cloud (cloud.apexgroupcompanies.com) is deliberately absent: it returns
- * 502 — mailcow's mariadb cannot write its PID file — and its reachability
- * check in tests/e2e is already failing. Restore the entry once the host
- * answers; linking a dead property from five footers only multiplies the
- * damage.
+ * Every entry here must answer 200. Apex Cloud was pulled from this list while
+ * it returned 502 (mailcow's mariadb could not write its PID file) and
+ * restored once that was fixed — a dead entry here is a dead link in five
+ * footers at once, not one.
  */
 export const GROUP_COMPANIES = [
   { label: "Apex Group of Companies", href: "https://apex.apexgroupcompanies.com" },
   { label: "Apex Global Tech Solution", href: "https://tech.apexgroupcompanies.com", self: true },
+  { label: "Apex Cloud", href: "https://cloud.apexgroupcompanies.com" },
   { label: "Apex Tours", href: "https://tours.apexgroupcompanies.com" },
   { label: "Apex Outsourcing", href: "https://outsourcing.apexgroupcompanies.com" },
   { label: "Apex Holdings", href: "https://holdings.apexgroupcompanies.com" },

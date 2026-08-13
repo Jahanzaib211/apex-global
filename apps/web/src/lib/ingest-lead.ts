@@ -24,7 +24,7 @@ import { enrichLeadInBackground } from "@/lib/enrich";
 
 /** The Apex properties allowed to write into this pipeline. */
 export const LEAD_SITES = {
-  "tech": "Apex Global Tech",
+  tech: "Apex Global Tech",
   "apex-group": "Apex Group of Companies",
   "apex-holdings": "Apex Holdings",
   "apex-outsourcing": "Apex Outsourcing",
@@ -119,7 +119,15 @@ export interface IngestLeadResult<T = undefined> {
 export async function ingestLead<T = undefined>(
   options: IngestLeadOptions<T>,
 ): Promise<IngestLeadResult<T>> {
-  const { input, headers, sourceSite, sourceType, activitySummary, extend, notify = true } = options;
+  const {
+    input,
+    headers,
+    sourceSite,
+    sourceType,
+    activitySummary,
+    extend,
+    notify = true,
+  } = options;
 
   const attribution = options.attribution ?? {};
   const visitor = options.visitor ?? {};

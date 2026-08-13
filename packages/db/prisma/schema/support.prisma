@@ -1,0 +1,90 @@
+// ── module: support ─────────────────────────────────────────────────────────
+// Tickets raised by clients (via the portal) and by the team (via the
+// console). KB articles are public-renderable on the marketing site.
+
+enum TicketStatus {
+  OPEN
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Ticket {
+  id     String        @id @default(cuid())
+  number String        @unique // TCK-0001
+
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(NORMAL)
+
+  title String
+  body  String  @db.Text
+
+  portalAccountId String?
+  // Link to the lead when the ticket was opened from a marketing enquiry
+  // rather than from the portal.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  openedById String?
+  assigneeId String?
+
+  tags String[]
+
+  comments TicketComment[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  resolvedAt DateTime?
+  closedAt   DateTime?
+
+  @@index([status, createdAt])
+  @@index([portalAccountId, status])
+  @@map("tickets")
+}
+
+model TicketComment {
+  id       String @id @default(cuid())
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  // "core:user:<id>" or "portal:user:<id>" — the author of the comment.
+  authorKind String
+  authorId   String
+
+  body String @db.Text
+  isInternal Boolean @default(false) // team-only notes — never visible to the client
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_comments")
+}
+
+model KbArticle {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title       String
+  excerpt     String
+  body        String  @db.Text
+  category    String
+  tags        String[]
+
+  // Linked from a portal account — only that account (and team) see it.
+  portalAccountId String?
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("kb_articles")
+}

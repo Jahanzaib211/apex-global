@@ -4,6 +4,7 @@
 **Compiled:** 2026-08-13
 
 > ### Why this file exists, and how it relates to the tunnel report
+>
 > This is the **host** hardening report: the 2026-08-12 memory-exhaustion
 > freeze and the container/service posture around it.
 >
@@ -30,24 +31,24 @@
 
 ## Status summary
 
-| # | Finding | Severity | Status |
-|---|---|---|---|
-| 1 | Runaway self-healing daemon exhausted RAM + swap; host froze | **Critical** | ✅ Fixed 2026-08-13 |
-| 2 | k3s restart loop driven by a remote node | High | ✅ Fixed 2026-08-13 |
-| 3 | No root domain resolves | Medium | ⚠️ Open (partly actionable) |
-| 4 | 46 of 71 containers had no memory limit | High | ✅ Fixed 2026-08-13 |
-| 5 | Cloudflare tunnel tokens stored in world-readable plaintext | **High** | ⚠️ Open |
-| 6 | Cluster has no imagePullSecret; 7 workloads down 13 days | Medium | ⚠️ Open (needs PAT) |
-| 7 | `chat.apexgroupcompanies.com` serves HTTP 530 publicly | Medium | ⚠️ Open (needs dashboard) |
-| 8 | Compose file stored in `/tmp`, lost on reboot | Medium | ✅ Fixed 2026-08-13 |
-| 9 | No global OOM backstop | **Critical** | ✅ Fixed 2026-08-13 |
+| #   | Finding                                                      | Severity     | Status                      |
+| --- | ------------------------------------------------------------ | ------------ | --------------------------- |
+| 1   | Runaway self-healing daemon exhausted RAM + swap; host froze | **Critical** | ✅ Fixed 2026-08-13         |
+| 2   | k3s restart loop driven by a remote node                     | High         | ✅ Fixed 2026-08-13         |
+| 3   | No root domain resolves                                      | Medium       | ⚠️ Open (partly actionable) |
+| 4   | 46 of 71 containers had no memory limit                      | High         | ✅ Fixed 2026-08-13         |
+| 5   | Cloudflare tunnel tokens stored in world-readable plaintext  | **High**     | ⚠️ Open                     |
+| 6   | Cluster has no imagePullSecret; 7 workloads down 13 days     | Medium       | ⚠️ Open (needs PAT)         |
+| 7   | `chat.apexgroupcompanies.com` serves HTTP 530 publicly       | Medium       | ⚠️ Open (needs dashboard)   |
+| 8   | Compose file stored in `/tmp`, lost on reboot                | Medium       | ✅ Fixed 2026-08-13         |
+| 9   | No global OOM backstop                                       | **Critical** | ✅ Fixed 2026-08-13         |
 
 ---
 
 ## Finding 1 — Runaway self-healing daemon (Critical, fixed)
 
 The host froze hard at **22:18:14 on 2026-08-12** and was force-reset. It was
-*not* an OOM kill — the kernel never fired the global OOM killer (zero
+_not_ an OOM kill — the kernel never fired the global OOM killer (zero
 `CONSTRAINT_NONE` events in boot `-1`). RAM and the 8 GB swap file were both
 exhausted and the machine thrashed until unresponsive. Boot `-1`'s journal ends
 mid-line on `gnome-shell: ... your system is too slow`, with no
@@ -58,13 +59,13 @@ list and tries to "heal" anything missing. **Five of its seven registered apps
 could never start**, and it retried all of them every ~5 s with no backoff and
 no failure ceiling:
 
-| Target | Why it could never succeed |
-|---|---|
-| `nova-dify` | script path `~/Desktop/dify/` does not exist |
-| `llama-bridge-disabled` | script path `~/Desktop/llama-bridge/` does not exist |
-| `nova-tunnel` | wraps `cloudflared-nova.service`, which is not installed |
-| `pm2 restart deerflow` | no pm2 app of that name — the app is called `nova` |
-| `sudo systemctl restart cloudflared-nova` | sudoers rule absent; needs a TTY |
+| Target                                    | Why it could never succeed                               |
+| ----------------------------------------- | -------------------------------------------------------- |
+| `nova-dify`                               | script path `~/Desktop/dify/` does not exist             |
+| `llama-bridge-disabled`                   | script path `~/Desktop/llama-bridge/` does not exist     |
+| `nova-tunnel`                             | wraps `cloudflared-nova.service`, which is not installed |
+| `pm2 restart deerflow`                    | no pm2 app of that name — the app is called `nova`       |
+| `sudo systemctl restart cloudflared-nova` | sudoers rule absent; needs a TTY                         |
 
 Measured rate: **281 auto-fix actions/minute (16,863/hour)**, spawning **733
 `pm2` + 725 `sudo` subprocesses per 21 minutes**. Each `pm2` invocation is a
@@ -278,12 +279,12 @@ When RAM and swap were exhausted the kernel never OOM-killed anything; the host
 simply thrashed to a standstill. Two contributing settings:
 
 - `vm.overcommit_memory = 1` — the kernel never refuses an allocation, so
-  nothing pushes back until RAM *and* swap are genuinely gone, by which point
+  nothing pushes back until RAM _and_ swap are genuinely gone, by which point
   the desktop is already unresponsive.
 - `systemd-oomd` is active but Ubuntu's default configuration only watches
   `user.slice` pressure. It did not fire.
 
-**Fix.** `earlyoom` installed and enabled, triggering at 6% free RAM *and* 6%
+**Fix.** `earlyoom` installed and enabled, triggering at 6% free RAM _and_ 6%
 free swap, configured to never kill `systemd`/`gnome-shell`/`Xorg`/`sshd`/
 `k3s-server` and to prefer `next-server`/`node`/`esbuild`/`tsc` — the transient
 2–4 GB build spikes that push this host over. Applied by
@@ -315,7 +316,7 @@ Worth recording so a future cleanup does not "fix" them:
 
 ## Operating guidance
 
-The 2026-08-12 freeze needed both a runaway loop *and* zero headroom. The loops
+The 2026-08-12 freeze needed both a runaway loop _and_ zero headroom. The loops
 are fixed and `earlyoom` now covers the headroom, but the host remains densely
 packed — 57 containers, 30 k3s pods and 23 pm2 apps on one 30 GB desktop.
 

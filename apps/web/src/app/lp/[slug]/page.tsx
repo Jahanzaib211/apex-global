@@ -51,7 +51,7 @@ export default async function LandingPage({ params }: Props) {
 
       <div className="container-page relative py-8">
         <div className="flex items-center justify-between gap-4">
-          <Logo variant="inverse" />
+          <Logo variant="inverse" animated />
           {phone ? (
             <a
               href={`tel:${phone.replace(/\s/g, "")}`}

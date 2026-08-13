@@ -42,7 +42,10 @@ export interface ApexModule {
   dependsOn: string[];
 }
 
-export interface DefineModuleInput extends Omit<ApexModule, "nav" | "permissions" | "jobs" | "dependsOn"> {
+export interface DefineModuleInput extends Omit<
+  ApexModule,
+  "nav" | "permissions" | "jobs" | "dependsOn"
+> {
   nav?: ModuleNavItem[];
   permissions?: ModulePermission[];
   jobs?: ModuleJob[];

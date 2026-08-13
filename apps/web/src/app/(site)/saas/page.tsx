@@ -1,19 +1,18 @@
 import { Card, OriginBadge, Section, SectionHeading } from "@apex/ui";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getProducts } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Apex SaaS",
+export const metadata = {
+  title: "SaaS Products",
   description:
-    "Technology products built to solve real business problems — each one live, supported, and stating its provenance.",
+    "Software products built and operated by Apex Global Tech Solution. Each one states its provenance.",
   alternates: { canonical: absoluteUrl("/saas") },
 };
 
-export default async function SaasPage() {
+export default async function SaasIndexPage() {
   const products = await getProducts();
 
   return (
@@ -23,22 +22,23 @@ export default async function SaasPage() {
           inverse
           as="h1"
           eyebrow="Apex SaaS"
-          title="Technology products built to solve real business problems"
-          lede="Everything here is running, supported, and something we can show you. Each product states whether we built it or derived it, and from what."
+          title="Products we build, run and support"
+          lede="Two live platforms today. Each declares whether we built it, operate it, or run it as third-party open source — because a platform you cannot verify is a platform you cannot trust."
         />
       </Section>
 
       <Section tone="page">
-        <div className={`grid gap-6 ${products.length > 1 ? "md:grid-cols-2" : "max-w-3xl"}`}>
+        <div className="grid gap-6 md:grid-cols-2">
           {products.map((p) => (
             <Card key={p.slug} as="article" interactive className="flex flex-col gap-4 p-8">
-              <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
-                {p.category}
-              </p>
-              <h2 className="text-2xl">
-                <Link href={`/saas/${p.slug}`}>{p.name}</Link>
-              </h2>
-              <p className="font-medium text-[var(--ink-secondary)]">{p.tagline}</p>
+              <div>
+                <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
+                  {p.category}
+                </p>
+                <h2 className="mt-2 text-2xl">{p.name}</h2>
+                <p className="mt-1 text-[var(--ink-secondary)]">{p.tagline}</p>
+              </div>
+
               <p className="text-[var(--ink-secondary)]">{p.summary}</p>
 
               <OriginBadge
@@ -48,12 +48,12 @@ export default async function SaasPage() {
                 upstreamLicense={p.upstreamLicense}
               />
 
-              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-3">
+              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-2">
                 <Link
                   href={`/saas/${p.slug}`}
                   className="text-sm font-medium underline-offset-4 hover:underline"
                 >
-                  Product details →
+                  Explore {p.name} →
                 </Link>
                 {p.isPubliclyReachable && p.publicUrl ? (
                   <a
@@ -73,11 +73,6 @@ export default async function SaasPage() {
             </Card>
           ))}
         </div>
-
-        <p className="mt-12 max-w-2xl text-sm text-[var(--ink-muted)]">
-          We only list products we can both demonstrate and support. Work that is still in
-          development does not appear here until it is neither.
-        </p>
       </Section>
     </>
   );

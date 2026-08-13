@@ -9,6 +9,7 @@ model User {
   passwordHash  String?
   image         String?
   emailVerified DateTime?
+  emailVerifiedAt DateTime?
 
   // TOTP. `totpSecret` is encrypted at rest with ENCRYPTION_KEY, never returned
   // to a client, and only decrypted inside the verification path.
@@ -165,6 +166,51 @@ model Integration {
   updatedAt DateTime @updatedAt
 
   @@map("integrations")
+}
+
+// ── Partner integrations ───────────────────────────────────────────────────
+// Hyperswitch and Twenty CRM each get their own credential row so the
+// partner:write permission can be granted independently from core:admin, and
+// so a single broken integration does not blow away the others.
+model PartnerIntegration {
+  id       String @id @default(cuid())
+  provider String @unique // "hyperswitch" | "twenty-crm"
+  label    String
+
+  isEnabled Boolean @default(false)
+
+  // Encrypted credentials — same scheme as `core.Integration`. The plaintext
+  // never leaves the server.
+  secretCiphertext String?
+  secretIv         String?
+  secretTag        String?
+  lastFour         String?
+
+  // Webhook signing secret — stored in its own envelope so it can be rotated
+  // independently of the API key. Same AES-256-GCM scheme.
+  webhookCiphertext String?
+  webhookIv         String?
+  webhookTag        String?
+  webhookLastFour   String?
+
+  // Per-provider non-secret configuration: workspace URLs, environment,
+  // routing config. Provider-specific shape lives behind the same `Json`
+  // column — the application code is the only thing that needs to know it.
+  config Json @default("{}")
+
+  lastTestedAt DateTime?
+  lastTestOk   Boolean?
+  lastTestNote String?
+
+  // Event log of recent sync activity, surfaced on the partner console page
+  // so an operator can see whether things are working without reading logs.
+  lastEventAt   DateTime?
+  lastEventKind String? // "sync.ok" | "sync.error" | "webhook.received"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("partner_integrations")
 }
 
 model FeatureFlag {

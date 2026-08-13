@@ -9,11 +9,11 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Industries",
   description:
-    "What changes between industries is the constraint — auditability, peak load, regulation, margin. The engineering follows from that.",
+    "Sector context for the work Apex Global Tech Solution does — what changes between industries is the constraint, not the engineering.",
   alternates: { canonical: absoluteUrl("/industries") },
 };
 
-export default async function IndustriesPage() {
+export default async function IndustriesIndexPage() {
   const industries = await getIndustries();
 
   return (
@@ -24,24 +24,23 @@ export default async function IndustriesPage() {
           as="h1"
           eyebrow="Industries"
           title="Sector context, not sector clichés"
-          lede="We do not claim deep domain expertise in twelve verticals. What we understand is which constraint dominates in each — and constraints are what architecture answers to."
+          lede="What changes between industries is the constraint — auditability, peak load, regulation, margin. The engineering follows from that."
         />
       </Section>
 
       <Section tone="page">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {industries.map((i) => (
-            <Card key={i.slug} as="article" interactive className="flex flex-col gap-4 p-8">
-              <h2 className="text-2xl">
-                <Link href={`/industries/${i.slug}`} className="after:absolute after:inset-0">
-                  {i.name}
-                </Link>
-              </h2>
-              <p className="font-medium text-[var(--ink-secondary)]">{i.tagline}</p>
-              <p className="line-clamp-4 text-sm text-[var(--ink-secondary)]">{i.challenge}</p>
-              <span className="mt-auto pt-2 text-sm font-medium text-[var(--color-amber-700)]">
+            <Card key={i.slug} as="article" interactive className="flex flex-col gap-3">
+              <h2 className="text-lg font-semibold">{i.name}</h2>
+              <p className="text-sm text-[var(--ink-secondary)]">{i.tagline}</p>
+              <p className="text-2xs mt-1 text-[var(--ink-muted)]">{i.challenge.slice(0, 120)}…</p>
+              <Link
+                href={`/industries/${i.slug}`}
+                className="mt-auto pt-3 text-sm font-medium underline-offset-4 hover:underline"
+              >
                 How we work here →
-              </span>
+              </Link>
             </Card>
           ))}
         </div>

@@ -17,9 +17,7 @@ const REGISTRY: Record<string, AiProvider> = {
 export function getProvider(id: string): AiProvider {
   const provider = REGISTRY[id];
   if (!provider) {
-    throw new Error(
-      `Unknown AI provider "${id}". Available: ${Object.keys(REGISTRY).join(", ")}.`,
-    );
+    throw new Error(`Unknown AI provider "${id}". Available: ${Object.keys(REGISTRY).join(", ")}.`);
   }
   return provider;
 }

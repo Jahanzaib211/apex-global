@@ -85,7 +85,11 @@ services:
     # happened on 2026-08-11.
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${CHATWOOT_POSTGRES_USERNAME:-chatwoot} -d ${CHATWOOT_POSTGRES_DATABASE:-chatwoot}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${CHATWOOT_POSTGRES_USERNAME:-chatwoot} -d ${CHATWOOT_POSTGRES_DATABASE:-chatwoot}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 8
@@ -97,7 +101,7 @@ services:
   chatwoot-redis:
     image: redis:7-alpine
     container_name: chatwoot-redis
-    command: ["sh", "-c", "redis-server --requirepass \"$CHATWOOT_REDIS_PASSWORD\" --appendonly yes"]
+    command: ["sh", "-c", 'redis-server --requirepass "$CHATWOOT_REDIS_PASSWORD" --appendonly yes']
     environment:
       CHATWOOT_REDIS_PASSWORD: ${CHATWOOT_REDIS_PASSWORD:?CHATWOOT_REDIS_PASSWORD is required}
     volumes:

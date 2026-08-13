@@ -29,7 +29,9 @@
     "services:ps": "docker compose --env-file .env -f infra/docker-compose.yml ps",
     "smoke": "node scripts/smoke-test.mjs",
     "audit:credibility": "pnpm --filter @apex/db run audit",
-    "db:seed:admin": "pnpm --filter @apex/db run seed:admin"
+    "db:seed:admin": "pnpm --filter @apex/db run seed:admin",
+    "provision:hyperswitch": "node scripts/provision-hyperswitch.mjs",
+    "repo:graph": "python3 scripts/generate-repo-graph.py"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

@@ -133,7 +133,12 @@ export async function enrichLead(
     ),
     settle(
       definition.complete(
-        { system: LEAD_SCORE.system, prompt: LEAD_SCORE.build(input), maxTokens: 8, temperature: 0 },
+        {
+          system: LEAD_SCORE.system,
+          prompt: LEAD_SCORE.build(input),
+          maxTokens: 8,
+          temperature: 0,
+        },
         config,
       ),
     ),

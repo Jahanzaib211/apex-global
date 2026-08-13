@@ -268,13 +268,16 @@ model Faq {
   question String
   answer   String  @db.Text
   order    Int     @default(0)
-  scope    String  @default("general") // "general" | "solution" | "product"
+  scope    String  @default("general") // "general" | "solution" | "product" | "service"
 
   solution   Solution? @relation(fields: [solutionId], references: [id], onDelete: Cascade)
   solutionId String?
 
   product   SaasProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String?
+
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String?
 
   status PublishStatus @default(LIVE)
 
@@ -327,6 +330,143 @@ model Page {
   @@map("pages")
 }
 
+// ── Productised services ────────────────────────────────────────────────────
+// Each Service is an independently purchasable, fixed-scope, fixed-fee,
+// fixed-timeline engagement. Built from the same engineering practice as the
+// rest of the platform, with a price that is published because it is the price.
+model Service {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  // "Architecture & Design" — what the buyer is buying.
+  name        String
+  tagline     String
+  summary     String  @db.Text
+  body        String? @db.Text
+  icon        String?
+
+  // Fixed scope, fixed fee, fixed timeline. The three values that decide what
+  // a productised service is — and the things that change when one does.
+  flatFeeAmount   Int       // USD, whole units
+  feeCurrency     String    @default("USD")
+  timelineDays    Int       // business days from kickoff to handoff
+  timelineLabel   String    // "5 days", "3 weeks" — pre-formatted for display
+  category        String    // "foundation" | "platform" | "operations" | "security" | "knowledge"
+
+  // Provenance: we deploy and operate these against an open-source stack.
+  // The audit refuses a publishable service without a declared origin.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // What the buyer gets — short list for the card, longer prose in `body`.
+  deliverables    String[]
+  outcomes        String[]
+
+  // The tools we deploy against. Surfaced on the page so a technical buyer
+  // can verify the stack is real, not a description of one.
+  technologies    String[]
+
+  // Whether a single engagement can be purchased, or only as part of a bundle.
+  isBundleOnly    Boolean   @default(false)
+  bundleSlugs     String[]  @default([])
+
+  faqs            Faq[]
+  seo             Seo?      @relation(fields: [seoId], references: [id])
+  seoId           String?   @unique
+
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("services")
+}
+
+// ── Bundles ─────────────────────────────────────────────────────────────────
+// Three pre-assembled ServiceBundles — a name, a list of service slugs, and the
+// price the bundle goes for as a unit. Kept separate from `Service` so a bundle
+// page can be rendered alongside the individual modules without one having to
+// masquerade as the other.
+model ServiceBundle {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name            String
+  tagline         String
+  summary         String  @db.Text
+  body            String? @db.Text
+
+  // The slugs of `Service` rows that make up the bundle. Order is preserved
+  // when rendered.
+  serviceSlugs    String[]
+
+  // The bundle price and what the buyer would have paid for the modules
+  // separately — the difference is the discount, displayed plainly.
+  bundlePriceAmount Int
+  sumPriceAmount    Int
+  feeCurrency       String @default("USD")
+
+  bestFor         String   @db.Text
+  outcomes        String[]
+
+  seo             Seo?     @relation(fields: [seoId], references: [id])
+  seoId           String?  @unique
+
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("service_bundles")
+}
+
+// ── Live endpoints (proof of capability) ───────────────────────────────────
+// The Cloudflare tunnel endpoints and loopback services that the platform
+// operates. Surfaced on the Technology page as concrete evidence of what runs
+// here right now, with provenance declared per the credibility rules.
+model LiveEndpoint {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  // "Nova", "Fox Hosting client portal", "Postgres primary".
+  name            String
+  kind            String    // "tunnel" | "loopback-service" | "internal-app"
+
+  // Where it is reached from the public internet. Null for loopback-only
+  // services (which are still proven, just reachable over Tailscale only).
+  publicUrl       String?
+  originLoopback  String?   // "127.0.0.1:4300" — only when no public URL
+
+  // Description in one line, plus the role this endpoint plays in the system.
+  summary         String
+  role            String    @db.Text
+
+  // Whether we built it, operate it, or both.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // Whether this is publicly safe to link. Internal-only endpoints
+  // (the operator console, the billing back-office) are excluded here.
+  isPubliclyLinkable Boolean @default(true)
+
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, kind, order])
+  @@map("live_endpoints")
+}
+
 // Authored per page. Never auto-generated from the first paragraph — that is
 // how sites end up with 40 identical descriptions.
 model Seo {
@@ -344,6 +484,8 @@ model Seo {
   jobPosting JobPosting?
   page       Page?
   product    SaasProduct?
+  service    Service?
+  bundle     ServiceBundle?
 
   @@map("seo")
 }

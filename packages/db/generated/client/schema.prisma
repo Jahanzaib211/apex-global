@@ -1,3 +1,111 @@
+// ── module: billing ────────────────────────────────────────────────────────
+// Quotes, invoices, payments and subscriptions. The schema is intentionally
+// small — the goal is the operational loop (issue invoice → customer pays →
+// webhook reconciles), not a full accounting system.
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+  OVERDUE
+}
+
+model Quote {
+  id     String @id @default(cuid())
+  number String @unique // QT-0001
+
+  status QuoteStatus @default(DRAFT)
+
+  customerName  String
+  customerEmail String
+  companyName   String?
+
+  lineItems      Json // [{ description, quantity, unitAmount, currency }]
+  subtotalAmount Int
+  taxAmount      Int    @default(0)
+  totalAmount    Int
+  currency       String @default("USD")
+
+  notes      String?
+  validUntil DateTime?
+
+  // Link back to the lead this quote was generated against, so attribution
+  // reporting can roll spend → lead → quote → invoice → revenue.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  // What this quote is selling. Either a service (modular engagement) or a
+  // product (SaaS). Exactly one is set.
+  serviceSlug String?
+  productSlug String?
+
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  invoices Invoice[]
+
+  @@index([status, createdAt])
+  @@map("quotes")
+}
+
+model Invoice {
+  id     String @id @default(cuid())
+  number String @unique // INV-0001
+
+  status InvoiceStatus @default(DRAFT)
+
+  customerName  String
+  customerEmail String
+  companyName   String?
+
+  subtotalAmount Int
+  taxAmount      Int    @default(0)
+  totalAmount    Int
+  currency       String @default("USD")
+
+  notes String?
+
+  lineItems Json? // [{ description, quantity, unitAmount, currency }]
+
+  // Link back to the originating quote, if any.
+  quoteId String?
+  quote   Quote?  @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+
+  // Lead attribution — same purpose as the link on Quote.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  serviceSlug String?
+  productSlug String?
+
+  // Payment reconciliation fields, populated by the Hyperswitch webhook.
+  paymentProvider String? // "hyperswitch" | "manual"
+  paymentRef      String? // gateway payment id
+  paidAt          DateTime?
+
+  dueDate DateTime?
+  sentAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([dueDate])
+  @@map("invoices")
+}
+
 // ── module: cms ─────────────────────────────────────────────────────────────
 // Everything the public site renders. Content is data: a new solution page or
 // SaaS product is a record, not a deploy.
@@ -268,13 +376,16 @@ model Faq {
   question String
   answer   String @db.Text
   order    Int    @default(0)
-  scope    String @default("general") // "general" | "solution" | "product"
+  scope    String @default("general") // "general" | "solution" | "product" | "service"
 
   solution   Solution? @relation(fields: [solutionId], references: [id], onDelete: Cascade)
   solutionId String?
 
   product   SaasProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String?
+
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String?
 
   status PublishStatus @default(LIVE)
 
@@ -327,6 +438,143 @@ model Page {
   @@map("pages")
 }
 
+// ── Productised services ────────────────────────────────────────────────────
+// Each Service is an independently purchasable, fixed-scope, fixed-fee,
+// fixed-timeline engagement. Built from the same engineering practice as the
+// rest of the platform, with a price that is published because it is the price.
+model Service {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  // "Architecture & Design" — what the buyer is buying.
+  name    String
+  tagline String
+  summary String  @db.Text
+  body    String? @db.Text
+  icon    String?
+
+  // Fixed scope, fixed fee, fixed timeline. The three values that decide what
+  // a productised service is — and the things that change when one does.
+  flatFeeAmount Int // USD, whole units
+  feeCurrency   String @default("USD")
+  timelineDays  Int // business days from kickoff to handoff
+  timelineLabel String // "5 days", "3 weeks" — pre-formatted for display
+  category      String // "foundation" | "platform" | "operations" | "security" | "knowledge"
+
+  // Provenance: we deploy and operate these against an open-source stack.
+  // The audit refuses a publishable service without a declared origin.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // What the buyer gets — short list for the card, longer prose in `body`.
+  deliverables String[]
+  outcomes     String[]
+
+  // The tools we deploy against. Surfaced on the page so a technical buyer
+  // can verify the stack is real, not a description of one.
+  technologies String[]
+
+  // Whether a single engagement can be purchased, or only as part of a bundle.
+  isBundleOnly Boolean  @default(false)
+  bundleSlugs  String[] @default([])
+
+  faqs  Faq[]
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("services")
+}
+
+// ── Bundles ─────────────────────────────────────────────────────────────────
+// Three pre-assembled ServiceBundles — a name, a list of service slugs, and the
+// price the bundle goes for as a unit. Kept separate from `Service` so a bundle
+// page can be rendered alongside the individual modules without one having to
+// masquerade as the other.
+model ServiceBundle {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  name    String
+  tagline String
+  summary String  @db.Text
+  body    String? @db.Text
+
+  // The slugs of `Service` rows that make up the bundle. Order is preserved
+  // when rendered.
+  serviceSlugs String[]
+
+  // The bundle price and what the buyer would have paid for the modules
+  // separately — the difference is the discount, displayed plainly.
+  bundlePriceAmount Int
+  sumPriceAmount    Int
+  feeCurrency       String @default("USD")
+
+  bestFor  String   @db.Text
+  outcomes String[]
+
+  seo   Seo?    @relation(fields: [seoId], references: [id])
+  seoId String? @unique
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, order])
+  @@map("service_bundles")
+}
+
+// ── Live endpoints (proof of capability) ───────────────────────────────────
+// The Cloudflare tunnel endpoints and loopback services that the platform
+// operates. Surfaced on the Technology page as concrete evidence of what runs
+// here right now, with provenance declared per the credibility rules.
+model LiveEndpoint {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+  order  Int           @default(0)
+
+  // "Nova", "Fox Hosting client portal", "Postgres primary".
+  name String
+  kind String // "tunnel" | "loopback-service" | "internal-app"
+
+  // Where it is reached from the public internet. Null for loopback-only
+  // services (which are still proven, just reachable over Tailscale only).
+  publicUrl      String?
+  originLoopback String? // "127.0.0.1:4300" — only when no public URL
+
+  // Description in one line, plus the role this endpoint plays in the system.
+  summary String
+  role    String @db.Text
+
+  // Whether we built it, operate it, or both.
+  origin          Origin
+  upstreamName    String?
+  upstreamUrl     String?
+  upstreamLicense String?
+
+  // Whether this is publicly safe to link. Internal-only endpoints
+  // (the operator console, the billing back-office) are excluded here.
+  isPubliclyLinkable Boolean @default(true)
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, kind, order])
+  @@map("live_endpoints")
+}
+
 // Authored per page. Never auto-generated from the first paragraph — that is
 // how sites end up with 40 identical descriptions.
 model Seo {
@@ -344,6 +592,8 @@ model Seo {
   jobPosting JobPosting?
   page       Page?
   product    SaasProduct?
+  service    Service?
+  bundle     ServiceBundle?
 
   @@map("seo")
 }
@@ -353,12 +603,13 @@ model Seo {
 // Every other module depends on this one.
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  passwordHash  String?
-  image         String?
-  emailVerified DateTime?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  passwordHash    String?
+  image           String?
+  emailVerified   DateTime?
+  emailVerifiedAt DateTime?
 
   // TOTP. `totpSecret` is encrypted at rest with ENCRYPTION_KEY, never returned
   // to a client, and only decrypted inside the verification path.
@@ -517,6 +768,51 @@ model Integration {
   @@map("integrations")
 }
 
+// ── Partner integrations ───────────────────────────────────────────────────
+// Hyperswitch and Twenty CRM each get their own credential row so the
+// partner:write permission can be granted independently from core:admin, and
+// so a single broken integration does not blow away the others.
+model PartnerIntegration {
+  id       String @id @default(cuid())
+  provider String @unique // "hyperswitch" | "twenty-crm"
+  label    String
+
+  isEnabled Boolean @default(false)
+
+  // Encrypted credentials — same scheme as `core.Integration`. The plaintext
+  // never leaves the server.
+  secretCiphertext String?
+  secretIv         String?
+  secretTag        String?
+  lastFour         String?
+
+  // Webhook signing secret — stored in its own envelope so it can be rotated
+  // independently of the API key. Same AES-256-GCM scheme.
+  webhookCiphertext String?
+  webhookIv         String?
+  webhookTag        String?
+  webhookLastFour   String?
+
+  // Per-provider non-secret configuration: workspace URLs, environment,
+  // routing config. Provider-specific shape lives behind the same `Json`
+  // column — the application code is the only thing that needs to know it.
+  config Json @default("{}")
+
+  lastTestedAt DateTime?
+  lastTestOk   Boolean?
+  lastTestNote String?
+
+  // Event log of recent sync activity, surfaced on the partner console page
+  // so an operator can see whether things are working without reading logs.
+  lastEventAt   DateTime?
+  lastEventKind String? // "sync.ok" | "sync.error" | "webhook.received"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("partner_integrations")
+}
+
 model FeatureFlag {
   id          String  @id @default(cuid())
   key         String  @unique
@@ -596,6 +892,16 @@ model Lead {
 
   sourceType LeadSourceType @default(FORM)
 
+  // Which Apex property captured this enquiry: "tech", "apex-group",
+  // "apex-holdings", "apex-outsourcing", "apex-tours".
+  //
+  // The group runs five public sites into this one pipeline. Without a source
+  // brand every site's demand lands in one undifferentiated pile, and neither
+  // "which site is actually producing pipeline" nor "route this to the team
+  // that owns it" can be answered. Defaults to "tech" so rows written before
+  // the group sites were wired keep their true origin.
+  sourceSite String @default("tech")
+
   // ── Handling ──────────────────────────────────────────────────────────
   ownerId String?
   owner   User?   @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
@@ -616,12 +922,23 @@ model Lead {
   aiScoredAt DateTime?
   aiModel    String?
 
-  attribution Attribution?
-  activities  LeadActivity[]
-  demoRequest DemoRequest?
+  attribution    Attribution?
+  activities     LeadActivity[]
+  demoRequest    DemoRequest?
+  quotes         Quote[]
+  invoices       Invoice[]
+  tickets        Ticket[]
+  projects       Project[]       @relation("LeadProjects")
+  portalAccounts PortalAccount[]
 
-  // Deduplication window key: same email + same day. Prevents a double-tap on
-  // a slow mobile connection from creating two leads and two notifications.
+  // Deduplication window key: same site + same email + same day. Prevents a
+  // double-tap on a slow mobile connection from creating two leads and two
+  // notifications.
+  //
+  // The site is part of the key on purpose. Someone who enquires at Apex Tours
+  // and at Apex Tech on the same day has two distinct intents for two
+  // different businesses; collapsing them into one lead would silently discard
+  // the second and hand it to the wrong team.
   dedupeKey String? @unique
 
   createdAt DateTime @default(now())
@@ -631,6 +948,7 @@ model Lead {
   @@index([email])
   @@index([ownerId, stage])
   @@index([createdAt])
+  @@index([sourceSite, createdAt])
   @@map("leads")
 }
 
@@ -720,6 +1038,497 @@ model CampaignSpend {
   @@unique([platform, campaign, periodStart, periodEnd])
   @@index([platform, periodStart])
   @@map("campaign_spend")
+}
+
+// ── Marketing module ───────────────────────────────────────────────────────
+// A named, addressable campaign. `slug` is the value passed in the
+// `utm_campaign` query parameter and matched against Attribution on lead
+// submission, so the spend→lead→customer join is one SQL query away.
+model Campaign {
+  id     String @id @default(cuid())
+  slug   String @unique // matches utm_campaign
+  status String @default("active") // "active" | "paused" | "completed"
+
+  name      String
+  channel   String // "google-ads" | "meta" | "linkedin" | "email" | "organic"
+  objective String? // "leads" | "demos" | "traffic"
+
+  // The landing page URL this campaign drives traffic to. Required for paid
+  // campaigns so the spend can be tied to a destination.
+  landingPath String?
+
+  // Budget the campaign is allowed to spend. The attribution report surfaces
+  // actual spend against this number so over-spend is visible at a glance.
+  budgetAmount   Int?
+  budgetCurrency String @default("USD")
+
+  // Linked SaaS product or service, optional. A campaign selling
+  // "Architecture & Design" sets interestSlug here so attribution can be
+  // segmented by surface without parsing the landing path.
+  interestSlug String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, channel])
+  @@map("campaigns")
+}
+
+// Aggregate roll-up of attribution for a campaign over a date range.
+// Computed on a schedule (see modules/marketing/README.md) and cached so the
+// attribution report renders in one query rather than scanning every lead.
+model AttributionReport {
+  id           String   @id @default(cuid())
+  campaignSlug String
+  periodStart  DateTime
+  periodEnd    DateTime
+
+  leads         Int
+  qualified     Int
+  opportunities Int
+  customers     Int
+
+  revenueAmount   Int // sum of Lead.valueAmount for customers, in minor units
+  revenueCurrency String @default("USD")
+
+  spendAmount   Int // sum of CampaignSpend for the campaign+period, in minor units
+  spendCurrency String @default("USD")
+
+  createdAt DateTime @default(now())
+
+  @@unique([campaignSlug, periodStart, periodEnd])
+  @@index([campaignSlug, periodEnd])
+  @@map("attribution_reports")
+}
+
+// ── module: ops ─────────────────────────────────────────────────────────────
+// Operational telemetry that the /dev panel reads from. WebhookEvent is
+// append-only — every inbound webhook from Hyperswitch, Twenty, Stripe,
+// etc. lands here so an operator can replay, audit, or trace a payment.
+
+model WebhookEvent {
+  id String @id @default(cuid())
+
+  /**
+   * Provider that delivered the webhook (e.g. "hyperswitch", "twenty-crm").
+   */
+  provider  String
+  /**
+   * Event type from the provider (e.g. "payment.succeeded").
+   */
+  eventType String
+
+  /**
+   * Provider's own event id, used for idempotent processing.
+   */
+  providerEventId String?
+
+  /**
+   * HTTP status we returned to the provider.
+   */
+  responseStatus Int
+
+  /**
+   * Was the HMAC signature on the request valid?
+   */
+  signatureOk Boolean @default(false)
+
+  /**
+   * Summary of the payload (truncated) so the operator can scan without opening JSON.
+   */
+  payloadSummary String @db.Text
+
+  /**
+   * Raw payload, kept for the operator "view" action. Capped at 64KB.
+   */
+  payloadBytes Bytes?
+
+  /**
+   * Source IP and user agent from the request.
+   */
+  sourceIp  String?
+  userAgent String?
+
+  /**
+   * What we did with the event — links to any reconciliation we performed.
+   */
+  handledAs String? // "invoice.paid" | "invoice.failed" | "lead.stage_changed" | "ignored"
+
+  /**
+   * Free-form notes for failure investigation.
+   */
+  error String?
+
+  receivedAt DateTime @default(now())
+
+  @@index([provider, eventType, receivedAt])
+  @@index([providerEventId])
+  @@index([receivedAt])
+  @@map("webhook_events")
+}
+
+// ── module: portal ───────────────────────────────────────────────────────────
+// Customer-facing portal identity. Deliberately a separate identity space
+// from `core.User` — sharing the table would put customer credentials one
+// bad query away from operator permissions, and a customer churn event
+// would not be able to clean up without touching operator rows.
+//
+// Every query in the portal joins on `portalAccountId` so a portal user
+// never sees data belonging to another account. Enforced at the query
+// layer, not by hiding a link.
+
+enum PortalRole {
+  OWNER // can manage account settings + invite others + see everything
+  ADMIN // can manage users + see everything except billing ownership transfer
+  MEMBER // can see their own tickets/invoices/projects, no admin actions
+}
+
+enum PortalAccountStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+model PortalAccount {
+  id     String              @id @default(cuid())
+  slug   String              @unique // used in URLs: /portal/accounts/<slug>
+  name   String
+  status PortalAccountStatus @default(ACTIVE)
+
+  // Optional defaults applied to every user invited to this account.
+  defaultTimezone String?
+  defaultCurrency String  @default("USD")
+
+  // Link back to the original Lead/CRM contact that became this account,
+  // so the commercial history is preserved when a lead becomes a customer.
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  users       PortalUser[]
+  invitations PortalInvitation[]
+  auditLog    PortalAuditLog[]
+  documents   ClientDocument[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@map("portal_accounts")
+}
+
+model PortalUser {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+
+  // bcrypt hash. Nullable because OAuth-only users do not have a password.
+  // Verified email is required to set a password — the forgot-password
+  // flow also requires a verified email.
+  passwordHash String?
+
+  emailVerifiedAt DateTime?
+
+  // 2FA. The secret is stored AES-256-GCM sealed; never returned to the
+  // browser. `totpEnabledAt` is the truth flag — secret alone without a
+  // verified code at enable time is not enough.
+  totpSecretCiphertext String?
+  totpSecretIv         String?
+  totpSecretTag        String?
+  totpEnabledAt        DateTime?
+
+  failedLogins Int       @default(0)
+  lockedUntil  DateTime?
+  lastLoginAt  DateTime?
+  isActive     Boolean   @default(true)
+
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+  role            PortalRole    @default(MEMBER)
+
+  sessions       PortalSession[]
+  magicLinks     PortalMagicLink[]
+  passwordResets PortalPasswordReset[]
+  oauthAccounts  PortalOAuthAccount[]
+  auditLog       PortalAuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([portalAccountId, role])
+  @@map("portal_users")
+}
+
+model PortalSession {
+  id     String     @id @default(cuid())
+  userId String
+  user   PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash  String   @unique // SHA-256 of the plaintext; plaintext only in cookie
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("portal_sessions")
+}
+
+// One-time email link, both for sign-in and for password reset. The hash is
+// what is stored; the raw token is in the URL the user clicks.
+model PortalMagicLink {
+  id     String      @id @default(cuid())
+  email  String
+  userId String?
+  user   PortalUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String    @unique
+  purpose   String    @default("sign-in") // "sign-in" | "reset"
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([email, purpose, expiresAt])
+  @@map("portal_magic_links")
+}
+
+model PortalPasswordReset {
+  id     String     @id @default(cuid())
+  userId String
+  user   PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("portal_password_resets")
+}
+
+// One row per (provider, providerAccountId). Stable across sessions so a
+// returning user is recognised. The (provider, providerAccountId) pair is
+// globally unique — that prevents accidentally creating two portal users
+// for the same Google account.
+model PortalOAuthAccount {
+  id     String     @id @default(cuid())
+  userId String
+  user   PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  provider          String // "google" | "microsoft"
+  providerAccountId String
+
+  // Tokens are AES-256-GCM sealed. Plaintext never leaves the server.
+  accessTokenCiphertext  String?
+  accessTokenIv          String?
+  accessTokenTag         String?
+  refreshTokenCiphertext String?
+  refreshTokenIv         String?
+  refreshTokenTag        String?
+  expiresAt              DateTime?
+
+  scopes     String?
+  lastUsedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("portal_oauth_accounts")
+}
+
+model PortalInvitation {
+  id              String        @id @default(cuid())
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+
+  email String
+  role  PortalRole @default(MEMBER)
+
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+
+  invitedById String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, acceptedAt])
+  @@map("portal_invitations")
+}
+
+// Shared documents and notes between the team and the client.
+// `key` is the S3 object key in the existing `apex-media` bucket.
+model ClientDocument {
+  id              String        @id @default(cuid())
+  portalAccountId String
+  portalAccount   PortalAccount @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+
+  filename    String
+  key         String  @unique
+  mimeType    String
+  bytes       Int
+  title       String?
+  description String?
+
+  uploadedByKind String  @default("team") // "team" | "client"
+  uploadedById   String? // portalUserId or core User id, depending on kind
+
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, publishedAt])
+  @@map("client_documents")
+}
+
+model PortalAuditLog {
+  id              String         @id @default(cuid())
+  portalAccountId String?
+  portalAccount   PortalAccount? @relation(fields: [portalAccountId], references: [id], onDelete: Cascade)
+  portalUserId    String?
+  portalUser      PortalUser?    @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
+
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+
+  changes   Json?
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portalAccountId, createdAt])
+  @@index([portalUserId, createdAt])
+  @@map("portal_audit_log")
+}
+
+// ── module: projects ────────────────────────────────────────────────────────
+// Delivery projects for clients. Each project is scoped to one portal
+// account. Tasks roll up to the project; timesheets link to billing
+// invoice lines (a separate concern for the billing module to consume).
+
+enum ProjectStatus {
+  PLANNED
+  ACTIVE
+  WAITING
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  REVIEW
+  DONE
+}
+
+model Project {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status ProjectStatus @default(PLANNED)
+
+  name    String
+  summary String?
+  body    String? @db.Text
+
+  portalAccountId String?
+  leadId          String?
+  leads           Lead[]  @relation("LeadProjects")
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  budgetAmount   Int?
+  budgetCurrency String @default("USD")
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([portalAccountId, status])
+  @@map("projects")
+}
+
+model Task {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?    @db.Text
+  status      TaskStatus @default(TODO)
+
+  // Effort estimate and actual, in hours. Kept simple — billing is a
+  // downstream concern.
+  estimatedHours Float?
+  actualHours    Float?
+
+  assigneeId String?
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId, order])
+  @@map("tasks")
+}
+
+model Timesheet {
+  id        String @id @default(cuid())
+  userId    String // core user id — operator/engineer who logged time
+  projectId String
+
+  date  DateTime
+  hours Float
+  note  String?
+
+  // When the timesheet is billed, this points at the invoice line it
+  // rolled into. NULL means it has not been billed yet.
+  invoiceLineId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId, date])
+  @@map("timesheets")
+}
+
+model ClientApproval {
+  id        String @id @default(cuid())
+  projectId String
+
+  title       String
+  description String? @db.Text
+  status      String  @default("PENDING") // PENDING | APPROVED | CHANGES_REQUESTED
+
+  requestedById String?
+  respondedById String?
+
+  respondedAt  DateTime?
+  responseNote String?
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId, status])
+  @@map("client_approvals")
 }
 
 // ── module: saas ────────────────────────────────────────────────────────────
@@ -930,4 +1739,95 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ── module: support ─────────────────────────────────────────────────────────
+// Tickets raised by clients (via the portal) and by the team (via the
+// console). KB articles are public-renderable on the marketing site.
+
+enum TicketStatus {
+  OPEN
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Ticket {
+  id     String @id @default(cuid())
+  number String @unique // TCK-0001
+
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(NORMAL)
+
+  title String
+  body  String @db.Text
+
+  portalAccountId String?
+  // Link to the lead when the ticket was opened from a marketing enquiry
+  // rather than from the portal.
+  leadId          String?
+  lead            Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  openedById String?
+  assigneeId String?
+
+  tags String[]
+
+  comments TicketComment[]
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+  closedAt   DateTime?
+
+  @@index([status, createdAt])
+  @@index([portalAccountId, status])
+  @@map("tickets")
+}
+
+model TicketComment {
+  id       String @id @default(cuid())
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  // "core:user:<id>" or "portal:user:<id>" — the author of the comment.
+  authorKind String
+  authorId   String
+
+  body       String  @db.Text
+  isInternal Boolean @default(false) // team-only notes — never visible to the client
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_comments")
+}
+
+model KbArticle {
+  id     String        @id @default(cuid())
+  slug   String        @unique
+  status PublishStatus @default(DRAFT)
+
+  title    String
+  excerpt  String
+  body     String   @db.Text
+  category String
+  tags     String[]
+
+  // Linked from a portal account — only that account (and team) see it.
+  portalAccountId String?
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("kb_articles")
 }

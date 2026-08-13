@@ -13,14 +13,19 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@apex/ai": "workspace:*",
+    "@apex/auth": "workspace:*",
     "@apex/db": "workspace:*",
+    "@apex/integrations": "workspace:*",
     "@apex/ui": "workspace:*",
+    "@types/pg": "^8.21.0",
+    "motion": "^13.0.0",
     "next": "^15.1.6",
+    "pg": "^8.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
-    "zod": "^3.24.1",
-    "@apex/ai": "workspace:*"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@apex/config": "workspace:*",

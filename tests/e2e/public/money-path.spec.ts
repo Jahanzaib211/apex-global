@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 /**
  * The money path.
@@ -7,6 +7,13 @@ import { expect, test } from "@playwright/test";
  * visitor converts, and the enquiry arrives with its attribution intact. If
  * this breaks, advertising spend produces nothing measurable — every other
  * test in the suite matters less than this one.
+ *
+ * Rate limiting: /api/leads caps at 5 submissions per 10 minutes per client
+ * IP. A real visitor is one IP, but this whole spec talks to one origin from
+ * 127.0.0.1, so every POST would eat the same 5-request budget and half the
+ * assertions would 429. Each test therefore presents itself as a distinct
+ * client address (exactly what Cloudflare sets in production), so the limiter
+ * sees N visitors, not one bot.
  */
 
 const CAMPAIGN = `e2e-${Date.now()}`;
@@ -16,8 +23,29 @@ function uniqueEmail() {
   return `e2e-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
 }
 
+/** A random pseudo-client IP per call (TEST-NET-10, 198.19/16). Random, not a
+    small counter — workers and retries both re-enter this file in parallel, so
+    a tight address sequence would collide across back-to-back full-suite runs
+    and trip the per-IP rate limiter. */
+function testIp(): string {
+  const seed = Math.floor(Math.random() * 4294967295);
+  return `198.19.${(seed >> 16) & 0xff}.${(seed >> 8) & 0xff}`;
+}
+
+/**
+ * Route every /api request through `x-forwarded-for: <ip>` so the page's own
+ * fetch submissions count against a per-test visitor, not the shared host.
+ */
+async function spoofPageIp(page: Page, ip: string) {
+  await page.route("**/api/**", (route) => {
+    const headers = { ...route.request().headers(), "x-forwarded-for": ip };
+    void route.continue({ headers });
+  });
+}
+
 test.describe("money path", () => {
   test("a campaign page has one action and no way to wander off", async ({ page }) => {
+    await spoofPageIp(page, testIp());
     await page.goto(LANDING);
 
     // No site chrome: every exit route on a page we paid for is a lost click.
@@ -30,6 +58,7 @@ test.describe("money path", () => {
   });
 
   test("campaign pages are excluded from search", async ({ page }) => {
+    await spoofPageIp(page, testIp());
     const response = await page.goto(LANDING);
     expect(response?.status()).toBe(200);
 
@@ -40,6 +69,7 @@ test.describe("money path", () => {
   });
 
   test("submitting converts and lands on the thank-you page", async ({ page }) => {
+    await spoofPageIp(page, testIp());
     const email = uniqueEmail();
 
     await page.goto(LANDING);
@@ -54,6 +84,8 @@ test.describe("money path", () => {
   });
 
   test("the enquiry is stored with its campaign attribution intact", async ({ page, request }) => {
+    const ip = testIp();
+    await spoofPageIp(page, ip);
     const email = uniqueEmail();
 
     await page.goto(LANDING);
@@ -66,6 +98,7 @@ test.describe("money path", () => {
     // Re-submitting the same address on the same day must append to the
     // existing lead, not create a second one for sales to call twice.
     const duplicate = await request.post("/api/leads", {
+      headers: { "x-forwarded-for": ip },
       data: { name: "Attribution Check", email, consentContact: true, message: "double tap" },
     });
     expect(duplicate.status()).toBe(201);
@@ -75,6 +108,7 @@ test.describe("money path", () => {
     // Returning a validation error naming the trap field would tell the bot
     // exactly which input to leave alone next time.
     const response = await request.post("/api/leads", {
+      headers: { "x-forwarded-for": testIp() },
       data: {
         name: "Bot",
         email: uniqueEmail(),
@@ -89,6 +123,7 @@ test.describe("money path", () => {
 
   test("consent is required", async ({ request }) => {
     const response = await request.post("/api/leads", {
+      headers: { "x-forwarded-for": testIp() },
       data: { name: "No Consent", email: uniqueEmail() },
     });
 
@@ -99,6 +134,7 @@ test.describe("money path", () => {
 
   test("the raw IP is never returned to a client", async ({ request }) => {
     const response = await request.post("/api/leads", {
+      headers: { "x-forwarded-for": testIp() },
       data: { name: "Privacy Check", email: uniqueEmail(), consentContact: true },
     });
 
