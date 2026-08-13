@@ -48,3 +48,17 @@ graphify-out/
 
 # live password cheat-sheet — never commit
 infra/MASTER-CREDENTIALS.md
+
+# Business collateral that landed in the repo root: sales decks, pricing
+# frameworks, financial scoping and invoices. These are commercial documents,
+# not source, and some are internal — they should live in the drive, not in a
+# code repository where every collaborator inherits them.
+/*.pdf
+/*.pptx
+/*.docx
+/*.png
+/Genesis_X_*.html
+/Nova_*.html
+
+# Vendored upstream with its own git repository — not a submodule.
+infra/mailcow-dockerized/

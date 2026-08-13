@@ -1,0 +1,190 @@
+# Apex Global Tech Solution — Hyperswitch (open-source payment router).
+#
+# Owns the "/api/webhooks/hyperswitch" endpoint on the public site and the
+# "pay via Hyperswitch" entry on the client portal. Self-hosted: the router,
+# the operator UI (Control Center), the card-vault (PCI tokenisation) and
+# the client SDK are all on this stack.
+#
+# Ports (loopback only — same policy as every other stack on this host):
+#   8080  router  (REST + webhooks)
+#   9090  control-center  (operator UI; 9000 was taken → 9090)
+#   9056  web SDK  (the PCI-tolerant SDK bundle)
+#   9043  card vault  (tokenisation)
+#   5438  postgres
+#   6383  redis
+#
+# All Hyperswitch containers are the `nightly-standalone` family where
+# available — those packages Kafka + scheduler inside the single router
+# binary, so a four-container stack is enough (router / card-vault /
+# control-center / postgres; redis optional).
+
+name: apex-hyperswitch
+
+services:
+  hyperswitch-postgres:
+    image: postgres:16-alpine
+    container_name: hyperswitch-postgres
+    environment:
+      POSTGRES_USER: ${HYPERSWITCH_POSTGRES_USER:-hyperswitch}
+      POSTGRES_PASSWORD: ${HYPERSWITCH_POSTGRES_PASSWORD:?HYPERSWITCH_POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${HYPERSWITCH_POSTGRES_DB:-hyperswitch}
+    volumes:
+      - hyperswitch_pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5538:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${HYPERSWITCH_POSTGRES_USER:-hyperswitch} -d ${HYPERSWITCH_POSTGRES_DB:-hyperswitch}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+
+  hyperswitch-redis:
+    image: redis:7-alpine
+    container_name: hyperswitch-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - hyperswitch_redisdata:/data
+    ports:
+      - "127.0.0.1:6383:6379"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 320M
+
+  hyperswitch-card-vault:
+    image: juspaydotin/hyperswitch-card-vault:latest
+    container_name: hyperswitch-card-vault
+    environment:
+      CARD_VAULT_JWT_SECRET: ${HYPERSWITCH_CARD_VAULT_JWT_SECRET:?HYPERSWITCH_CARD_VAULT_JWT_SECRET is required}
+      CARD_VAULT_TENANT: ${HYPERSWITCH_TENANT_ID:?HYPERSWITCH_TENANT_ID is required}
+      LOCKER_BIND_ADDR: "0.0.0.0:9043"
+    volumes:
+      - ./hyperswitch-config/vault.toml:/local/config/production.toml:ro
+    ports:
+      - "127.0.0.1:9043:9043"
+    depends_on:
+      hyperswitch-postgres:
+        condition: service_healthy
+      hyperswitch-vault-redis:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9043/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+  hyperswitch-vault-redis:
+    image: redis:7-alpine
+    container_name: hyperswitch-vault-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - hyperswitch_vault_redisdata:/data
+    ports:
+      - "127.0.0.1:6384:6379"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  hyperswitch-router:
+    image: juspaydotin/hyperswitch-router:nightly-standalone
+    container_name: hyperswitch-router
+    environment:
+      RUN_ENV: sandbox
+      RUST_LOG: info
+      ROUTER__SERVER__HOST: 0.0.0.0
+      ROUTER__PUBLIC_ENDPOINT_BASE_URL: ${HYPERSWITCH_PUBLIC_BASE_URL:-https://tech.apexgroupcompanies.com}
+    volumes:
+      - ./hyperswitch-config/router.toml:/local/config/sandbox.toml:ro
+      - ./hyperswitch-config/superposition_seed.toml:/local/bin/config/superposition_seed.toml:ro
+    ports:
+      - "127.0.0.1:8084:8080"
+    depends_on:
+      hyperswitch-postgres:
+        condition: service_healthy
+      hyperswitch-redis:
+        condition: service_healthy
+      hyperswitch-card-vault:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  hyperswitch-control-center:
+    image: juspaydotin/hyperswitch-control-center:latest
+    container_name: hyperswitch-control-center
+    environment:
+      API_BASE_URL: http://hyperswitch-router:8080
+      CONTROL_CENTER_ENV: docker
+      CONTROL_CENTER_PORT: "9000"
+    ports:
+      - "127.0.0.1:9090:9000"
+    depends_on:
+      hyperswitch-router:
+        condition: service_started
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  hyperswitch-web-sdk:
+    image: juspaydotin/hyperswitch-web:latest
+    container_name: hyperswitch-web-sdk
+    # The baked image can carry a stale ReScript lockfile (.bsb.lock) that
+    # makes `re:build` abort forever; clear it before building/serving.
+    # The dev server's watcher (watchpack) exhausts file descriptors on
+    # overlayfs and crash-loops the container. Instead: build once and serve
+    # the static bundle from dist/. The build takes a few minutes at boot.
+    command:
+      [
+        "/bin/sh",
+        "-lc",
+        "rm -f .bsb.lock && npm run re:build && npm run build && (cd /usr/src/app/dist && npx --yes serve@14 -l 5252 .)",
+      ]
+    ports:
+      - "127.0.0.1:9056:5252"
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+volumes:
+  hyperswitch_pgdata:
+  hyperswitch_redisdata:
+  hyperswitch_vault_redisdata:

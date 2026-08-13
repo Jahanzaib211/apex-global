@@ -1,0 +1,51 @@
+[log.console]
+enabled = true
+level = "DEBUG"
+log_format = "default"
+
+[server]
+host = "0.0.0.0"
+port = 9043
+
+[limit]
+request_count = 100
+duration = 60
+
+[database]
+username = "hyperswitch"
+password = "change_me_hs_pg"
+host = "hyperswitch-postgres"
+port = 5432
+dbname = "hyperswitch"
+
+[cache]
+tti = 7200
+max_capacity = 5000
+
+[secrets]
+locker_private_key = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDMtHGVfssCv8dEIqV49oYW3GpkFenXFLegybgmD8EeqNUa31I2gkXkmwqqhPorN+WDrZ2K0yoTj/cNjIgL9YjRgCZf25EPStFA1y1HysOG2XAvQWJ+m5AAVDCY3r68brT73Mt060JUuHzPaUO7K/LFwlEgmrkyv1HhIX2IDQgj63M/96ZWXiMjxCjtLvGxsiu2QqKUKXxOXhvYAIsByUinuwmlbMaZI9jTYmsTk3lwvTMATcyYksxCc7ZFMbrtYbXY1Csrti6rnyEOfn09oAsazi7m8Exe9L1xtvrPikTgQD5zTVBfXjc2FmU6XUvaWRGcuLGAW+HVWSNWCKULy7rfAgMBAAECggEARxdDew+VoVbI9TizDtdOqhHSQP/7Pd7MBuMHOPCvuN4ZZEO6YYPMkh/mDGIyH2BCLQDWfafoLPMKcYIknUKgSWGf8hpmvlDVaxdPemdIkERjWYXzltSfpf2XAwAYbYhlAjMj1W7+kj2f2shL5WzV2ygo1JHnT2ByJyViWyVrdk1np8gcAQ40m0LdaOhiju1DBfkOOKj4mpTdmwNJEPT5i70wyxX0viu9mo95LVB4rCHwDqOI34dVN/EMS0bpxMjhpSdHQcJcef2FC01UsXaL3Kok9p7Yr4HRQf5rcLW9agWhqckMtYCvpQMRXvnNKD82qnqc1mrdpwhNOnOBE/s7gQKBgQDpnNWcPCOSaOXWoCZIFCPvGG4nteaI71xh7OWh3aGHs3rH01MrB62f9mBJecQWQbs482XR9C/PyT6WKMs7jCKXCXSY+wtoK/MMgevvPCMqIyzp9UdqV2G39xw8IHNDUJOv6lFpRhSWyLFa7IWM/Wi7xKijrCdQTgx1IZKo7j5NiQKBgQDgUmvfWQL7hcjl621+bn8wEpTQsTB9dEVkE5ZSGl6GXhWk+m0dAaoZeoKskd+EVdnMJyQAufrpw+mVISIk5+uiYu8iJnsaw2gQfZvSrQxAOPrIlGUiS6mwOQLLHH7G5TaMYc+l98DiribKZMCp38Ti09G0MeFhAbLaQ+37T7bTJwKBgF2YcVjMG3BgSJ1pwoykTRVRE2kjjr6UL84oDISCeGIW/X0r5KlbxStOmZs2huJn6WvS0JuCmtlEBqhApdQwu/cJWcak5hgRa6o6L13FGU2blDYUCE3JvqPnBE/urF9u3Azh80YbRsp2k+Aa3RL0wE5iZzJUGdgpvQH8tnaqJRoJAoGASrMnuPirRZcHj4kWrUOelyOY6uYWf7B4axsas7yUPaqXCplaPI6RVmq1mUH6bNcp8BIYqyVDqRTUdBTUifWxQiIv/+9Qj1kDDnrFqSJ3MevHl4PTKdiIaWaSx5B1p0YtJBJuU5ZtZQ8ZW8yxW+BocCCZdKgnpWYraQO1/DpPZ4ECgYAG8fNrNDTrF0Hf2WcVwG9MhJaZv22qXtFSOUgw3uSe+0yRXNV+XIqM6ZkkXyOmXIdzaHNmAPRwPLTFOB6iy/ewTRHNp1JSKCU+hWyvvA1zfy9V+CPKmQay0QOJo6Fuf4Wf9ASerSXBxPBlmloP682lMeg6nisphyYYPoiPyvaveg=="
+
+[tenant_secrets.org_c7a39597a99558d9]
+master_key = "0ffe26311d7964072fe003eaa6a31488af4dc9b4f449d6f980891c571b4b274f"
+public_key = "LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSUtwRmZ4cGcvNDlxYVM3WUhHRDFoT2tNdnorc2Rla1EvSDkvcnkzNm5XVzhvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFWUVtNEFrdEMyYkR6U29teVhMUk16VzZsZURQMzVwZmNITnhSc3pYU09GdWphbkpjM0N4MwoyTEgvTFJ6NUtkazVNWVRlNU52STErelRjZzlrRWNReU1nPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQo="
+schema = "public"
+redis_key_prefix = "public"
+
+[external_key_manager]
+mode = "disabled"
+
+[redis]
+host = "hyperswitch-vault-redis"
+port = 6379
+pool_size = 5
+
+[kv]
+drainer_stream_suffix = "DRAINER_STREAM"
+drainer_num_partitions = 16
+ttl_for_kv = 900
+
+[metrics]
+mode = "disabled"
+
+[runtime_config]
+mode = "disabled"
