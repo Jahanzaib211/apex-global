@@ -32,8 +32,18 @@ judged — and it cannot be reconstructed afterwards.
 | `lead.notify` | New lead → email / WhatsApp / Telegram |
 | `lead.conversion` | New lead → server-side conversion to Meta CAPI and Google Ads |
 
-Both are still inline TODOs in the API route; they move onto BullMQ with the
-worker tier for retries and a dead-letter queue.
+**Neither runs as a queue yet.** `lead.notify` exists in substance —
+`notifyNewLead` (`packages/auth/src/email.ts`) ships email and is called from
+`ingestLead()` — but as an un-awaited promise in the request handler, not a job:
+nothing retries it, and a crash between commit and send drops the alert
+silently. WhatsApp and Telegram are unbuilt. `lead.conversion` is unbuilt
+entirely. Both move onto BullMQ with the worker tier, for retries and a
+dead-letter queue.
+
+What the lead path does today — validate, write in one transaction, record
+`sourceSite`, sync to Twenty, enrich and notify fire-and-forget — is described in
+[docs/API.md](../../docs/API.md) and
+[docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
 
 ## Design decisions
 
@@ -41,9 +51,12 @@ worker tier for retries and a dead-letter queue.
   attribution cannot be tied to spend, which defeats the point of collecting it.
 - **The IP is hashed with a daily-rotating salt**, never stored. Enough to
   rate-limit and deduplicate; not a stable identifier across days.
-- **Same email, same day appends** to the existing lead rather than creating a
-  second one — a double-tap on a slow connection should not make sales call
-  the same person twice.
+- **Same site, same email, same day appends** to the existing lead rather than
+  creating a second one — a double-tap on a slow connection should not make
+  sales call the same person twice. The key is `sourceSite:email:day`, not
+  `email:day`: with five properties on one pipeline, hashing on email alone
+  would collapse a tours enquiry and a tech enquiry from the same person on the
+  same day into one lead and lose the second intent.
 - **Click-to-call and WhatsApp taps are tracked conversions.** In several of
   our markets they outnumber form fills, and a funnel that only counts forms
   will under-report demand and mis-optimise the spend.

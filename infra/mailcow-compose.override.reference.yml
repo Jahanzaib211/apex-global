@@ -1,0 +1,81 @@
+# Reference copy — NOT used at runtime.
+#
+# The live file is infra/mailcow-dockerized/docker-compose.override.yml,
+# which mailcow's own .gitignore excludes (line 71) because overrides are
+# meant to stay local to a deployment. That means the memory caps below
+# are NOT version-controlled where they actually live, and vanish if that
+# file is lost or the vendored mailcow checkout is refreshed.
+#
+# This copy exists so they can be restored. To reapply:
+#   cp infra/mailcow-compose.override.reference.yml \
+#      infra/mailcow-dockerized/docker-compose.override.yml
+#
+# Added 2026-08-13 — see infra/HARDENING-REPORT.md, Finding 4.
+
+# Memory caps.
+#
+# Upstream mailcow sets no mem_limit on any service, so any one of them can
+# consume the whole host. On 2026-08-12 this machine froze after RAM + swap
+# were exhausted, with 46 of 71 containers uncapped; a cap turns a host-wide
+# freeze into one contained container restart. Values are ~4-6x observed
+# steady-state, so normal operation never touches them.
+#
+# Applied live with `docker update --memory` too; these entries are what makes
+# them survive a `docker compose up --force-recreate`.
+services:
+  mysql-mailcow:
+    mem_limit: 1g
+  rspamd-mailcow:
+    mem_limit: 1g
+  sogo-mailcow:
+    mem_limit: 512m
+  php-fpm-mailcow:
+    mem_limit: 512m
+  ofelia-mailcow:
+    mem_limit: 512m
+  dockerapi-mailcow:
+    mem_limit: 256m
+  dovecot-mailcow:
+    mem_limit: 512m
+  netfilter-mailcow:
+    mem_limit: 256m
+  watchdog-mailcow:
+    mem_limit: 256m
+  unbound-mailcow:
+    mem_limit: 256m
+  olefy-mailcow:
+    mem_limit: 256m
+  nginx-mailcow:
+    mem_limit: 256m
+  postfix-tlspol-mailcow:
+    mem_limit: 256m
+  memcached-mailcow:
+    mem_limit: 128m
+  acme-mailcow:
+    mem_limit: 256m
+  clamd-mailcow:
+    mem_limit: 2g
+
+  postfix-mailcow:
+    # Replaces the upstream entrypoint so we run our permission-fixer first,
+    # then call the original entrypoint. Without this, /var/lib/postfix and
+    # /opt/postfix (bind-mounted from ./data/...) are owned by host uid 1000 on
+    # every start and Postfix's master refuses to boot ("cannot open lock file").
+    command: ["sh", "-c", "exec /usr/local/bin/postfix-entrypoint.sh /opt/postfix.sh"]
+    volumes:
+      - ./patches/postfix.sh:/opt/postfix.sh:rw
+      - ./patches/postfix-bootfix.sh:/usr/local/bin/postfix-entrypoint.sh:ro
+
+# rspamd-mailcow and dovecot-mailcow deliberately have no override.
+#
+# They previously carried copies of the postfix block above — a command of
+# `exec /opt/rspamd.sh` / `exec /opt/dovecot.sh` and a bind mount to
+# ./patches/<name>.sh. Those patch scripts were never written, so Docker
+# created ./patches/rspamd.sh and ./patches/dovecot.sh as empty *directories*
+# and both services died on startup with "Permission denied" trying to exec a
+# directory. rspamd and dovecot had been crash-looping since 2026-08-07 —
+# no spam filtering and no IMAP/POP — while postfix, which has a real patched
+# script, ran fine.
+#
+# Only postfix needs the permission fix. Everything else uses the upstream
+# entrypoint. If a patch is ever needed here, write the script first.

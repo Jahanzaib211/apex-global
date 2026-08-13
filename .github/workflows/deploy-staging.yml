@@ -55,15 +55,25 @@ jobs:
             pnpm db:generate
             pnpm db:migrate
             pnpm build
-            pm2 reload ecosystem.config.cjs --update-env
+            # The ecosystem file lives in infra/, not the repo root. This ran
+            # bare `ecosystem.config.cjs` from the checkout root, where no such
+            # file exists, so every staging deploy failed at the reload step
+            # after already having built and migrated.
+            pm2 reload infra/ecosystem.config.cjs --update-env
           REMOTE
 
       - name: Smoke test
         run: |
+          # /api/health reports database reachability, not just "the process
+          # is listening" — a homepage 200 can be served from cache while the
+          # database is down.
           for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${{ vars.STAGING_URL }}" || true)
-            if [ "$code" = "200" ]; then echo "Staging healthy."; exit 0; fi
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${{ vars.STAGING_URL }}/api/health" || true)
+            if [ "$code" = "200" ]; then echo "Staging healthy."; break; fi
+            if [ "$i" = "12" ]; then
+              echo "::error::Staging /api/health did not return 200 after deploy (last: $code)."
+              exit 1
+            fi
             echo "Attempt $i: got $code, retrying..."; sleep 10
           done
-          echo "::error::Staging did not return 200 after deploy."
-          exit 1
+          WEB_ORIGIN="${{ vars.STAGING_URL }}" node scripts/smoke-test.mjs

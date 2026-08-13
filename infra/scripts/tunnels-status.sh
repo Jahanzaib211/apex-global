@@ -32,6 +32,11 @@ TUNNELS=(
   "tunnel-apex-outsourcing|20006|outsourcing.apexgroupcompanies.com"
   "tunnel-apex-holdings|20007|holdings.apexgroupcompanies.com"
   "tunnel-apex-tech|20008|tech.apexgroupcompanies.com"
+  "cloud-apex-tunnel|20009|cloud.apexgroupcompanies.com"
+  # fincept was live but absent from this list and from TUNNELS.md, which is how
+  # its metrics port (20010) came to be advertised as the next free one.
+  "tunnel-fincept|20010|fincept.apexgroupcompanies.com"
+  "tunnel-chat|20011|chat.apexgroupcompanies.com"
 )
 
 printf '%-26s %-10s %-6s %-36s %s\n' "PM2 PROCESS" "STATE" "CONNS" "HOSTNAME" "HTTP"

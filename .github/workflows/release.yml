@@ -90,7 +90,10 @@ jobs:
             pnpm db:generate
             pnpm db:migrate
             pnpm build
-            pm2 reload ecosystem.config.cjs --update-env
+            # infra/, not the repo root — same bug as deploy-staging.yml had.
+            # Both deploy paths were failing at the reload step, after the
+            # build and the migration had already run.
+            pm2 reload infra/ecosystem.config.cjs --update-env
           REMOTE
 
       # Health check after the swap. The previous process stays up until the

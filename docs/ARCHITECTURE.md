@@ -27,7 +27,9 @@
               notifications · AI jobs · conversions
 ```
 
-`apps/portal` (customer accounts) joins the same data layer in Stage 9.
+`apps/web` hosts both the marketing site (`(site)` route group) and the
+client portal (`(portal)/portal` route group) so a single deploy carries
+both surfaces. The console is `apps/console`, ops + admin.
 
 ## Why a monorepo
 
@@ -55,22 +57,65 @@ contribute no navigation.
 ## Rendering strategy
 
 Public pages are server components reading through `packages/db` with ISR. Publishing in the console
-triggers a targeted revalidation, so content goes live in seconds without a deploy. The only client
+posts to `/api/revalidate` on the web app, so content goes live in seconds without a deploy — the two
+apps are separate processes, and a local `revalidatePath` in the console cannot reach this cache. The
+only client
 components on the public site are the lead forms, the navigation disclosure and the 3D hero island —
 everything else ships zero JavaScript.
 
 ## Data flow: a lead
 
+Three entry points, all documented in [API.md](API.md):
+
+| Route | Source |
+|---|---|
+| `POST /api/leads` | this site's forms |
+| `POST /api/demo-request` | this site, when the enquiry names a SaaS product |
+| `POST /api/leads/partner` | the other four Apex properties, server-to-server, HMAC-signed |
+
+All three converge on one function — `ingestLead()` in `apps/web/src/lib/ingest-lead.ts` — so the
+group shares a single pipeline rather than four that drift apart:
+
 ```
-form submit
+form submit (or signed partner POST)
   → Zod validation
-  → honeypot + Turnstile + Redis rate-limit (per IP, per form)
-  → Lead + Attribution rows written in one transaction
-  → BullMQ: notify (email / WhatsApp / Telegram)
-  → BullMQ: AI summarise + score  (draft only, never auto-actioned)
-  → BullMQ: server-side conversion event (Meta CAPI / Google Ads)
+  → honeypot + Turnstile + in-process rate-limit (per IP, per endpoint)
+      · partner route instead verifies HMAC over `timestamp.site.body`
+  → Lead + Attribution + Activity rows written in one transaction
+      · sourceSite recorded; dedupe key is sourceSite:email:day
+  → Twenty CRM sync            ← NOT CURRENTLY ACTIVE, see below
+  → fire-and-forget: AI summarise + score  (draft only, never auto-actioned)
+  → fire-and-forget: notifyNewLead — email carrying site name + AI score
   → redirect /thank-you
 ```
+
+> **Twenty sync is wired but not configured.** `syncLeadToTwenty()`
+> (`packages/integrations/src/sync.ts`) reads its base URL and API key from an
+> `Integration` row, with the secret encrypted in the vault — not from env. As
+> of 2026-08-13 the `Integration` table is **empty**, so every call returns
+> `{ ok: false, detail: "Twenty CRM integration is not enabled" }` and no lead
+> has ever reached Twenty. The Twenty app itself runs on `127.0.0.1:3008`; only
+> the integration record is missing. Configure it in the console under
+> Settings → Integrations. Nothing is lost meanwhile — Postgres is the system of
+> record and the sync is a downstream copy — but any statement that leads "land
+> in the Twenty pipeline automatically" is not true today.
+
+`sourceSite` is what keeps five brands' demand separable in one pipeline, and it is in the dedupe key
+deliberately: the same person enquiring at tours *and* at tech on one day is two intents, and hashing
+on email alone would silently collapse them into one lead.
+
+**The worker tier is still not built.** Enrichment, notification and the Twenty sync all run as
+un-awaited promises in the request handler, and the rate limiter is an in-process map, so it counts
+per replica. Server-side conversion events (Meta CAPI / Google Ads) are specified in
+[`modules/crm`](../modules/crm/README.md) and remain unimplemented. All of it moves onto BullMQ —
+with retries and a dead-letter queue — when that tier lands.
+
+One honest consequence: an earlier version of this document argued that losing an advisory AI summary
+to a recycled process is acceptable but losing a notification is not, and that notifications should
+therefore wait for the queue. `notifyNewLead` shipped in `80ba62a` on the fire-and-forget path
+anyway. The lead row itself is committed before any of these run, so nothing is lost from the CRM —
+but a crash between commit and send drops the alert silently, and nothing retries it. That is the
+trade as it actually stands today, and it is the strongest argument for building the worker tier.
 
 Attribution is captured at first touch and stored on the lead: `utm_*`, `gclid`, `fbclid`, referrer,
 landing path, user agent, country, consent state. That is what makes
