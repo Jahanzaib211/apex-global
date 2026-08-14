@@ -1,0 +1,333 @@
+type Cap = string;
+type Step = { t: string; d: string };
+type Related = { label: string; href: string };
+
+export type ServiceContent = {
+  title: string;
+  tagline: string;
+  heroTitle: string;
+  heroHighlight: string;
+  overviewTitle: string;
+  overview: string[];
+  capabilities: Cap[];
+  process: Step[];
+  related: Related[];
+};
+
+export const servicesContent: Record<string, ServiceContent> = {
+  bpo: {
+    title: "Business Process Outsourcing",
+    tagline:
+      "Professional outsourced business operations designed around the way your business actually runs.",
+    heroTitle: "Operations, not overhead.",
+    heroHighlight: "",
+    overviewTitle: "Outsource the work that slows your team down.",
+    overview: [
+      "Apex builds and manages back-office and operational functions so your in-house team can focus on the work that grows the business. We don't just supply labour — we take responsibility for the process, the quality and the output.",
+      "Each engagement starts with process discovery, mapping the workflows, controls and outputs that matter. From there we design the right team, KPIs and operating rhythm — and continuously optimize.",
+    ],
+    capabilities: [
+      "Back-office operations",
+      "Administrative support",
+      "Data processing & validation",
+      "Document management",
+      "Business process management",
+      "Operational support",
+      "Research & analysis",
+      "Workflow automation",
+      "Documentation & reporting",
+      "Quality assurance",
+      "Process governance",
+      "Exception handling",
+    ],
+    process: [
+      { t: "Process Discovery", d: "Map current workflows, controls, owners and exceptions." },
+      { t: "Operating Model Design", d: "Define team structure, tools, KPIs and SLAs." },
+      { t: "Build & Train", d: "Recruit and train a team on your exact process." },
+      { t: "Transition & Launch", d: "Run a controlled transition with quality gates." },
+      { t: "Operate & Optimize", d: "Continuous improvement backed by transparent reporting." },
+    ],
+    related: [
+      { label: "Customer Experience", href: "/services/customer-experience" },
+      { label: "Back-Office Operations", href: "/services/back-office" },
+      { label: "Dedicated Remote Teams", href: "/services/dedicated-teams" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "customer-experience": {
+    title: "Customer Experience",
+    tagline:
+      "Voice, chat, email and omnichannel customer support — engineered for measurable CSAT.",
+    heroTitle: "Customer experience,",
+    heroHighlight: "engineered.",
+    overviewTitle: "Support that protects your brand and your customers.",
+    overview: [
+      "Apex runs customer support operations across voice, chat, email and social — for businesses that want professional service without building and managing a large internal contact centre.",
+      "Quality is non-negotiable. Every interaction is monitored, scored and coached. Your customers get consistent service, your team gets clear KPIs, and your brand gets protected.",
+    ],
+    capabilities: [
+      "Inbound customer support",
+      "Outbound customer support",
+      "Technical support (Tier 1 & 2)",
+      "Complaint handling & resolution",
+      "Customer retention",
+      "Feedback collection",
+      "Call handling",
+      "Chat & live chat support",
+      "Email support",
+      "Omnichannel customer experience",
+      "CSAT / NPS management",
+      "Quality monitoring & coaching",
+    ],
+    process: [
+      { t: "CX Discovery", d: "Map customer journeys, channels, FAQs and SLAs." },
+      { t: "Knowledge & Training", d: "Build knowledge bases and certify your support team." },
+      { t: "Channel Setup", d: "Configure phone, chat, email and ticketing infrastructure." },
+      { t: "Soft Launch", d: "Run a controlled launch with shadowing and quality scoring." },
+      { t: "Scale & Optimize", d: "Expand coverage, monitor CSAT and continuously improve." },
+    ],
+    related: [
+      { label: "Business Process Outsourcing", href: "/services/bpo" },
+      { label: "Telesales", href: "/services/tele-sales" },
+      { label: "Dedicated Remote Teams", href: "/services/dedicated-teams" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "tele-sales": {
+    title: "Telesales",
+    tagline: "Structured outbound sales operations that turn conversations into customers.",
+    heroTitle: "Turn conversations",
+    heroHighlight: "into customers.",
+    overviewTitle: "Outbound sales, run as a managed revenue operation.",
+    overview: [
+      "Apex builds and runs Telesales operations for businesses that want to acquire customers through professional sales teams. We don't just dial numbers — we operate as a revenue engine with scripts, qualification frameworks and conversion KPIs.",
+      "From cold calling to closing, from SMB to enterprise, our teams follow a defined sales process that integrates with your CRM and your funnel.",
+    ],
+    capabilities: [
+      "B2B Telesales",
+      "B2C Telesales",
+      "Outbound sales campaigns",
+      "Cold calling",
+      "Lead qualification",
+      "Product & service pitching",
+      "Appointment setting",
+      "Sales closing support",
+      "Follow-up campaigns",
+      "Lead nurturing",
+      "Upselling & cross-selling",
+      "Customer reactivation",
+    ],
+    process: [
+      {
+        t: "Funnel Design",
+        d: "Define ICP, scripts, qualification criteria and conversion targets.",
+      },
+      { t: "Data & List Building", d: "Source and clean prospect data for your campaign." },
+      { t: "Team Build & Training", d: "Hire, certify and ramp the Telesales team." },
+      { t: "Live Operations", d: "Run the campaign with daily KPIs, coaching and QA." },
+      {
+        t: "Optimize & Scale",
+        d: "Test messaging, channels and capacity as performance data arrives.",
+      },
+    ],
+    related: [
+      { label: "Sales Development", href: "/services/sales-development" },
+      { label: "Lead Generation", href: "/services/sales-development" },
+      { label: "Digital Marketing", href: "/services/digital-marketing" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "sales-development": {
+    title: "Sales Development & Lead Generation",
+    tagline: "Build your pipeline. Expand your reach.",
+    heroTitle: "Build your pipeline.",
+    heroHighlight: "Expand your reach.",
+    overviewTitle: "SDR teams that operate as an extension of yours.",
+    overview: [
+      "Apex provides sales development representatives that prospect, qualify and book meetings for your closers. We work from your ICP, your messaging and your CRM — so every meeting booked looks like one your team would have booked themselves.",
+      "Outbound, inbound, LinkedIn, email — we build the channel mix that fits your market and your sales motion.",
+    ],
+    capabilities: [
+      "B2B lead generation",
+      "B2C lead generation",
+      "Cold calling",
+      "Prospecting & list building",
+      "Database building",
+      "Lead qualification",
+      "Appointment setting",
+      "LinkedIn prospecting",
+      "Email outreach",
+      "Follow-up campaigns",
+      "Market research",
+      "Sales development representatives",
+    ],
+    process: [
+      { t: "ICP & Messaging", d: "Define your ideal customer profile and outbound messaging." },
+      { t: "Data Sourcing", d: "Build and refresh prospect databases that match your ICP." },
+      { t: "Outbound Engine", d: "Run multi-channel outbound — call, email, LinkedIn." },
+      {
+        t: "Qualify & Book",
+        d: "Qualify prospects and book meetings into your closers' calendars.",
+      },
+      { t: "Report & Optimize", d: "Track SQLs, show-rates, pipeline value and conversion." },
+    ],
+    related: [
+      { label: "Telesales", href: "/services/tele-sales" },
+      { label: "Digital Marketing", href: "/services/digital-marketing" },
+      { label: "Dedicated Remote Teams", href: "/services/dedicated-teams" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "digital-marketing": {
+    title: "Digital Marketing & Growth",
+    tagline: "Marketing that generates attention, leads and customers.",
+    heroTitle: "Marketing that",
+    heroHighlight: "drives revenue.",
+    overviewTitle: "Full-funnel digital marketing — under one partner.",
+    overview: [
+      "Apex runs digital marketing operations across social, performance, content, email and LinkedIn. Strategy, execution and measurement — managed end-to-end.",
+      "We don't just create marketing content. We help businesses generate attention, leads and customers.",
+    ],
+    capabilities: [
+      "Social media management",
+      "Performance / paid advertising",
+      "Campaign management",
+      "Lead-generation campaigns",
+      "Conversion-focused campaigns",
+      "Content marketing & copywriting",
+      "Content planning & calendars",
+      "Email marketing & automation",
+      "LinkedIn marketing & outreach",
+      "Marketing strategy",
+      "Customer acquisition",
+      "Performance tracking & attribution",
+    ],
+    process: [
+      { t: "Strategy & Audience", d: "Define audience, positioning, channels and KPIs." },
+      { t: "Content & Creative", d: "Build content systems, ad creative and conversion assets." },
+      { t: "Launch Campaigns", d: "Run campaigns across paid, organic, email and LinkedIn." },
+      { t: "Generate Leads", d: "Drive qualified leads into your CRM and your sales team." },
+      { t: "Measure & Scale", d: "Track CAC, ROAS, pipeline and revenue — and scale what works." },
+    ],
+    related: [
+      { label: "Sales Development", href: "/services/sales-development" },
+      { label: "Telesales", href: "/services/tele-sales" },
+      { label: "Customer Experience", href: "/services/customer-experience" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "back-office": {
+    title: "Back-Office Operations",
+    tagline: "Reliable back-office execution that protects the work that matters.",
+    heroTitle: "Reliable back-office,",
+    heroHighlight: "every day.",
+    overviewTitle: "The work that holds your business together.",
+    overview: [
+      "Data entry, processing, documentation, virtual assistance and operational support — run by trained resources with clear SLAs and quality controls.",
+      "We become the dependable layer behind your core operations.",
+    ],
+    capabilities: [
+      "Data entry & processing",
+      "Order processing",
+      "Documentation & records",
+      "Virtual assistance",
+      "Scheduling & calendar management",
+      "Email & inbox management",
+      "CRM data hygiene",
+      "Reporting & dashboards",
+      "File & asset management",
+      "Customer data updates",
+      "Operational support",
+      "Quality checks",
+    ],
+    process: [
+      { t: "Scope & SOPs", d: "Document the process, volume, SLAs and quality criteria." },
+      { t: "Resource Build", d: "Recruit and train resources on your specific SOPs." },
+      { t: "Pilot Run", d: "Run a pilot with quality sampling and coaching." },
+      { t: "Steady-State Operations", d: "Run daily operations with reporting and reviews." },
+      { t: "Continuous Improvement", d: "Refine SOPs, automation and capacity as you scale." },
+    ],
+    related: [
+      { label: "Business Process Outsourcing", href: "/services/bpo" },
+      { label: "Dedicated Remote Teams", href: "/services/dedicated-teams" },
+      { label: "Staffing Solutions", href: "/services/staffing" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  "dedicated-teams": {
+    title: "Dedicated Remote Teams",
+    tagline: "Build your team without building the overhead.",
+    heroTitle: "Build your team",
+    heroHighlight: "without the overhead.",
+    overviewTitle: "Your team, fully managed.",
+    overview: [
+      "Apex recruits, manages and runs dedicated teams that work exclusively on your business. They are your team — just operated by us.",
+      "From single hires to full multi-disciplinary teams, you get the talent without the HR, payroll, infrastructure and management overhead.",
+    ],
+    capabilities: [
+      "Sales teams",
+      "Telesales agents",
+      "Customer support agents",
+      "Technical support",
+      "Back-office teams",
+      "Data-entry resources",
+      "Social media managers",
+      "Graphic designers",
+      "Lead generation specialists",
+      "Virtual assistants",
+      "Business development representatives",
+      "QA & team leads",
+    ],
+    process: [
+      { t: "Role Definition", d: "Define roles, skills, experience and KPIs for your team." },
+      { t: "Recruitment", d: "Source, screen and select candidates aligned to your culture." },
+      {
+        t: "Onboarding & Training",
+        d: "Onboard and certify team members on your tools and processes.",
+      },
+      {
+        t: "Operations Management",
+        d: "Provide supervision, QA, reporting and people management.",
+      },
+      { t: "Scale & Evolve", d: "Expand the team as your business needs evolve." },
+    ],
+    related: [
+      { label: "Staffing Solutions", href: "/services/staffing" },
+      { label: "Customer Experience", href: "/services/customer-experience" },
+      { label: "Telesales", href: "/services/tele-sales" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+  staffing: {
+    title: "Staffing & Resource Solutions",
+    tagline: "Flexible engagement models for every stage of growth.",
+    heroTitle: "Flexible staffing,",
+    heroHighlight: "real outcomes.",
+    overviewTitle: "Four models. One partner.",
+    overview: [
+      "Apex offers four core engagement models so you can choose the level of management, flexibility and accountability that fits your business.",
+      "Each model is supported by the same recruitment, training and operations infrastructure — so quality is consistent regardless of the model you pick.",
+    ],
+    capabilities: [
+      "Dedicated Resources — exclusive resources on your business",
+      "Managed Teams — Apex runs recruitment, ops and performance",
+      "Project-Based Teams — assembled for a defined project",
+      "Campaign-Based Outsourcing — built for a sales/marketing campaign",
+      "Hybrid Engagements — blend of client + Apex teams",
+      "Flexible Scaling — ramp up or down with demand",
+    ],
+    process: [
+      { t: "Needs Discovery", d: "Identify which model fits your goals, timeline and budget." },
+      { t: "Model Selection", d: "Choose dedicated, managed, project or campaign." },
+      { t: "Team Build", d: "Recruit, train and certify resources for the model." },
+      { t: "Operate", d: "Run with defined KPIs, reporting and reviews." },
+      { t: "Evolve", d: "Adjust model, capacity or scope as your needs change." },
+    ],
+    related: [
+      { label: "Dedicated Remote Teams", href: "/services/dedicated-teams" },
+      { label: "Business Process Outsourcing", href: "/services/bpo" },
+      { label: "Back-Office Operations", href: "/services/back-office" },
+      { label: "Contact Our Team", href: "/contact" },
+    ],
+  },
+};

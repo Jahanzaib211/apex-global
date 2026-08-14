@@ -1,0 +1,38 @@
+{
+  "name": "@apex/outsourcing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p ${PORT:-3100}",
+    "build": "dotenv -e ../../.env -- next build",
+    "start": "next start -p ${PORT:-3100}",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "clean": "rm -rf .next .next/standalone/.next"
+  },
+  "dependencies": {
+    "@apex/site-kit": "workspace:*",
+    "next": "15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.460.0"
+  },
+  "devDependencies": {
+    "@apex/config": "workspace:*",
+    "dotenv-cli": "^8.0.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "20.16.10",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "10.4.20",
+    "eslint": "8.57.1",
+    "eslint-config-next": "15.1.6",
+    "postcss": "8.4.47",
+    "tailwindcss": "3.4.13",
+    "typescript": "5.5.4",
+    "vitest": "2.1.8"
+  }
+}

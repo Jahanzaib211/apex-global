@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Fixed header is ~88px tall. Honour it on hash-link scrolls. */
+    scroll-padding-top: 6rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Respect users who asked for less motion. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply bg-white font-sans text-slate-700;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: #0b1220;
+    color: #b89247;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    @apply text-ink;
+    font-feature-settings: "kern";
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply max-w-8xl mx-auto px-5 sm:px-8 lg:px-12;
+  }
+  .eyebrow {
+    @apply tracking-wide-3 text-brand-accent inline-block text-[11px] font-medium uppercase;
+  }
+  .h-display {
+    @apply font-display text-ink;
+    font-feature-settings: "liga", "kern";
+  }
+  .btn-primary {
+    @apply bg-ink tracking-wide-1 hover:bg-gold-400 hover:text-ink inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-medium text-white uppercase transition-all duration-300;
+  }
+  .btn-accent {
+    @apply bg-gold-400 text-ink tracking-wide-1 hover:bg-ink hover:text-gold-400 inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold uppercase transition-all duration-300;
+  }
+  .btn-ghost {
+    @apply border-ink/20 text-ink tracking-wide-1 hover:border-ink hover:bg-ink inline-flex items-center justify-center gap-2 border px-7 py-3.5 text-sm font-medium uppercase transition-all duration-300 hover:text-white;
+  }
+  .btn-ghost-light {
+    @apply tracking-wide-1 hover:border-gold-400 hover:text-gold-400 inline-flex items-center justify-center gap-2 border border-white/30 px-7 py-3.5 text-sm font-medium text-white uppercase transition-all duration-300;
+  }
+  .pill {
+    @apply tracking-wide-2 inline-flex items-center gap-1.5 border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-600 uppercase;
+  }
+  .pill-gold {
+    @apply tracking-wide-2 border-gold-400 text-ink bg-gold-50 inline-flex items-center gap-1.5 border px-3 py-1 text-[11px] font-medium uppercase;
+  }
+  .section {
+    @apply py-20 lg:py-28;
+  }
+  .section-tight {
+    @apply py-14 lg:py-20;
+  }
+  .divider {
+    @apply h-px bg-slate-200;
+  }
+  .card-base {
+    @apply shadow-card hover:shadow-card-hover bg-white transition-shadow duration-500;
+  }
+  /* architectural subtle grid bg */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(11, 18, 32, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(11, 18, 32, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}

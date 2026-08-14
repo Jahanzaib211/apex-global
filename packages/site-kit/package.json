@@ -1,0 +1,35 @@
+{
+  "name": "@apex/site-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./brand": "./src/brand.ts",
+    "./site": "./src/site.ts",
+    "./social": "./src/social.ts",
+    "./nav": "./src/nav.ts",
+    "./attribution": "./src/attribution.ts",
+    "./attribution.server": "./src/attribution.server.ts",
+    "./partner-signature": "./src/partner-signature.ts",
+    "./lead-schema": "./src/lead-schema.ts",
+    "./form-guards": "./src/form-guards.ts",
+    "./forward-lead": "./src/forward-lead.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo node_modules coverage"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@apex/config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.8.2",
+    "vitest": "^2.1.8"
+  }
+}
