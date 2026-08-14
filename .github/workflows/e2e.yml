@@ -60,7 +60,7 @@ jobs:
       NEXT_PUBLIC_SITE_URL: http://localhost:4890
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

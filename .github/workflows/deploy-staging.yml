@@ -38,7 +38,7 @@ jobs:
       url: ${{ vars.STAGING_URL }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # No staging host has ever been configured, so this guard failed in
       # about eight seconds on every push to main — a red X that means "not

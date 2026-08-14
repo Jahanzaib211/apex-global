@@ -55,7 +55,7 @@ jobs:
       DATABASE_URL: postgresql://apex:apex_ci@localhost:5432/apex_test?schema=public
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -79,7 +79,7 @@ jobs:
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Two different rules, because two different things were being conflated.
       #
@@ -134,7 +134,7 @@ jobs:
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       # The gitleaks *scanner* is MIT, but gitleaks-action@v2 is licence-gated
@@ -184,7 +184,7 @@ jobs:
       ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
       NEXT_PUBLIC_SITE_URL: http://localhost:4300
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

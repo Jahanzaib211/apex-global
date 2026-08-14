@@ -36,7 +36,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Pinned by digest-bearing tag rather than `latest`: a scanner that
       # silently changes version underneath you produces findings nobody can
@@ -98,7 +98,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # osv.dev is Google's open vulnerability database; the scanner reads the
       # pnpm lockfile directly, so it sees the exact resolved tree rather than
