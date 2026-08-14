@@ -23,7 +23,7 @@ export default function HoldingsHero() {
             Home
           </Link>
           <span>/</span>
-          <a href="#companies" className="hover:text-gold">
+          <a href="/companies" className="hover:text-gold">
             Companies
           </a>
           <span>/</span>

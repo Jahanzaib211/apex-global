@@ -17,18 +17,26 @@
 # Upstream mailcow sets no mem_limit on any service, so any one of them can
 # consume the whole host. On 2026-08-12 this machine froze after RAM + swap
 # were exhausted, with 46 of 71 containers uncapped; a cap turns a host-wide
-# freeze into one contained container restart. Values are ~4-6x observed
-# steady-state, so normal operation never touches them.
+# freeze into one contained container restart.
+#
+# CORRECTION 2026-08-14: these values were NOT derived from measurement, despite
+# the "~4-6x observed steady-state" claim this comment used to carry. Measured
+# total container RSS across the host is ~5.5 GiB against ~41 GiB of declared
+# limits. sogo was set *below* its working set (256m live), producing 844 OOM
+# kills in 7 hours. A cap that is too tight is its own outage.
 #
 # Applied live with `docker update --memory` too; these entries are what makes
-# them survive a `docker compose up --force-recreate`.
+# them survive a `docker compose up --force-recreate`. `docker update` alone
+# silently diverges from the file — always change both.
 services:
   mysql-mailcow:
     mem_limit: 1g
   rspamd-mailcow:
     mem_limit: 1g
   sogo-mailcow:
-    mem_limit: 512m
+    # See the matching comment in the live override. 256m/512m are both below
+    # SOGo's real working set; it crashlooped until this became 1g on 2026-08-14.
+    mem_limit: 1g
   php-fpm-mailcow:
     mem_limit: 512m
   ofelia-mailcow:

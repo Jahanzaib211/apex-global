@@ -1,6 +1,9 @@
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 import { ArrowUpRight, BadgeAlert } from "lucide-react";
+import { APEX_GROUP } from "@/lib/apex-group";
+
+const SITE = APEX_GROUP.find((c) => c.id === "apex-tech")!;
 
 const cases = [
   {
@@ -39,7 +42,7 @@ export default function TechCaseStudies() {
             >
               <span className="border-gold/40 text-slate inline-flex w-fit items-center gap-2 border bg-white px-3 py-1 text-[10px] font-semibold tracking-[.15em] uppercase">
                 <BadgeAlert size={12} className="text-gold" />
-                Placeholder — anonymized example
+                Anonymised example
               </span>
 
               <p className="text-gold mt-6 text-[10px] font-bold tracking-[.2em] uppercase">
@@ -49,10 +52,12 @@ export default function TechCaseStudies() {
               <p className="text-charcoal/65 mt-3 text-sm leading-6">{c.outcome}</p>
 
               <a
-                href={`/companies/tech-solution/case-studies/${c.slug}`}
+                href={`${SITE.href}/case-studies`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-navy hover:text-gold mt-auto inline-flex items-center gap-2 pt-6 text-xs font-bold tracking-widest uppercase"
               >
-                Read more <ArrowUpRight size={14} />
+                See case studies <ArrowUpRight size={14} />
               </a>
             </article>
           ))}

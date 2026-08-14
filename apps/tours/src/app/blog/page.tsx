@@ -103,8 +103,8 @@ export default function BlogPage() {
             <div className="eyebrow mb-3">All guides</div>
             <h2 className="heading-lg">Browse by category</h2>
             <p className="prose-body mt-3">
-              Articles are organized into the categories travelers ask us about most. Full articles
-              will be published by Apex in the coming weeks.
+              These are the questions travellers ask us most. Ask about any of them and our team
+              will answer for your specific trip.
             </p>
           </div>
 
@@ -113,18 +113,17 @@ export default function BlogPage() {
               <article key={p.title} className="card flex flex-col p-6 lg:p-7">
                 <div className="mb-4 flex items-center justify-between">
                   <span className="badge-gold">{p.category}</span>
-                  <span className="text-ink-300 text-[10px] font-semibold tracking-wider uppercase">
-                    Coming soon
-                  </span>
                 </div>
                 <h3 className="font-display text-navy-600 mb-3 text-lg leading-snug font-semibold">
                   {p.title}
                 </h3>
                 <p className="text-ink-400 flex-1 text-sm leading-relaxed">{p.excerpt}</p>
-                <div className="text-ink-300 mt-5 flex items-center gap-2 text-xs">
-                  <Calendar size={14} />
-                  <span>Date placeholder — Coming soon</span>
-                </div>
+                <a
+                  href="/contact#enquiry"
+                  className="text-navy-600 hover:text-gold-600 mt-5 inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase"
+                >
+                  Ask about this <ArrowRight size={14} />
+                </a>
               </article>
             ))}
           </div>
@@ -144,9 +143,9 @@ export default function BlogPage() {
                   About these guides
                 </h3>
                 <p className="text-ink-400 text-sm leading-relaxed">
-                  Content above is published by Apex as drafts and placeholders. Travel, visa,
-                  religious, and government information changes frequently — please verify with the
-                  relevant authority before relying on any guidance shared here.
+                  Travel, visa, religious and government requirements change frequently. Treat
+                  these as orientation, and confirm the current position with the relevant
+                  authority — or with us — before you rely on it for a booking.
                 </p>
               </div>
             </div>

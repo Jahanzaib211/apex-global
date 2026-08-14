@@ -14,7 +14,8 @@
     "./partner-signature": "./src/partner-signature.ts",
     "./lead-schema": "./src/lead-schema.ts",
     "./form-guards": "./src/form-guards.ts",
-    "./forward-lead": "./src/forward-lead.ts"
+    "./forward-lead": "./src/forward-lead.ts",
+    "./legal": "./src/legal.ts"
   },
   "scripts": {
     "lint": "eslint src",

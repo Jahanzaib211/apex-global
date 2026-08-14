@@ -2,15 +2,14 @@
  * Apex Group of Companies — Next.js 14 production config.
  *
  * Mirrors the apex-holdings playbook:
- *   - standalone output for minimal-runtime deployment
  *   - strict security headers (CSP, HSTS, X-Frame-Options, etc.)
  *   - lean image proxy allowlist
  *   - telemetry off in production
  *   - poweredByHeader disabled
  *   - reactStrictMode kept on
  *
- * The standalone build is opt-in via `npm run build:standalone`. The PM2
- * ecosystem config (`ecosystem.config.cjs`) points at `.next/standalone/server.js`.
+ * PM2 serves this with `pnpm --filter @apex/group start` (i.e. `next start`),
+ * per infra/ecosystem.config.cjs — not a standalone server bundle.
  */
 
 const isProd = process.env.NODE_ENV === "production";
@@ -63,10 +62,8 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   compress: true,
-  output: "standalone",
   images: {
-    // Unoptimized avoids the runtime image optimizer dependency in the standalone
-    // build (no sharp required). Optimize behind a CDN if needed later.
+    // Unoptimized avoids a runtime dependency on sharp on the deploy host.
     unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

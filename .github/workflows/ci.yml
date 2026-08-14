@@ -75,7 +75,7 @@ jobs:
 
       - name: Unit tests
         if: ${{ !cancelled() }}
-        run: pnpm test -- --coverage
+        run: pnpm test:coverage
 
       - name: Build
         if: ${{ !cancelled() }}

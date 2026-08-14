@@ -89,6 +89,20 @@ The hardening report this file cites is **`~/Desktop/TUNNEL-HARDENING.md`**
 for it comes up empty. It is the authority for anything tunnel-shaped, and its
 Appendix carries the zero-downtime connector-replacement recipe.
 
+A companion [MAIL.md](MAIL.md) covers the **mail** side, and is authoritative
+for anything mail-shaped. Two points bear directly on this file:
+
+- **`cloud-apex-tunnel` publishes the Mailcow admin UI to the public internet.**
+  `https://cloud.apexgroupcompanies.com/` serves SOGo, and `/admin` responds
+  from outside — behind their own login only, with no Cloudflare Access. Same
+  exposure noted for Chatwoot above, and the superadmin password sits in
+  git-tracked `MASTER-CREDENTIALS.md`.
+- **A tunnel cannot carry inbound mail.** Both domains' MX records point at
+  `mail.cloud` (malformed — resolves to nothing), and the intended target
+  `mail.cloud.apexgroupcompanies.com` is a CNAME to `97d3536e-….cfargotunnel.com`.
+  Tunnels carry HTTP, not SMTP, so for mail that record has to become a plain
+  grey-cloud `A` to a real IP. See Finding 4 there.
+
 A companion [HARDENING-REPORT.md](HARDENING-REPORT.md) covers the **host** side —
 the 2026-08-12 memory freeze, container limits, service posture. Where the two
 overlap they are cross-numbered: the inline-token issue is Finding 1 there and

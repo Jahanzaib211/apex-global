@@ -102,17 +102,18 @@ pnpm build && pm2 restart apex-global-web && pm2 save
 
 ## 8. Where things live
 
-| What                   | File                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| Homepage               | `apps/web/src/app/(site)/page.tsx`                                                                 |
-| Hero                   | `apps/web/src/components/hero.tsx`                                                                 |
-| Code-graph             | `apps/web/src/components/repo-graph.tsx`                                                           |
-| Tech marquee           | `apps/web/src/components/tech-stack-marquee.tsx`                                                   |
-| Design tokens / CSS    | `packages/ui/src/styles/base.css`                                                                  |
-| API routes             | `apps/web/src/app/api/**` and `apps/web/src/app/(portal)/**/route.ts` — inventory in `docs/API.md` |
-| Console (staff)        | `apps/console/src/app/(app)/**`                                                                    |
-| Surface e2e (all apps) | `tests/e2e/surfaces/` — project `surfaces`                                                         |
-| Infra/publish          | `infra/DEPLOY.md`, `infra/TUNNELS.md`, `infra/MASTER-CREDENTIALS.md`                               |
+| What                   | File                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Homepage               | `apps/web/src/app/(site)/page.tsx`                                                                                             |
+| Hero                   | `apps/web/src/components/hero.tsx`                                                                                             |
+| Code-graph             | `apps/web/src/components/repo-graph.tsx`                                                                                       |
+| Tech marquee           | `apps/web/src/components/tech-stack-marquee.tsx`                                                                               |
+| Design tokens / CSS    | `packages/ui/src/styles/base.css`                                                                                              |
+| API routes             | `apps/web/src/app/api/**` and `apps/web/src/app/(portal)/**/route.ts` — inventory in `docs/API.md`                             |
+| Console (staff)        | `apps/console/src/app/(app)/**`                                                                                                |
+| Surface e2e (all apps) | `tests/e2e/surfaces/` — project `surfaces`                                                                                     |
+| Infra/publish          | `infra/DEPLOY.md`, `infra/TUNNELS.md`, `infra/MASTER-CREDENTIALS.md`                                                           |
+| Mail (Mailcow, SMTP)   | `infra/MAIL.md` — authoritative. **Outbound delivery does not work**; read it before debugging any "email not arriving" report |
 
 ## 9. Deploy after change
 

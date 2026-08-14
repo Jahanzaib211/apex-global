@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 /** The site had no 404 page, so a bad URL rendered Next's unstyled default. */
 export default function NotFound() {
   return (
-    <main className="bg-navy-800 flex min-h-[70vh] items-center text-white">
+    <div className="bg-navy-800 flex min-h-[70vh] items-center text-white">
       <div className="container-x py-24">
         <p className="text-gold-400 font-display text-[clamp(6rem,20vw,16rem)] leading-none">404</p>
         <h1 className="font-display mt-3 text-4xl md:text-5xl">This page has moved.</h1>
@@ -25,6 +25,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

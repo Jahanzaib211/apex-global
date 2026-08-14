@@ -20,7 +20,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="bg-navy-800 flex min-h-[70vh] items-center text-white">
+    <div className="bg-navy-800 flex min-h-[70vh] items-center text-white">
       <div className="container-x py-24">
         <span className="eyebrow !text-gold-400 mb-3 block">Something went wrong</span>
         <h1 className="font-display text-4xl md:text-5xl">We hit a snag on this page.</h1>
@@ -39,6 +39,6 @@ export default function Error({
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

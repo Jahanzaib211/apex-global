@@ -35,7 +35,7 @@ export default function EventDetailPage() {
         bg={event.cover}
         breadcrumbs={[{ label: "Events", href: "/events" }, { label: event.title }]}
       />
-      <main className="bg-white">
+      <div className="bg-white">
         <div className="container-x py-8 md:py-12">
           <div className="relative h-[42vh] min-h-[280px] overflow-hidden rounded-2xl">
             <Image src={event.cover} alt={event.title} fill unoptimized className="object-cover" />
@@ -129,7 +129,7 @@ export default function EventDetailPage() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         title="Talk to our team"
@@ -140,12 +140,12 @@ export default function EventDetailPage() {
 }
 function NotFound() {
   return (
-    <main className="container-x section">
+    <div className="container-x section">
       <h1 className="font-display text-ink text-4xl font-bold">Event not found</h1>
       <p className="mt-3 text-slate-600">The event you are looking for may have moved.</p>
       <Link href="/events" className="btn-primary mt-7 inline-flex">
         Back to events
       </Link>
-    </main>
+    </div>
   );
 }

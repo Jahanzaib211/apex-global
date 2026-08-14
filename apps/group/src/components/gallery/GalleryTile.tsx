@@ -16,8 +16,7 @@ export default function GalleryTile({
       <span className="bg-gold text-navy absolute top-4 left-4 z-10 px-2 py-1 text-[10px] font-bold tracking-wider uppercase">
         {item.category}
       </span>
-      <span className="absolute bottom-4 left-4 z-10 text-xs text-white/45">Placeholder image</span>
-      <div className="from-navy via-navy/85 absolute inset-x-0 bottom-0 z-10 translate-y-3 bg-gradient-to-t to-transparent p-5 pt-16 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="from-navy via-navy/85 absolute inset-x-0 bottom-0 z-10 translate-y-3 bg-gradient-to-t to-transparent p-5 pt-16 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
         <h3 className="font-display text-2xl text-white">{item.title}</h3>
       </div>
     </button>

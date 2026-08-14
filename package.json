@@ -31,11 +31,19 @@
     "audit:credibility": "pnpm --filter @apex/db run audit",
     "db:seed:admin": "pnpm --filter @apex/db run seed:admin",
     "provision:hyperswitch": "node scripts/provision-hyperswitch.mjs",
-    "repo:graph": "python3 scripts/generate-repo-graph.py"
+    "repo:graph": "python3 scripts/generate-repo-graph.py",
+    "test:coverage": "turbo test -- --coverage"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^19.0.0",
+      "@types/react-dom": "^19.0.0"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",

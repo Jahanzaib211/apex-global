@@ -20,7 +20,7 @@ export default function HoldingsGallery() {
         <SectionHeading
           eyebrow="GALLERY"
           title="Project and Corporate Imagery."
-          subtitle="A selection of project visuals and corporate moments. All images are placeholders — real assets are shared with qualified enquiries."
+          subtitle="A selection of project visuals and corporate moments. Full project imagery is shared with qualified enquiries."
         />
 
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -44,7 +44,6 @@ export default function HoldingsGallery() {
               <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-white/80">
                 <ImageIcon size={28} className="text-gold/80" />
                 <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                  Placeholder image
                 </p>
                 <p className="font-editorial mt-2 text-sm">{t.caption}</p>
               </div>

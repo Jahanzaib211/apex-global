@@ -33,9 +33,9 @@ const bodies: Record<string, string[]> = {
 export function getEventBody(event: Event): string[] {
   return (
     bodies[event.slug] ?? [
-      `${event.name} — placeholder event description. Replace with the full program details, agenda and any prerequisites before publication.`,
+      event.description,
       "The Apex Group events team drafts each event page with a clear view of what the event is, who it is for, and what attendees should expect.",
-      "When the event details are finalized, this placeholder will be replaced with the full description, agenda, and any required preparation notes for attendees.",
+      "Registration opens closer to the date. Register your interest below and we will send the agenda and any preparation notes directly.",
     ]
   );
 }

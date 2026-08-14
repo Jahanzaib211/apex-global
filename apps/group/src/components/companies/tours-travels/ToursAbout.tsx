@@ -2,10 +2,10 @@ import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 
 const stats = [
-  { label: "Fleet Vehicles", placeholder: "—" },
-  { label: "Pilgrims Served", placeholder: "—" },
-  { label: "Cities Covered", placeholder: "—" },
-  { label: "Years Operating", placeholder: "—" },
+  { label: "Fleet Vehicles", value: "—" },
+  { label: "Pilgrims Served", value: "—" },
+  { label: "Cities Covered", value: "—" },
+  { label: "Years Operating", value: "—" },
 ];
 
 export default function ToursAbout() {
@@ -39,7 +39,7 @@ export default function ToursAbout() {
             <div className="grid grid-cols-2 gap-3">
               {stats.map((s) => (
                 <div key={s.label} className="border-navy/10 border bg-white p-6">
-                  <p className="font-display text-navy text-4xl">{s.placeholder}</p>
+                  <p className="font-display text-navy text-4xl">{s.value}</p>
                   <p className="text-charcoal/60 mt-2 text-xs font-semibold tracking-[.18em] uppercase">
                     {s.label}
                   </p>
@@ -50,7 +50,7 @@ export default function ToursAbout() {
               ))}
             </div>
             <p className="text-charcoal/45 mt-4 text-xs italic">
-              Specific metrics verified annually. Placeholders shown for privacy.
+              Specific metrics are verified annually and shared with qualified enquiries.
             </p>
           </div>
         </div>

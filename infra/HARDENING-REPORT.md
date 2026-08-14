@@ -8,6 +8,13 @@
 > This is the **host** hardening report: the 2026-08-12 memory-exhaustion
 > freeze and the container/service posture around it.
 >
+> It is **not** the mail report either. **`infra/MAIL.md`** (2026-08-13) is
+> authoritative for anything mail-shaped: the LAN open relay (Critical, fixed),
+> Chatwoot's dead SMTP path (High, fixed), and why outbound delivery is
+> impossible from this connection at all — the ISP blocks IPv4/25 and Gmail
+> refuses IPv6 for the missing PTR. Mailcow appears below only as Finding 4's
+> memory limits.
+>
 > It is **not** the tunnel report. That one exists and is authoritative for
 > anything tunnel-shaped: **`~/Desktop/TUNNEL-HARDENING.md`** (4 Aug 2026), the
 > document `infra/TUNNELS.md` and `infra/scripts/tunnels-status.sh` both cite.
@@ -137,21 +144,67 @@ for anyone who types it without a subdomain.
 
 ---
 
-## Finding 4 — Containers without memory limits (High, fixed)
+## Finding 4 — Containers without memory limits (High, partly fixed — see correction)
 
 **46 of 71 running containers had no `mem_limit`**, so any single one could
 consume all 30 GB. Upstream mailcow sets none on any of its ~19 services.
 
 **Fix.** Limits applied live via `docker update` and persisted in
-`infra/mailcow-dockerized/docker-compose.override.yml` (values ~4–6× observed
-steady state, so normal operation never touches them).
+`infra/mailcow-dockerized/docker-compose.override.yml`.
+
+### Correction 2026-08-14 — this fix caused an outage
+
+Three claims in the original entry were wrong, and the verification could not
+have caught any of them:
 
 ```bash
 docker stats --no-stream --format '{{.Name}}|{{.MemUsage}}' | grep -c '30.26GiB'   # 0
 ```
 
-Result: **0 of 57 running containers uncapped.** A limit converts a host-wide
-freeze into one contained container restart.
+That command only proves no container is **uncapped**. It never checks a cap is
+large enough, nor that the caps sum below host RAM.
+
+1. **"0 of 57 running containers uncapped" was false.** 9 of 62 running
+   containers still have no limit, so the original risk is only partly closed.
+2. **"Values ~4–6× observed steady state" was not measured.** Total container
+   RSS is ~5.5 GiB against ~42 GiB of declared limits — the numbers were picked,
+   not derived. (The sum exceeding host RAM is not itself a fault: limits are
+   ceilings, not reservations. It is a signal the values were never checked
+   against reality, which is what allowed item 3.)
+3. **`sogo-mailcow` was capped below its working set.** The live container ran
+   at 256m (an older `docker update` value; this file said 512m and the
+   container was never recreated, so the two silently diverged). SOGo sat at
+   242 MiB / 256 MiB = 91.8% and was **OOM-killed 844 times in 7 hours**,
+   restarting every ~3.5 min and burning ~33s CPU per cycle. Every OOM event on
+   that boot was this one container.
+
+That churn, together with a k3s reconcile storm, drove the disk-IO pressure that
+**hard-locked this machine three times** (2026-08-12 08:11, 2026-08-12 22:18,
+2026-08-13 09:30) and stalled it repeatedly. In each case RAM was over 40% free
+— the box ran out of *swap* while thrashing the disk, never out of RAM, which is
+why no host-wide OOM killer ever fired.
+
+**A cap that is too tight is its own outage.** Raised sogo to 1g on 2026-08-14;
+kills went to zero immediately.
+
+**Verification that actually tests the claim:**
+
+```bash
+# 1. nothing uncapped
+docker ps -q | while read c; do docker inspect $c --format '{{.HostConfig.Memory}}'; done | grep -c '^0$'   # want 0
+
+# 2. no container starved against its own cap — THIS is the failure mode that
+#    caused the outage, and the check the original entry was missing
+docker stats --no-stream --format '{{.MemPerc}} {{.Name}}' | sort -rn | head   # want all < 80%
+
+# 3. total declared, for awareness (a sum over RAM is a smell, not a fault —
+#    limits are ceilings, not reservations)
+docker ps -q | while read c; do docker inspect $c --format '{{.HostConfig.Memory}}'; done \
+  | awk '{s+=$1} END {printf "limits: %.1f GiB / RAM: 31 GiB\n", s/1073741824}'
+```
+
+Both are wrapped up in `infra/scripts/cap-uncapped-containers.sh`, which dry-runs
+by default and applies generous caps (~4× measured, with floors) on `--apply`.
 
 ---
 

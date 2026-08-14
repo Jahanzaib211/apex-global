@@ -36,8 +36,7 @@ export default function ToursFleet() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                   <Car size={36} className="text-gold" />
                   <p className="text-gold mt-3 text-xs tracking-[.18em] uppercase">{v.type}</p>
-                  <p className="mt-1 text-[10px] text-white/45">Placeholder image</p>
-                </div>
+                                  </div>
               </div>
 
               <div className="flex flex-1 flex-col p-6">
@@ -62,7 +61,7 @@ export default function ToursFleet() {
                 </dl>
 
                 <p className="text-charcoal/40 mt-3 text-[10px] italic">
-                  Placeholder — example fleet entry
+                  Representative fleet entry
                 </p>
 
                 <div className="mt-5">

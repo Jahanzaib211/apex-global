@@ -38,7 +38,14 @@ x-chatwoot-app: &chatwoot-app
     RAILS_LOG_TO_STDOUT: "true"
     LOG_LEVEL: info
     DISABLE_TELEMETRY: "true"
-    SMTP_ADDRESS: ${CHATWOOT_SMTP_ADDRESS:-127.0.0.1}
+    # `127.0.0.1` here means *this container*, not the host — web and sidekiq
+    # run on the `apex-chatwoot_default` bridge, not host networking, so the
+    # old value could never reach Mailcow. It failed closed and silently:
+    # `Connection refused` on every send, which is why Chatwoot mail was dead.
+    # `host.docker.internal` is mapped to the host gateway via `extra_hosts`
+    # below; hardcoding the gateway IP (172.24.0.1 today) would break whenever
+    # the network is recreated.
+    SMTP_ADDRESS: ${CHATWOOT_SMTP_ADDRESS:-host.docker.internal}
     SMTP_PORT: ${CHATWOOT_SMTP_PORT:-587}
     SMTP_USERNAME: ${CHATWOOT_SMTP_USERNAME:-chatwoot@cloud.apexgroupcompanies.com}
     # Required, with no default on purpose. A literal fallback password here
@@ -61,6 +68,12 @@ x-chatwoot-app: &chatwoot-app
     ENABLE_RACK_ATTACK_WIDGET_API: "false"
   volumes:
     - chatwoot_storage:/app/storage
+  # Resolves SMTP_ADDRESS above to the Docker bridge gateway, i.e. the host,
+  # where Mailcow publishes 587. Chatwoot is outside Mailcow's `mynetworks`
+  # (172.31.1.0/24) by design, so it authenticates with SMTP_USERNAME /
+  # SMTP_PASSWORD rather than being granted unauthenticated relay.
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   restart: unless-stopped
   depends_on:
     chatwoot-postgres:

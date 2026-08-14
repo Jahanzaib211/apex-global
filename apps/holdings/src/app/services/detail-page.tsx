@@ -10,7 +10,7 @@ export function ServiceDetail({ slug }: { slug: string }) {
   const service = services.find((item) => item.slug === slug);
   if (!service) return null;
   return (
-    <main>
+    <div>
       <PageBanner
         eyebrow={service.title.toUpperCase()}
         title={service.intro}
@@ -76,6 +76,6 @@ export function ServiceDetail({ slug }: { slug: string }) {
         primary={{ label: "Start a conversation", href: `/contact?service=${service.slug}` }}
         secondary={{ label: "Partner with us", href: "/partner" }}
       />
-    </main>
+    </div>
   );
 }

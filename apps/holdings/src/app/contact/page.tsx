@@ -271,7 +271,7 @@ export default function ContactPage() {
                         <MapPin className="h-6 w-6" />
                       </div>
                       <p className="tracking-wide-2 text-[11px] font-semibold text-slate-400 uppercase">
-                        Map Placeholder
+                        Visit by appointment
                       </p>
                       <p className="mt-1 px-4 text-[12px] text-slate-300">Main Boulevard, Lahore</p>
                     </div>

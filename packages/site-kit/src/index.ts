@@ -24,3 +24,4 @@ export * from "./social";
 export * from "./brand";
 export * from "./nav";
 export * from "./forward-lead";
+export * from "./legal";

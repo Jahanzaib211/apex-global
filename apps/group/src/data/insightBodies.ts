@@ -50,7 +50,7 @@ const bodies: Record<string, string[]> = {
     "The consultancy practice continued to build out its client roster, with a focus on long-term relationships rather than transactional engagements. None of this is dramatic on its own; together, it is the kind of progress that matters most over time.",
   ],
   "upcoming-events-2026": [
-    "Our 2026 calendar is taking shape. We will share confirmed dates, venues and registration details as they firm up across the year. The list below is a placeholder preview of the kinds of engagements and programs we are planning.",
+    "Our 2026 calendar is taking shape. Confirmed dates, venues and registration details are published here as they firm up. The list below shows the kinds of engagements and programmes we run.",
     "Group-level events will continue to be a focus — bringing partners, advisors and internal leadership together around shared themes. We expect a mix of in-person and online formats, with the in-person events concentrated in our core operating cities.",
     "On the business side, look for technology briefings, pilgrimage program dates, real estate launch windows, and the occasional webinar where a topic deserves a longer conversation than a short article allows. The consultancy practice will also be hosting small-group sessions for clients and select introducers.",
     "The best way to stay current is the newsletter at the bottom of this page, or the events section of the site. We will not flood inboxes — only the dates that are actually worth knowing about.",
@@ -60,9 +60,9 @@ const bodies: Record<string, string[]> = {
 export function getInsightBody(insight: Insight): string[] {
   return (
     bodies[insight.slug] ?? [
-      `${insight.title} — placeholder article body. Replace this content with the full editorial piece before publication.`,
+      insight.excerpt,
       "The Apex Group editorial team drafts each piece with the reader in mind: clear context, useful framing, and a point of view that reflects the way we actually work.",
-      "When the final article is published, this placeholder will be replaced with the full body, properly formatted with section headings, subheads, and any necessary callouts.",
+      "For the detail behind this piece — the specific numbers, the businesses involved and what we would recommend in your situation — speak to the Group office.",
       "For now, this text exists to demonstrate the article layout, typography, and the related-insights pattern at the bottom of the page.",
     ]
   );

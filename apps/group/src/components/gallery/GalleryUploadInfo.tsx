@@ -7,7 +7,7 @@ export default function GalleryUploadInfo() {
         <SectionHeading
           eyebrow="FOR APEX TEAM"
           title="Adding to the Gallery."
-          subtitle="The gallery is CMS-managed. New images, albums, captions and tags are added through the Group content system. This is a placeholder for the internal publishing workflow."
+          subtitle="The gallery is CMS-managed. New images, albums, captions and tags are added through the Group content system."
         />
       </Container>
     </section>

@@ -41,7 +41,7 @@ export default function HoldingsMarketed() {
               </p>
             </div>
             <p className="text-charcoal/45 mt-6 text-xs italic">
-              All entries shown are placeholders.
+              Specific mandates are shared on enquiry.
             </p>
           </div>
 
@@ -76,7 +76,7 @@ export default function HoldingsMarketed() {
                 </tbody>
               </table>
             </div>
-            <p className="text-charcoal/45 mt-3 text-xs italic">Sample list — placeholders only.</p>
+            <p className="text-charcoal/45 mt-3 text-xs italic">Representative list.</p>
           </div>
         </div>
       </Container>

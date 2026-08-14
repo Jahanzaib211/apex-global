@@ -29,7 +29,7 @@ export default function InsightDetailPage() {
         bg={insight.cover}
         breadcrumbs={[{ label: "Insights", href: "/insights" }, { label: insight.title }]}
       />
-      <main className="bg-white">
+      <div className="bg-white">
         <div className="container-x py-8 md:py-12">
           <div className="relative h-[38vh] min-h-[260px] overflow-hidden rounded-2xl">
             <Image
@@ -98,7 +98,7 @@ export default function InsightDetailPage() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         title="Discuss your project"
@@ -109,11 +109,11 @@ export default function InsightDetailPage() {
 }
 function NotFound() {
   return (
-    <main className="container-x section">
+    <div className="container-x section">
       <h1 className="font-display text-ink text-4xl font-bold">Insight not found</h1>
       <Link href="/insights" className="btn-primary mt-7 inline-flex">
         Back to insights
       </Link>
-    </main>
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export default function TestimonialsPage() {
         description="A selection of testimonials, published only where permission has been granted."
         breadcrumbs={[{ label: "Testimonials" }]}
       />
-      <main className="section bg-slate-50">
+      <div className="section bg-slate-50">
         <div className="container-x">
           <div className="mb-10 max-w-2xl">
             <span className="eyebrow mb-3 block">TRUST, IN THEIR WORDS</span>
@@ -49,7 +49,7 @@ export default function TestimonialsPage() {
             ))}
           </div>
         </div>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         eyebrow="ADD YOUR PERSPECTIVE"

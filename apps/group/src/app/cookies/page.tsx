@@ -57,7 +57,7 @@ const sections: LegalSection[] = [
     content: (
       <p>
         Some services may set their own cookies when embedded or linked. Potential examples include
-        Google Analytics ([property placeholder]) for non-sensitive aggregate measurement and Meta
+        Google Analytics for non-sensitive aggregate measurement and Meta
         Pixel on non-sensitive pages if separately enabled and legally permitted. We will configure
         providers to respect consent and will not place these tools on financial consultancy pages.
       </p>
@@ -87,7 +87,7 @@ const sections: LegalSection[] = [
     title: "Contact",
     content: (
       <p>
-        Questions about cookies can be sent to [privacy email] or [physical address placeholder].
+        Questions about cookies can be sent to the contact form at apex.apexgroupcompanies.com/contact, or by post to 31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan.
         Apex Group of Companies (Pvt) Ltd is the relevant contact entity unless stated otherwise.
       </p>
     ),

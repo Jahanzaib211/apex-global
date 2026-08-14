@@ -2,9 +2,8 @@
  * Apex Global Tours & Travels — production config.
  *
  * The app shipped with no `next.config.mjs` at all after the migration, which
- * meant no `output: "standalone"` (the PM2 entry in infra/ecosystem.config.cjs
- * expects one) and, worse, **no security headers** — no CSP, no HSTS, no
- * X-Frame-Options — while its sibling sites all served the full set.
+ * meant **no security headers** at all — no CSP, no HSTS, no X-Frame-Options —
+ * while its sibling sites all served the full set.
  *
  * Brought to the same baseline as apps/holdings and apps/group. The only
  * deliberate difference is `images.remotePatterns`: this site loads no remote
@@ -62,10 +61,8 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   compress: true,
-  output: "standalone",
   images: {
-    // Unoptimized avoids the runtime image optimizer dependency in the
-    // standalone build (no sharp required). Optimize behind a CDN if needed.
+    // Unoptimized avoids a runtime dependency on sharp on the deploy host.
     unoptimized: true,
   },
   experimental: {

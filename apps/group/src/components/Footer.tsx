@@ -80,7 +80,13 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="block text-sm text-white/65 hover:text-white"
               >
-                {c.label}
+                {/*
+                  Show the hostname, not the company name. "Our Companies"
+                  already lists the same names linking to this site's own
+                  profile pages, so the footer had each company twice under an
+                  identical label going to two different destinations.
+                */}
+                {new URL(c.href).hostname}
               </a>
             ))}
           </div>
@@ -90,7 +96,7 @@ export default function Footer() {
           items={[
             ["Financial Consultancy", "/consultancy"],
             ["Partnerships", "/partnerships"],
-            ["Corporate Services", "/about"],
+            ["Our Ecosystem", "/ecosystem"],
           ]}
         />
         <FooterCol

@@ -81,6 +81,7 @@ export default function ProjectsPage() {
             <div className="relative">
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
+                aria-label="Search projects"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search projects, locations, developers..."

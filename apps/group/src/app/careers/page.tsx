@@ -10,7 +10,7 @@ import { SITE_URL } from "@/lib/site-url";
 export const metadata = {
   title: "Careers | Apex Group of Companies",
   description:
-    "Build a career with Apex Group of Companies. Explore placeholder roles across technology, outsourcing, travel, real estate and financial consultancy.",
+    "Build a career with Apex Group of Companies. Explore roles across technology, outsourcing, travel, real estate and financial consultancy.",
 };
 
 const jobPostingSchema = {
@@ -18,7 +18,7 @@ const jobPostingSchema = {
   "@type": "JobPosting",
   title: "Apex Group Careers — General Application",
   description:
-    "Placeholder general application for roles across Apex Group of Companies. Real vacancies are listed on the Careers page.",
+    "General application for roles across Apex Group of Companies. Current vacancies are listed on the Careers page.",
   datePosted: "2025-01-01",
   employmentType: "FULL_TIME",
   hiringOrganization: {

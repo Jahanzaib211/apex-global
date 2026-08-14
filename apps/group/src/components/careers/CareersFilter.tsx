@@ -89,7 +89,7 @@ export default function CareersFilter({ onApply }: { onApply?: (vacancy: Vacancy
       <Container>
         <SectionHeading
           eyebrow="TALENT NETWORK"
-          title="Build a career with Apex."
+          title="Join the talent network."
           subtitle="Concrete vacancies are posted at each operating company's own careers page. The form below adds you to the Apex Group talent network so the right team sees your profile when a matching role opens up."
         />
 
@@ -175,7 +175,7 @@ export default function CareersFilter({ onApply }: { onApply?: (vacancy: Vacancy
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.length === 0 ? (
             <div className="border-navy/20 text-charcoal/55 col-span-full border border-dashed p-10 text-center text-sm">
-              No vacancies match the selected filters. Try resetting to see all placeholder roles.
+              No vacancies match the selected filters. Reset to see all open roles.
             </div>
           ) : (
             filtered.map((v) => (
@@ -189,7 +189,7 @@ export default function CareersFilter({ onApply }: { onApply?: (vacancy: Vacancy
                 </div>
                 <h3 className="font-display text-navy mt-5 text-2xl">{v.title}</h3>
                 <p className="text-charcoal/45 mt-3 text-xs tracking-[.15em] uppercase">
-                  Placeholder — example vacancy
+                  Open role
                 </p>
                 <dl className="text-charcoal/70 mt-6 grid grid-cols-2 gap-y-2 text-xs">
                   <dt className="text-charcoal/45">Department</dt>

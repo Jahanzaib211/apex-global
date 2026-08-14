@@ -41,7 +41,7 @@ export default function GalleryPage() {
         description="Curated imagery from our project portfolio and corporate journey — updated as the company grows."
         breadcrumbs={[{ label: "Gallery" }]}
       />
-      <main className="section bg-white">
+      <div className="section bg-white">
         <div className="container-x">
           <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -107,7 +107,7 @@ export default function GalleryPage() {
             ))}
           </div>
         </div>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         eyebrow="KEEP THE STORY MOVING"

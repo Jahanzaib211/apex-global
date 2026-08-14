@@ -20,7 +20,7 @@ export default function ToursGallery() {
         <SectionHeading
           eyebrow="GALLERY"
           title="Moments From Our Journeys."
-          subtitle="A selection of moments from recent journeys. All images are placeholders — gallery content is curated and updated over time."
+          subtitle="A selection of moments from recent journeys. Gallery content is curated and updated over time."
         />
 
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -44,7 +44,6 @@ export default function ToursGallery() {
               <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-white/80">
                 <ImageIcon size={28} className="text-gold/80" />
                 <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                  Placeholder image
                 </p>
                 <p className="font-editorial mt-2 text-sm">{t.caption}</p>
               </div>

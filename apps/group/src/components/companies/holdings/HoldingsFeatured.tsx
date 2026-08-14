@@ -58,7 +58,6 @@ export default function HoldingsFeatured() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                   <Building2 size={36} className="text-gold" />
                   <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                    Placeholder image
                   </p>
                 </div>
               </div>
@@ -80,7 +79,7 @@ export default function HoldingsFeatured() {
                 </ul>
 
                 <p className="text-charcoal/40 mt-4 text-[10px] italic">
-                  Placeholder — example featured project
+                  Representative project
                 </p>
 
                 <a

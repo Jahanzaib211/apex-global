@@ -133,7 +133,7 @@ function CityChips({ cities }: { cities: string[][] }) {
 
 export default function Home() {
   return (
-    <main>
+    <>
       {/* 1. Hero */}
       <section className="bg-navy-grad grain relative overflow-hidden">
         <div className="container-page relative grid items-center gap-12 py-20 text-white md:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-32">
@@ -168,7 +168,7 @@ export default function Home() {
               ))}
             </div>
             <p className="mt-4 text-center text-xs text-white/55">
-              (Image placeholders — real photography added by Apex)
+              
             </p>
           </div>
         </div>
@@ -487,15 +487,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 11. Closing line */}
-      <footer className="bg-sand-50">
+      {/* 11. Closing line — a section, not a <footer>: the layout renders the
+          site footer, and two footer landmarks on one page is a bug. */}
+      <section className="bg-sand-50">
         <div className="container-page py-8 text-center">
           <p className="text-ink-400 text-xs leading-relaxed md:text-sm">
             {BRAND.legal} — {BRAND.tagline}. Cities, fleet, hotels, packages and rates are confirmed
             by Apex at enquiry time.
           </p>
         </div>
-      </footer>
-    </main>
+      </section>
+    </>
   );
 }

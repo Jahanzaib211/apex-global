@@ -29,7 +29,7 @@ export default function InsightsPage() {
         title="Perspectives on real estate, marketing and the journey ahead."
         breadcrumbs={[{ label: "Insights" }]}
       />
-      <main className="section bg-white">
+      <div className="section bg-white">
         <div className="container-x">
           <div className="mb-10 flex flex-wrap gap-2">
             {categories.map((item) => (
@@ -104,7 +104,7 @@ export default function InsightsPage() {
             ))}
           </div>
         </div>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         eyebrow="STAY IN THE KNOW"

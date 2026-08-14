@@ -689,7 +689,7 @@ function TestimonialsSection() {
  * ------------------------------------------------------------------------ */
 export default function Home() {
   return (
-    <main>
+    <div>
       <Hero />
       <AboutStrip />
       <PortfolioSection />
@@ -708,6 +708,6 @@ export default function Home() {
         secondary={{ label: "Contact Our Team", href: "/contact" }}
       />
       <TestimonialsSection />
-    </main>
+    </div>
   );
 }

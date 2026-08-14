@@ -37,7 +37,6 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   compress: true,
-  output: "standalone",
   images: {
     unoptimized: true,
     remotePatterns: [

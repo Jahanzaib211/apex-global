@@ -58,7 +58,7 @@ export default function HoldingsPortfolio() {
         <SectionHeading
           eyebrow="PORTFOLIO"
           title="Complete Project Directory."
-          subtitle="A sample of projects in our marketing portfolio. All entries below are placeholders — specific projects are shared under NDA."
+          subtitle="A sample of projects in our marketing portfolio. Specific projects are shared under NDA."
         />
 
         <div className="mt-10 flex flex-wrap gap-2">
@@ -92,7 +92,6 @@ export default function HoldingsPortfolio() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                   <Building2 size={32} className="text-gold" />
                   <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                    Placeholder image
                   </p>
                 </div>
                 <div className="absolute top-3 right-3">
@@ -109,7 +108,7 @@ export default function HoldingsPortfolio() {
                   Developer: <span className="text-charcoal/80">On request</span>
                 </p>
                 <p className="text-charcoal/40 mt-1 text-[10px] italic">
-                  Placeholder — example project
+                  Representative project
                 </p>
                 <a
                   href="#site-visits"

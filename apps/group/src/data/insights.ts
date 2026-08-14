@@ -26,7 +26,7 @@ export const insights: Insight[] = [
     slug: "apex-group-2026-outlook",
     title: "Apex Group 2026 Outlook: A Note From the Group Office",
     excerpt:
-      "A placeholder look at the year ahead for the Group — cross-business coordination, sector priorities, and the themes that will shape our work across technology, outsourcing, travel, real estate and financial consultancy.",
+      "A look at the year ahead for the Group — cross-business coordination, sector priorities, and the themes that will shape our work across technology, outsourcing, travel, real estate and financial consultancy.",
     category: "Group News",
     author: "Apex Group Office",
     date: "2026-01-15",
@@ -38,7 +38,7 @@ export const insights: Insight[] = [
     slug: "cross-business-collaboration",
     title: "How Cross-Business Collaboration Shapes Our Day-to-Day",
     excerpt:
-      "A placeholder note on how teams across our Group companies share context, infrastructure and customer relationships — and why that is a quiet advantage for the clients we serve.",
+      "A note on how teams across our Group companies share context, infrastructure and customer relationships — and why that is a quiet advantage for the clients we serve.",
     category: "Group News",
     author: "Apex Group Office",
     date: "2025-12-04",
@@ -49,7 +49,7 @@ export const insights: Insight[] = [
     slug: "technology-delivery-models",
     title: "Choosing the Right Technology Delivery Model",
     excerpt:
-      "A placeholder exploration of how organizations think about delivery partners, in-house teams and managed models — and the questions worth asking before committing to one.",
+      "An exploration of how organizations think about delivery partners, in-house teams and managed models — and the questions worth asking before committing to one.",
     category: "Technology",
     author: "Apex Global Tech Solution",
     date: "2025-11-20",
@@ -60,7 +60,7 @@ export const insights: Insight[] = [
     slug: "outsourcing-quality-frameworks",
     title: "Building Quality Frameworks in Outsourced Operations",
     excerpt:
-      "A placeholder look at the operating disciplines that distinguish mature outsourcing engagements from transactional ones — clear ownership, defined review cadences, and outcome measurement.",
+      "A look at the operating disciplines that distinguish mature outsourcing engagements from transactional ones — clear ownership, defined review cadences, and outcome measurement.",
     category: "Outsourcing",
     author: "Apex Global Outsourcing",
     date: "2025-11-08",
@@ -71,7 +71,7 @@ export const insights: Insight[] = [
     slug: "tours-tailored-itineraries",
     title: "The Case for Tailored Itineraries Over Template Travel",
     excerpt:
-      "A placeholder perspective on why meaningful travel rarely comes off the shelf — and how a properly designed itinerary balances structure with personal rhythm.",
+      "A perspective on why meaningful travel rarely comes off the shelf — and how a properly designed itinerary balances structure with personal rhythm.",
     category: "Tours & Travels",
     author: "Apex Global Tours & Travels",
     date: "2025-10-22",
@@ -82,7 +82,7 @@ export const insights: Insight[] = [
     slug: "real-estate-local-knowledge",
     title: "Why Local Knowledge Matters in Cross-Border Real Estate",
     excerpt:
-      "A placeholder look at the role of on-the-ground context when evaluating property decisions in unfamiliar markets, and what investors tend to overlook.",
+      "A look at the role of on-the-ground context when evaluating property decisions in unfamiliar markets, and what investors tend to overlook.",
     category: "Real Estate",
     author: "Apex Holdings",
     date: "2025-10-05",
@@ -93,7 +93,7 @@ export const insights: Insight[] = [
     slug: "financial-clarity",
     title: "Clarity Before Strategy: A First Step in Financial Consultancy",
     excerpt:
-      "A placeholder note on why the most useful first move in any financial conversation is rarely a product recommendation — it is a clear, organized view of where things stand.",
+      "A note on why the most useful first move in any financial conversation is rarely a product recommendation — it is a clear, organized view of where things stand.",
     category: "Financial Insights",
     author: "Apex Group Financial Consultancy",
     date: "2025-09-18",
@@ -104,7 +104,7 @@ export const insights: Insight[] = [
     slug: "corporate-update-q3",
     title: "Quarterly Corporate Update: Q3 Highlights From Across the Group",
     excerpt:
-      "A placeholder quarterly update summarizing activity across our Group businesses — projects in motion, partnerships explored, and operating lessons from the quarter.",
+      "A quarterly update summarizing activity across our Group businesses — projects in motion, partnerships explored, and operating lessons from the quarter.",
     category: "Corporate Updates",
     author: "Apex Group Office",
     date: "2025-09-02",
@@ -115,7 +115,7 @@ export const insights: Insight[] = [
     slug: "upcoming-events-2026",
     title: "Looking Ahead: Events and Engagements for 2026",
     excerpt:
-      "A placeholder preview of planned Group events, product conversations, pilgrimage programs and webinars for the coming year — and how to stay informed as dates firm up.",
+      "A preview of planned Group events, product conversations, pilgrimage programs and webinars for the coming year — and how to stay informed as dates firm up.",
     category: "Events",
     author: "Apex Group Office",
     date: "2025-08-21",

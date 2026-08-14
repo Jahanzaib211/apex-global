@@ -74,6 +74,7 @@ export default function InsightsNewsletter() {
                 />
                 <input
                   type="email"
+                  aria-label="Email address for newsletter"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"

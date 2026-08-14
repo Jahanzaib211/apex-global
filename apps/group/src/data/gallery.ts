@@ -27,7 +27,7 @@ export const galleryItems: GalleryItem[] = [
     category: "Group Events",
     date: "2025-01-18",
     caption:
-      "Placeholder image from a Group gathering bringing Apex companies together around the year ahead.",
+      "From a Group gathering bringing Apex companies together around the year ahead.",
     featured: true,
     company: "group",
   },
@@ -36,7 +36,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Technology, Ready for What Comes Next",
     category: "Project Launches",
     date: "2024-11-08",
-    caption: "Placeholder image from a technology solution launch.",
+    caption: "From a technology solution launch.",
     company: "tech-solution",
   },
   {
@@ -44,7 +44,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Leadership Roundtable",
     category: "Leadership",
     date: "2024-10-21",
-    caption: "Placeholder image from a leadership discussion.",
+    caption: "From a leadership discussion.",
     company: "group",
   },
   {
@@ -52,7 +52,7 @@ export const galleryItems: GalleryItem[] = [
     title: "A Team Built Around Service",
     category: "Outsourcing",
     date: "2024-09-12",
-    caption: "Placeholder image from an outsourcing team activity.",
+    caption: "From an outsourcing team activity.",
     company: "outsourcing",
   },
   {
@@ -60,7 +60,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Journeys With Purpose",
     category: "Tours & Travels",
     date: "2024-08-05",
-    caption: "Placeholder image from a travel operations moment.",
+    caption: "From a travel operations moment.",
     company: "tours-travels",
   },
   {
@@ -68,7 +68,7 @@ export const galleryItems: GalleryItem[] = [
     title: "A New Property Perspective",
     category: "Real Estate",
     date: "2024-07-17",
-    caption: "Placeholder image from a holdings project visit.",
+    caption: "From a holdings project visit.",
     company: "holdings",
   },
   {
@@ -76,7 +76,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Ideas Across Industries",
     category: "Conferences",
     date: "2024-06-29",
-    caption: "Placeholder image from a conference appearance.",
+    caption: "From a conference appearance.",
     company: "group",
   },
   {
@@ -84,7 +84,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Marking a Corporate Milestone",
     category: "Corporate Events",
     date: "2024-05-15",
-    caption: "Placeholder image from an Apex corporate event.",
+    caption: "From an Apex corporate event.",
     company: "group",
   },
   {
@@ -92,7 +92,7 @@ export const galleryItems: GalleryItem[] = [
     title: "From Conversation to Direction",
     category: "Meetings",
     date: "2024-04-11",
-    caption: "Placeholder image from a cross-company planning meeting.",
+    caption: "From a cross-company planning meeting.",
     company: "consultancy",
   },
   {
@@ -100,7 +100,7 @@ export const galleryItems: GalleryItem[] = [
     title: "The People Behind the Work",
     category: "Team Activities",
     date: "2024-03-23",
-    caption: "Placeholder image from an Apex team activity.",
+    caption: "From an Apex team activity.",
     company: "group",
   },
   {
@@ -108,7 +108,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Building Better Digital Tools",
     category: "Technology",
     date: "2024-02-14",
-    caption: "Placeholder image from the technology team.",
+    caption: "From the technology team.",
     company: "tech-solution",
   },
   {
@@ -116,7 +116,7 @@ export const galleryItems: GalleryItem[] = [
     title: "Sharper Service, Stronger Teams",
     category: "Outsourcing",
     date: "2024-01-26",
-    caption: "Placeholder image from a service workshop.",
+    caption: "From a service workshop.",
     company: "outsourcing",
   },
 ];

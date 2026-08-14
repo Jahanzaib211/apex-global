@@ -108,6 +108,9 @@ export function SiteFooter() {
             <Link href="/legal/terms" className="hover:text-slate-300">
               Terms
             </Link>
+            <Link href="/legal/cookies" className="hover:text-slate-300">
+              Cookies
+            </Link>
             <Link href="/legal/disclaimer" className="hover:text-slate-300">
               Disclaimer
             </Link>

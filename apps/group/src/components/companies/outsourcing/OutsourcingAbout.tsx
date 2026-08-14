@@ -42,7 +42,7 @@ export default function OutsourcingAbout() {
                 Operating footprint at a glance
               </p>
               <p className="text-charcoal/55 mt-2 text-xs leading-6">
-                Figures below are placeholders. Verified metrics are published on the Group profile
+                Verified metrics are published on the Group profile
                 once available.
               </p>
 

@@ -11,7 +11,6 @@ const nextConfig = {
   },
 
   // Self-contained server bundle for the PM2 deploy.
-  output: "standalone",
 
   async headers() {
     return [

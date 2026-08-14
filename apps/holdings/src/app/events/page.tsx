@@ -28,7 +28,7 @@ export default function EventsPage() {
         title="The gatherings that define our journey."
         breadcrumbs={[{ label: "Events" }]}
       />
-      <main className="section bg-slate-50">
+      <div className="section bg-slate-50">
         <div className="container-x space-y-16">
           {groups.map((group) => (
             <section key={group.label}>
@@ -87,7 +87,7 @@ export default function EventsPage() {
             </section>
           ))}
         </div>
-      </main>
+      </div>
       <CTASection
         variant="dark"
         eyebrow="LET'S MAKE IT MATTER"

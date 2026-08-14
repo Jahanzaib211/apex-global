@@ -40,7 +40,11 @@ module.exports = {
       name: "apex-global-web",
       script: "pnpm",
       args: "--filter @apex/web start",
-      max_memory_restart: "512M",
+      // 1536M, not 512M. A Next.js 15 + Prisma server does not fit in 512M, so
+      // pm2 SIGKILLed it on a loop — 407 restarts by 2026-08-14, against 5 for
+      // every sibling app. The kill leaves no trace in the logs (they show only
+      // clean "Ready in 299ms" restarts), which is why it went unnoticed.
+      max_memory_restart: "1536M",
       error_file: path.join(ROOT, "logs/apex-global-web.error.log"),
       out_file: path.join(ROOT, "logs/apex-global-web.out.log"),
     },
@@ -98,6 +102,59 @@ module.exports = {
       restart_delay: 5000,
       error_file: path.join(ROOT, "logs/mailcow-watchdog.error.log"),
       out_file: path.join(ROOT, "logs/mailcow-watchdog.out.log"),
+    },
+    {
+      // Apex Global Outsourcing — migrated from the standalone sibling repo
+      // ~/Desktop/APEX OUTSORCING/apex-outsourcing on 2026-08-13. Bind stays
+      // 127.0.0.1:3100 so the existing Cloudflare tunnel
+      // (tunnel-apex-outsourcing, infra/TUNNELS.md) needs no changes.
+      //
+      // Do not `pm2 start` until the sibling PM2 process `apex-outsourcing`
+      // has been kept online for at least 30 minutes after the first build,
+      // so a broken migration cannot take the public hostname down.
+      ...base,
+      name: "apex-outsourcing",
+      script: "pnpm",
+      args: "--filter @apex/outsourcing start",
+      max_memory_restart: "512M",
+      error_file: path.join(ROOT, "logs/apex-outsourcing.error.log"),
+      out_file: path.join(ROOT, "logs/apex-outsourcing.out.log"),
+    },
+    {
+      // Apex Holdings — migrated from the standalone sibling repo
+      // ~/Desktop/APEX HOLDINGS/apex-holdings on 2026-08-13. Origin stays
+      // 127.0.0.1:3102 so the apex-holdings Cloudflare tunnel keeps serving.
+      ...base,
+      name: "apex-holdings",
+      script: "pnpm",
+      args: "--filter @apex/holdings start",
+      max_memory_restart: "512M",
+      error_file: path.join(ROOT, "logs/apex-holdings.error.log"),
+      out_file: path.join(ROOT, "logs/apex-holdings.out.log"),
+    },
+    {
+      // Apex Tours — migrated from the standalone sibling repo
+      // ~/Desktop/APEX TRAVEL N TOUR/apex-tours on 2026-08-13. Origin stays
+      // 127.0.0.1:3001 so the apex-tours Cloudflare tunnel keeps serving.
+      ...base,
+      name: "apex-tours",
+      script: "pnpm",
+      args: "--filter @apex/tours start",
+      max_memory_restart: "512M",
+      error_file: path.join(ROOT, "logs/apex-tours.error.log"),
+      out_file: path.join(ROOT, "logs/apex-tours.out.log"),
+    },
+    {
+      // Apex Group of Companies — migrated from the standalone sibling repo
+      // ~/Desktop/apex-group on 2026-08-13. Origin stays 127.0.0.1:3103 so
+      // the apex-group Cloudflare tunnel keeps serving.
+      ...base,
+      name: "apex-group",
+      script: "pnpm",
+      args: "--filter @apex/group start",
+      max_memory_restart: "512M",
+      error_file: path.join(ROOT, "logs/apex-group.error.log"),
+      out_file: path.join(ROOT, "logs/apex-group.out.log"),
     },
   ],
 };

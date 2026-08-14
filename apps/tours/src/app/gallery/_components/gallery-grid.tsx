@@ -90,7 +90,7 @@ export function GalleryGrid() {
               {t.category}
             </div>
             <div className="absolute right-2 bottom-2 left-2 text-[10px] text-white/60 italic">
-              (placeholder — image to be added)
+              
             </div>
           </div>
         ))}

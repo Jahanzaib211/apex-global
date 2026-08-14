@@ -26,7 +26,7 @@ export default function GalleryPage() {
             <h2 className="heading-lg mb-3">Destinations, vehicles, and pilgrim journeys</h2>
             <p className="prose-body">
               We are building a library of customer-approved photography from across our routes.
-              Placeholders below indicate the categories and frames we plan to publish.
+              The categories below show the journeys we publish photography from.
             </p>
           </div>
 
@@ -46,7 +46,7 @@ export default function GalleryPage() {
                 About this gallery
               </h3>
               <p className="text-ink-400 text-sm leading-relaxed">
-                Images shown above are placeholders representing the categories Apex plans to
+                The categories above represent the journeys Apex publishes; new photography is added to
                 publish. Final imagery will be added only after customer approval. No stock
                 photography is used to misrepresent our actual services.
               </p>

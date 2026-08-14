@@ -43,7 +43,7 @@ export default function OwnedProjectsPage() {
                 No Active Projects Yet
               </span>
               <h2 className="font-display text-4xl leading-[1.1] font-bold text-white sm:text-5xl lg:text-6xl">
-                Coming Soon.
+                Our first development.
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
                 Our first development will be announced here. Until then, this page stays

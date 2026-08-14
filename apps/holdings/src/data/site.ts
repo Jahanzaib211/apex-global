@@ -125,8 +125,10 @@ export const footerNav = [
  * Replaced placeholder root URLs (`https://facebook.com` etc.) with the
  * canonical handles from `@apex/site-kit/social`.
  *
- * YouTube remains a placeholder handle until Apex publishes one; the row is
- * kept so the footer layout doesn't shift when the handle is added.
+ * The YouTube row used to be kept with an empty href "so the footer layout
+ * doesn't shift when the handle is added". That rendered `<a href="">` on every
+ * page of the site — a link that reloads the current page and reads to a screen
+ * reader as a real destination. A row is only published once its handle exists.
  */
 import { APEX_SOCIALS, type SocialEntry } from "@apex/site-kit/social";
 
@@ -138,9 +140,6 @@ function entry(platform: "facebook" | "instagram" | "linkedin" | "youtube"): Soc
   return null;
 }
 
-export const socials = [
-  entry("linkedin"),
-  entry("facebook"),
-  entry("instagram"),
-  { label: "YouTube", href: "" },
-].filter((s): s is SocialEntry => s !== null);
+export const socials = [entry("linkedin"), entry("facebook"), entry("instagram")].filter(
+  (s): s is SocialEntry => s !== null && s.href.length > 0,
+);

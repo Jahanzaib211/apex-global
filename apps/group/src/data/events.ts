@@ -29,7 +29,7 @@ export const events: Event[] = [
     company: "group",
     category: "Group Event",
     description:
-      "A placeholder Group-level gathering for partners, advisors and internal leadership to align on the year ahead, share cross-business learnings, and explore new collaboration opportunities.",
+      "A Group-level gathering for partners, advisors and internal leadership to align on the year ahead, share cross-business learnings, and explore new collaboration opportunities.",
     featured: true,
   },
   {
@@ -40,7 +40,7 @@ export const events: Event[] = [
     company: "tech-solution",
     category: "Product Launch",
     description:
-      "A placeholder briefing session walking through current technology offerings, delivery models, and the questions prospective clients most often ask.",
+      "A briefing session walking through current technology offerings, delivery models, and the questions prospective clients most often ask.",
   },
   {
     slug: "umrah-program-winter",
@@ -51,7 +51,7 @@ export const events: Event[] = [
     company: "tours-travels",
     category: "Pilgrimage",
     description:
-      "A placeholder two-week guided Umrah program with group logistics, accommodation, transport, and on-ground coordination handled by our travel team.",
+      "A two-week guided Umrah program with group logistics, accommodation, transport, and on-ground coordination handled by our travel team.",
   },
   {
     slug: "holdings-project-launch",
@@ -61,7 +61,7 @@ export const events: Event[] = [
     company: "holdings",
     category: "Real Estate",
     description:
-      "A placeholder launch event for an upcoming real estate project, with an investor briefing, site walkthrough overview, and Q&A with the project team.",
+      "A launch event for an upcoming real estate project, with an investor briefing, site walkthrough overview, and Q&A with the project team.",
   },
   {
     slug: "financial-planning-webinar",
@@ -71,7 +71,7 @@ export const events: Event[] = [
     company: "consultancy",
     category: "Webinar",
     description:
-      "A placeholder educational webinar covering a structured approach to financial clarity — observation, organization, and forward planning — for individuals and business owners.",
+      "An educational webinar covering a structured approach to financial clarity — observation, organization, and forward planning — for individuals and business owners.",
   },
   {
     slug: "outsourcing-industry-conference",
@@ -82,7 +82,7 @@ export const events: Event[] = [
     company: "outsourcing",
     category: "Conference",
     description:
-      "A placeholder industry conference where our outsourcing team joins sector peers to discuss delivery quality, talent, and the changing shape of client expectations.",
+      "An industry conference where our outsourcing team joins sector peers to discuss delivery quality, talent, and the changing shape of client expectations.",
   },
 ];
 

@@ -41,7 +41,9 @@ export default function HoldingsDevelopments() {
                   Apex Holdings is preparing for future self-owned project development. As projects
                   progress, they will be featured here.
                 </p>
-                <p className="mt-5 text-xs tracking-[.2em] text-white/50 uppercase">Coming Soon</p>
+                <p className="mt-5 text-xs tracking-[.2em] text-white/50 uppercase">
+                  In preparation
+                </p>
               </div>
             </div>
           </div>

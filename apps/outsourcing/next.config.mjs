@@ -28,7 +28,6 @@ if (isProd) securityHeaders.push({ key: "Content-Security-Policy", value: csp })
 const nextConfig = {
   reactStrictMode: true,
   images: { unoptimized: true },
-  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

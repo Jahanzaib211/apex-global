@@ -54,7 +54,7 @@ const steps = [
 
 export default function ServicesPage() {
   return (
-    <main>
+    <div>
       <PageBanner
         eyebrow="SERVICES"
         title="How Apex Holdings brings real-estate projects to market."
@@ -142,6 +142,6 @@ export default function ServicesPage() {
         primary={{ label: "Partner with us", href: "/partner" }}
         secondary={{ label: "Contact Apex", href: "/contact" }}
       />
-    </main>
+    </div>
   );
 }

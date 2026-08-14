@@ -1,7 +1,7 @@
 /** Skeleton shown while a route segment streams in. */
 export default function Loading() {
   return (
-    <main className="bg-white">
+    <div className="bg-white">
       <div className="container-x max-w-3xl py-24">
         <div className="bg-slate-200 h-3 w-32 animate-pulse rounded" />
         <div className="bg-slate-200 mt-6 h-12 w-3/4 animate-pulse rounded" />
@@ -14,6 +14,6 @@ export default function Loading() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

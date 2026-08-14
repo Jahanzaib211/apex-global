@@ -97,7 +97,7 @@ export default function CompaniesIndexList() {
                   standards and long-term perspective.
                 </p>
                 <p className="text-charcoal/60 mt-4 max-w-2xl leading-7">
-                  Specific company information is a placeholder and will be updated through the
+                  Specific company information is shared on enquiry and maintained through the
                   Group content system.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2">
@@ -115,19 +115,19 @@ export default function CompaniesIndexList() {
                     <span className="text-navy/40 block tracking-wider uppercase">
                       Headquarters
                     </span>
-                    <span className="text-navy mt-1 block">Placeholder — to be updated</span>
+                    <span className="text-navy mt-1 block">Shared on enquiry</span>
                   </p>
                   <p>
                     <span className="text-navy/40 block tracking-wider uppercase">
                       Operating Markets
                     </span>
-                    <span className="text-navy mt-1 block">Placeholder — to be updated</span>
+                    <span className="text-navy mt-1 block">Shared on enquiry</span>
                   </p>
                   <p>
                     <span className="text-navy/40 block tracking-wider uppercase">
                       Company Type
                     </span>
-                    <span className="text-navy mt-1 block">Placeholder — to be updated</span>
+                    <span className="text-navy mt-1 block">Shared on enquiry</span>
                   </p>
                 </div>
                 <div className="mt-7 flex flex-wrap gap-3">

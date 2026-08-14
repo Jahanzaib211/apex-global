@@ -17,7 +17,6 @@ export default function GalleryFeatured({
           {item.category}
         </span>
         <span className="absolute bottom-6 left-6 text-xs tracking-wider text-white/45 uppercase">
-          Placeholder image
         </span>
       </div>
       <div className="flex flex-col justify-center p-8 md:p-12">
