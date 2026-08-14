@@ -65,27 +65,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Apex is the only brand this repo ships. Dispatch, BPO and call-centre
-      # positioning were removed by decision and must not return.
-      - name: Forbidden positioning in shipped content
+      # Two different rules, because two different things were being conflated.
+      #
+      # Retired service lines must not appear anywhere: Apex does not sell
+      # trucking dispatch, load-board or limousine services, and never should
+      # again.
+      #
+      # BPO and call-centre language is a *positioning* rule for Apex Global
+      # Tech Solution, not a banned word. Apex Global Outsourcing is a BPO and
+      # publishes "Business Process Outsourcing" on its live services page 25
+      # times over; the Group and Tours sites describe that subsidiary by name.
+      # A repo-wide ban only started failing once those apps were migrated in,
+      # and it would have meant deleting a real service line to satisfy a
+      # policy about a different company. So it is scoped to the properties the
+      # decision was actually about.
+      - name: Retired service lines (repo-wide)
         run: |
           set -uo pipefail
-          # Phrases, not bare words: "dispatch" alone is legitimate in code
-          # (useReducer, dispatchEvent), so only the positioning usage is banned.
-          # The sister front is part of the same company, so its name is no
-          # longer forbidden. The removed service lines still are.
-          PATTERN='truck dispatch|dispatch service|load board|limousine|\bBPO\b|business process outsourc|call cent(er|re)|outbound calling'
+          PATTERN='truck dispatch|dispatch service|load board|limousine'
           MATCHES=$(grep -rniE "$PATTERN" \
             --include='*.ts' --include='*.tsx' --include='*.css' \
             --include='*.json' --include='*.prisma' --include='*.mdx' \
             apps packages modules 2>/dev/null \
             | grep -viE 'credibility|forbidden|banned|FORBIDDEN_|audit' || true)
           if [ -n "$MATCHES" ]; then
-            echo "::error::Forbidden brand/positioning terms found in shipped code:"
+            echo "::error::Retired service lines found in shipped code:"
             echo "$MATCHES"
             exit 1
           fi
-          echo "Clean — no forbidden positioning terms in shipped code."
+          echo "Clean — no retired service lines."
+
+      - name: Tech positioning (apps/web, apps/console, modules)
+        run: |
+          set -uo pipefail
+          # "dispatch" as a bare word is legitimate in code (dispatchEvent,
+          # useReducer), so only the positioning phrases are listed.
+          PATTERN='\bBPO\b|business process outsourc|call cent(er|re)|outbound calling'
+          MATCHES=$(grep -rniE "$PATTERN" \
+            --include='*.ts' --include='*.tsx' --include='*.css' \
+            --include='*.json' --include='*.prisma' --include='*.mdx' \
+            apps/web apps/console modules 2>/dev/null \
+            | grep -viE 'credibility|forbidden|banned|FORBIDDEN_|audit' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "::error::Apex Tech must not position itself as a BPO or call centre:"
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "Clean — Apex Tech carries no BPO or call-centre positioning."
 
   secrets:
     name: Secret scan
