@@ -62,3 +62,17 @@ infra/MASTER-CREDENTIALS.md
 
 # Vendored upstream with its own git repository — not a submodule.
 infra/mailcow-dockerized/
+
+# Hyperswitch deployment config. These carry the live payment stack's
+# admin_api_key, jwt_secret and card-vault master_key — they were committed,
+# and the secret scan only passed because gitleaks-action is licence-gated
+# into a no-op. The redacted *.example templates next to them stay in git so
+# the deployment is still reproducible.
+#
+# The values remain in git history: rotating them and purging the history is
+# still outstanding, and the secret-scan job stays red until it is done.
+# Named individually rather than *.toml: superposition_seed.toml carries no
+# credentials and stays in git.
+infra/hyperswitch-config/router.toml
+infra/hyperswitch-config/vault.toml
+infra/hyperswitch-config/docker_compose.toml

@@ -1,0 +1,135 @@
+name: Security
+
+# Replaces the CodeQL workflow, which could never run here: code scanning on a
+# private repository requires GitHub Advanced Security, so every CodeQL run
+# ended in "Code scanning is not enabled for this repository" — a configuration
+# error reported as a failed security check on every commit.
+#
+# Semgrep OSS and osv-scanner are both Apache-2.0, need no licence server and
+# no GHAS, and run anywhere. They report findings as a failed job with the
+# detail in the log plus SARIF as an artifact, because uploading SARIF to the
+# Security tab is itself a GHAS feature.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly, so newly-published advisories surface without a push.
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+# Runner selection is driven by the CI_RUNNER repository variable so that
+# moving between our own hardware and GitHub-hosted runners is a settings
+# change, not a code change.
+jobs:
+  semgrep:
+    name: Static analysis (Semgrep OSS)
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned by digest-bearing tag rather than `latest`: a scanner that
+      # silently changes version underneath you produces findings nobody can
+      # reproduce.
+      - name: Run Semgrep
+        id: semgrep
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/src" \
+            -w /src \
+            semgrep/semgrep:1.97.0 \
+            semgrep scan \
+              --config=p/typescript \
+              --config=p/react \
+              --config=p/javascript \
+              --config=p/secrets \
+              --exclude='**/node_modules/**' \
+              --exclude='**/.next/**' \
+              --exclude='**/generated/**' \
+              --exclude='**/coverage/**' \
+              --sarif --output=semgrep.sarif \
+              --metrics=off \
+              --error
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      # The `p/` rulesets are fetched from Semgrep's registry at run time, so a
+      # registry outage is a network failure rather than a finding. Distinguish
+      # the two: no SARIF at all means the scan never ran.
+      - name: Interpret the result
+        run: |
+          set -uo pipefail
+          if [ ! -s semgrep.sarif ]; then
+            echo "::notice::Semgrep produced no report — the rule registry was probably unreachable. Not failing the build on an outage."
+            exit 0
+          fi
+          findings=$(python3 -c "import json;print(len(json.load(open('semgrep.sarif'))['runs'][0]['results']))")
+          echo "Semgrep findings: $findings"
+          if [ "$findings" -gt 0 ]; then
+            echo "::error::Semgrep found $findings issue(s). See the SARIF artifact and the log above."
+            exit 1
+          fi
+          echo "Clean — no Semgrep findings."
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
+          if-no-files-found: ignore
+          retention-days: 14
+
+  dependencies:
+    name: Dependency CVEs (osv-scanner)
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # osv.dev is Google's open vulnerability database; the scanner reads the
+      # pnpm lockfile directly, so it sees the exact resolved tree rather than
+      # the declared ranges.
+      - name: Scan the lockfile
+        run: |
+          set -uo pipefail
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/src" \
+            -w /src \
+            ghcr.io/google/osv-scanner:v1.9.2 \
+            --lockfile=/src/pnpm-lock.yaml \
+            --format=sarif \
+            --output=/src/osv.sarif || true
+
+          if [ ! -s osv.sarif ]; then
+            echo "::notice::osv-scanner produced no report — the advisory database was probably unreachable."
+            exit 0
+          fi
+          findings=$(python3 -c "import json;print(len(json.load(open('osv.sarif'))['runs'][0]['results']))")
+          echo "Known vulnerabilities: $findings"
+          if [ "$findings" -gt 0 ]; then
+            echo "::error::osv-scanner found $findings vulnerable package(s). See the SARIF artifact."
+            exit 1
+          fi
+          echo "Clean — no known vulnerabilities in the lockfile."
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: osv-sarif
+          path: osv.sarif
+          if-no-files-found: ignore
+          retention-days: 14

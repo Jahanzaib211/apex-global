@@ -1,0 +1,23 @@
+# Config for nektos/act — run the GitHub Actions workflows locally.
+#
+# Useful before pushing, and as the fallback when GitHub itself will not
+# dispatch a job (the whole pipeline was blocked once by an account spending
+# limit, which no amount of correct YAML fixes).
+#
+# The workflows select their runner with `${{ vars.CI_RUNNER || 'ubuntu-latest' }}`,
+# so both labels are mapped here: `ubuntu-latest` for a plain checkout, and
+# `apex-homelab` for when CI_RUNNER is set.
+#
+#   act -W .github/workflows/ci.yml -j quality
+#   act push -W .github/workflows/quality-gates.yml
+#
+# Scope: good for lint, typecheck, test and build. The E2E workflow needs
+# postgres and redis service containers and a browser stack, which act models
+# imperfectly — run that one on the real runner.
+-P ubuntu-latest=catthehacker/ubuntu:act-22.04
+-P apex-homelab=catthehacker/ubuntu:act-22.04
+--container-architecture linux/amd64
+
+# Secrets and variables are not in the repo. Supply them per invocation:
+#   act --var CI_RUNNER=apex-homelab --secret-file .env.act
+# Never commit .env.act — .gitignore already covers .env*.

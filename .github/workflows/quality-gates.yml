@@ -13,10 +13,17 @@ concurrency:
   group: gates-${{ github.ref }}
   cancel-in-progress: true
 
+# Runner selection is driven by the CI_RUNNER repository variable so that
+# moving between our own hardware and GitHub-hosted runners is a settings
+# change, not a code change. It is set to `apex-homelab` because GitHub-hosted
+# minutes are billed and self-hosted ones are not — every workflow here failed
+# to start with "recent account payments have failed or your spending limit
+# needs to be increased" until the runner existed. Unset it and everything
+# falls back to ubuntu-latest.
 jobs:
   credibility:
     name: Credibility audit
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
 
     # The audit reads published content out of the database. Without a
@@ -60,7 +67,7 @@ jobs:
 
   brand-leak:
     name: Brand leak audit
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -115,20 +122,41 @@ jobs:
 
   secrets:
     name: Secret scan
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      # The gitleaks *scanner* is MIT, but gitleaks-action@v2 is licence-gated
+      # for organisations and wants a GITLEAKS_LICENSE. Running the binary
+      # directly keeps the same coverage with no licence question, and pins the
+      # version so a new release cannot change what "clean" means mid-week.
       - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/repo" \
+            zricethezav/gitleaks:v8.21.2 \
+            detect \
+              --source=/repo \
+              --redact \
+              --no-banner \
+              --exit-code=1 \
+              --report-format=sarif \
+              --report-path=/repo/gitleaks.sarif
+
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-sarif
+          path: gitleaks.sarif
+          if-no-files-found: ignore
+          retention-days: 14
 
   lighthouse:
     name: Performance budget
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 25
     services:
       postgres:

@@ -14,10 +14,17 @@ env:
   TURBO_TELEMETRY_DISABLED: 1
   NEXT_TELEMETRY_DISABLED: 1
 
+# Runner selection is driven by the CI_RUNNER repository variable so that
+# moving between our own hardware and GitHub-hosted runners is a settings
+# change, not a code change. It is set to `apex-homelab` because GitHub-hosted
+# minutes are billed and self-hosted ones are not — every workflow here failed
+# to start with "recent account payments have failed or your spending limit
+# needs to be increased" until the runner existed. Unset it and everything
+# falls back to ubuntu-latest.
 jobs:
   quality:
     name: Lint · Typecheck · Test · Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
 
     services:
@@ -91,7 +98,7 @@ jobs:
 
   formatting:
     name: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,53 @@
+# gitleaks configuration.
+#
+# The secret scan used to run through `gitleaks/gitleaks-action@v2`, which is
+# licence-gated for organisations. It reported the job green in ~10 seconds
+# while the scanner binary, run over the same history, finds 25 hits. A gate
+# that passes because it is a no-op is worse than no gate, so the job now runs
+# the MIT binary directly and this file is what keeps its output honest.
+#
+# Everything allowlisted below is allowlisted with a reason. Nothing here is a
+# secret that "probably doesn't matter" — if it is genuinely sensitive it stays
+# flagged and the build stays red until it is rotated.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Provable false positives, each justified individually"
+
+paths = [
+  # Build output and vendored trees: not our source, and re-scanning them only
+  # produces noise.
+  '''^node_modules/''',
+  '''\.next/''',
+  '''^packages/db/generated/''',
+  '''coverage/''',
+  '''^infra/mailcow-dockerized/''',
+]
+
+regexes = [
+  # Chatwoot *website* tokens. These are public by construction — the widget
+  # ships them to every browser that loads the page, and they only identify
+  # which inbox to open. They are asserted per-site in
+  # tests/e2e/public/group-chat-widget.spec.ts and defined in
+  # packages/site-kit/src/chatwoot.ts. See the note in that file.
+  '''BwtQt74nqfPep16bMSHJrXZB''',
+  '''8ifuvAsh77ZAc3CfAV1vv29z''',
+  '''DCBe85BZciTqg3GtMZqM8Lkc''',
+  '''HCkV3Ez6Njd3XpYhgXiaw6nr''',
+  '''kzvNNCuZqvKhTu9Pb3hsGiut''',
+
+  # A localStorage key, not a credential.
+  '''apex\.attribution\.v1''',
+
+  # Reads of environment variables, not literals.
+  '''env\.S3_(ACCESS|SECRET)_KEY''',
+
+  # Obvious test fixtures. `sk-live-abcdef1234567890` is a sequence of hex
+  # letters used to prove the vault round-trips a string.
+  '''sk-live-abcdef1234567890''',
+
+  # Upstream placeholder shipped in Hyperswitch's own sample config.
+  '''change_me_hs_pg''',
+]
