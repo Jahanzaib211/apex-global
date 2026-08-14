@@ -6,6 +6,7 @@ import CareersProcess from "@/components/careers/CareersProcess";
 import CareersCrossDiscovery from "@/components/careers/CareersCrossDiscovery";
 import CareersFinalCTA from "@/components/careers/CareersFinalCTA";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Careers | Apex Group of Companies",
@@ -53,10 +54,7 @@ export default function CareersPage() {
       <CareersCrossDiscovery />
       <CareersFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(jobPostingSchema)} />
     </main>
   );
 }

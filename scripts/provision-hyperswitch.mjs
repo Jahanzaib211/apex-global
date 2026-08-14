@@ -35,7 +35,10 @@
  */
 
 const ADMIN_KEY = process.env.HYPERSWITCH_ADMIN_API_KEY;
-const ROUTER_URL = (process.env.HYPERSWITCH_ROUTER_URL ?? "http://127.0.0.1:8084").replace(/\/$/, "");
+const ROUTER_URL = (process.env.HYPERSWITCH_ROUTER_URL ?? "http://127.0.0.1:8084").replace(
+  /\/$/,
+  "",
+);
 const ORG_ID = process.env.HS_ORG_ID;
 const MERCHANT_ID = process.env.HS_MERCHANT_ID;
 const MERCHANT_NAME = process.argv[2] ?? "Apex Global Revenue";
@@ -99,7 +102,9 @@ async function main() {
     profileId = created.default_profile ?? merchantId;
   } else {
     console.log(`Reusing merchant: ${merchantId} (HS_MERCHANT_ID set).`);
-    const m = await api(`/accounts/${encodeURIComponent(merchantId)}`, "GET", null).catch(() => null);
+    const m = await api(`/accounts/${encodeURIComponent(merchantId)}`, "GET", null).catch(
+      () => null,
+    );
     if (m) {
       publishableKey = m.publishable_key;
       profileId = m.default_profile ?? merchantId;

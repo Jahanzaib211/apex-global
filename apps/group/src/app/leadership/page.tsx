@@ -5,6 +5,7 @@ import LeadershipPhilosophy from "@/components/leadership/LeadershipPhilosophy";
 import GroupDirection from "@/components/leadership/GroupDirection";
 import LeadershipCTA from "@/components/leadership/LeadershipCTA";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Leadership | Apex Group of Companies",
@@ -27,10 +28,7 @@ const personJsonLd = {
 export default function LeadershipPage() {
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(personJsonLd)} />
       <LeadershipHero />
       <CEOProfile />
       <LeadershipMessage />

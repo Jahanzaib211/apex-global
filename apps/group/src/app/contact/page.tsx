@@ -7,6 +7,7 @@ import ContactCrossDiscovery from "@/components/contact/ContactCrossDiscovery";
 import ContactFinalCTA from "@/components/contact/ContactFinalCTA";
 import { SITE_URL, url } from "@/lib/site-url";
 import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Contact | Apex Group of Companies",
@@ -52,10 +53,7 @@ export default function ContactPage() {
       <ContactCrossDiscovery />
       <ContactFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(contactPageSchema)} />
     </main>
   );
 }

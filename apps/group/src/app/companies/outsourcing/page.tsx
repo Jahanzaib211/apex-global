@@ -15,6 +15,7 @@ import OutsourcingCaseStudies from "@/components/companies/outsourcing/Outsourci
 import OutsourcingCrossDiscovery from "@/components/companies/outsourcing/OutsourcingCrossDiscovery";
 import OutsourcingFinalCTA from "@/components/companies/outsourcing/OutsourcingFinalCTA";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
   title: "Apex Global Outsourcing | People. Process. Performance. Global Scale.",
@@ -44,10 +45,7 @@ const serviceJsonLd = {
 export default function OutsourcingPage() {
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(serviceJsonLd)} />
       <OutsourcingHero />
       <OutsourcingAbout />
       <OutsourcingBPO />

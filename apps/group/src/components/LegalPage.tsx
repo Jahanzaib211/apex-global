@@ -3,6 +3,7 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 import { url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export type LegalSection = {
   title: string;
@@ -126,15 +127,13 @@ export function WebPageSchema({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name,
-          description,
-          url: url(path),
-        }),
-      }}
+      {...jsonLdProps({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name,
+        description,
+        url: url(path),
+      })}
     />
   );
 }

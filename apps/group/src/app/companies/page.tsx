@@ -4,6 +4,7 @@ import CompaniesIndexWhy from "@/components/companies-index/CompaniesIndexWhy";
 import CompaniesIndexFuture from "@/components/companies-index/CompaniesIndexFuture";
 import CompaniesIndexCrossDiscovery from "@/components/companies-index/CompaniesIndexCrossDiscovery";
 import CompaniesIndexFinalCTA from "@/components/companies-index/CompaniesIndexFinalCTA";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 const names = [
   "Apex Global Tech Solution",
   "Apex Global Outsourcing",
@@ -22,18 +23,16 @@ export default function CompaniesPage() {
       <CompaniesIndexFinalCTA />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            name: "Apex Group Companies",
-            itemListElement: names.map((name, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              item: { "@type": "Organization", name },
-            })),
-          }),
-        }}
+        {...jsonLdProps({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Apex Group Companies",
+          itemListElement: names.map((name, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: { "@type": "Organization", name },
+          })),
+        })}
       />
     </main>
   );

@@ -13,6 +13,7 @@ import ToursBooking from "@/components/companies/tours-travels/ToursBooking";
 import ToursCrossDiscovery from "@/components/companies/tours-travels/ToursCrossDiscovery";
 import ToursFinalCTA from "@/components/companies/tours-travels/ToursFinalCTA";
 import { url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Apex Global Tours & Travels | Car Rentals, Hajj & Umrah | Apex Group",
@@ -79,14 +80,8 @@ export default function ToursTravelsPage() {
       <ToursCrossDiscovery />
       <ToursFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(serviceSchema)} />
+      <script type="application/ld+json" {...jsonLdProps(localBusinessSchema)} />
     </main>
   );
 }

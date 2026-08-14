@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Prose } from "@/components/prose";
 import { getInsight } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const revalidate = 300;
 
@@ -56,10 +57,7 @@ export default async function InsightPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(jsonLd)} />
 
       <Section tone="page" className="pt-16 pb-10 md:pt-20 md:pb-12">
         <div className="mx-auto max-w-[var(--container-prose)]">

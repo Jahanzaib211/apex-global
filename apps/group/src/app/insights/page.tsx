@@ -4,6 +4,7 @@ import InsightsNewsletter from "@/components/insights/InsightsNewsletter";
 import InsightsCTA from "@/components/insights/InsightsCTA";
 import { insights } from "@/data/insights";
 import { SITE_URL, url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "News & Insights | Apex Group of Companies",
@@ -46,14 +47,8 @@ export default function InsightsPage() {
       <InsightsNewsletter />
       <InsightsCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(blogSchema)} />
+      <script type="application/ld+json" {...jsonLdProps(itemListSchema)} />
     </main>
   );
 }

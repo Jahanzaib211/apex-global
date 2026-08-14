@@ -102,6 +102,12 @@ function getMailer(cfg: SmtpConfig | null): Mailer {
     port: cfg.port,
     secure: cfg.port === 465,
     auth: cfg.user ? { user: cfg.user, pass: cfg.password ?? "" } : undefined,
+    // Scoped, not blanket: `insecure` is true only for a loopback relay — a
+    // connection that never leaves the host, where there is no network path
+    // for a man in the middle to sit on — or when an operator sets
+    // SMTP_TLS_INSECURE=1 deliberately. Any remote relay still requires a
+    // certificate the system trust store accepts.
+    // nosemgrep: problem-based-packs.insecure-transport.js-node.bypass-tls-verification.bypass-tls-verification
     tls: insecure ? { rejectUnauthorized: false } : undefined,
   });
   return new SmtpMailer(transporter, cfg.from);

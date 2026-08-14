@@ -5,6 +5,7 @@ import { BRAND, absoluteUrl } from "@/lib/brand";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
@@ -87,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           id="ld-json-org"
           type="application/ld+json"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }}
+          {...jsonLdProps(ORG_JSONLD)}
         />
         <AttributionCapture />
         <ApexChat />

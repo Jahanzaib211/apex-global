@@ -14,8 +14,11 @@
  *         WEB_ORIGIN=https://tech.apexgroupcompanies.com pnpm smoke
  */
 
-const ORIGIN = (process.env.WEB_ORIGIN ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:4300")
-  .replace(/\/$/, "");
+const ORIGIN = (
+  process.env.WEB_ORIGIN ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "http://127.0.0.1:4300"
+).replace(/\/$/, "");
 const TIMEOUT_MS = Number(process.env.SMOKE_TIMEOUT_MS ?? 10000);
 
 /** @type {Array<{ name: string, run: () => Promise<string> }>} */

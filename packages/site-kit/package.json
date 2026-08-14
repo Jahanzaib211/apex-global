@@ -16,7 +16,8 @@
     "./form-guards": "./src/form-guards.ts",
     "./forward-lead": "./src/forward-lead.ts",
     "./legal": "./src/legal.ts",
-    "./chatwoot": "./src/chatwoot.ts"
+    "./chatwoot": "./src/chatwoot.ts",
+    "./json-ld": "./src/json-ld.ts"
   },
   "scripts": {
     "lint": "eslint src",

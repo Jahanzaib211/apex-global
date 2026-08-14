@@ -7,6 +7,7 @@ import EcosystemFuture from "@/components/ecosystem/EcosystemFuture";
 import EcosystemCrossDiscovery from "@/components/ecosystem/EcosystemCrossDiscovery";
 import EcosystemFinalCTA from "@/components/ecosystem/EcosystemFinalCTA";
 import { url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 const subsidiaries = [
   "Apex Global Tech Solution",
   "Apex Global Outsourcing",
@@ -27,15 +28,13 @@ export default function EcosystemPage() {
       <EcosystemFinalCTA />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Apex Group of Companies",
-            url: url("/ecosystem"),
-            department: subsidiaries.map((name) => ({ "@type": "Organization", name })),
-          }),
-        }}
+        {...jsonLdProps({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Apex Group of Companies",
+          url: url("/ecosystem"),
+          department: subsidiaries.map((name) => ({ "@type": "Organization", name })),
+        })}
       />
     </main>
   );

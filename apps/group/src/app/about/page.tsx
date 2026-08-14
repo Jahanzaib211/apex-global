@@ -9,6 +9,7 @@ import OurFuture from "@/components/about/OurFuture";
 import AboutFinalCTA from "@/components/about/AboutFinalCTA";
 import { SITE_URL } from "@/lib/site-url";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "About | Apex Group of Companies",
@@ -30,10 +31,7 @@ const orgJsonLd = {
 export default function AboutPage() {
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(orgJsonLd)} />
       <AboutHero />
       <OurStory />
       <WhoWeAre />

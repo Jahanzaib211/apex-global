@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Prose } from "@/components/prose";
 import { displayClient, getSolution } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const revalidate = 300;
 
@@ -76,10 +77,7 @@ export default async function SolutionPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(jsonLd)} />
 
       <Section tone="inverse" grid className="py-20 md:py-24">
         <nav aria-label="Breadcrumb" className="mb-8">

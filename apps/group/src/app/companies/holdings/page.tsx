@@ -13,6 +13,7 @@ import HoldingsGallery from "@/components/companies/holdings/HoldingsGallery";
 import HoldingsCrossDiscovery from "@/components/companies/holdings/HoldingsCrossDiscovery";
 import HoldingsFinalCTA from "@/components/companies/holdings/HoldingsFinalCTA";
 import { url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Apex Holdings | Real Estate Marketing & Future Development | Apex Group",
@@ -60,14 +61,8 @@ export default function HoldingsPage() {
       <HoldingsCrossDiscovery />
       <HoldingsFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateAgentSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(serviceSchema)} />
+      <script type="application/ld+json" {...jsonLdProps(realEstateAgentSchema)} />
     </main>
   );
 }

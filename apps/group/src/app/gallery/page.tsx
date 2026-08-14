@@ -11,6 +11,7 @@ import GalleryCTA from "@/components/gallery/GalleryCTA";
 import galleryItems from "@/data/gallery";
 import type { GalleryItem } from "@/data/gallery";
 import { url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 export default function GalleryPage() {
   const [filtered, setFiltered] = useState(galleryItems);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
@@ -35,16 +36,14 @@ export default function GalleryPage() {
       <GalleryLightbox item={selected} onClose={() => setSelected(null)} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ImageGallery",
-            name: "Apex Group Gallery",
-            description: "Moments from across Apex Group of Companies",
-            url: url("/gallery"),
-            image: galleryItems.map((i) => url(`/gallery/${i.id}`)),
-          }),
-        }}
+        {...jsonLdProps({
+          "@context": "https://schema.org",
+          "@type": "ImageGallery",
+          name: "Apex Group Gallery",
+          description: "Moments from across Apex Group of Companies",
+          url: url("/gallery"),
+          image: galleryItems.map((i) => url(`/gallery/${i.id}`)),
+        })}
       />
     </main>
   );

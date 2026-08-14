@@ -14,6 +14,7 @@ import TechCaseStudies from "@/components/companies/tech-solution/TechCaseStudie
 import TechCrossDiscovery from "@/components/companies/tech-solution/TechCrossDiscovery";
 import TechFinalCTA from "@/components/companies/tech-solution/TechFinalCTA";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
   title: "Apex Global Tech Solution | Technology That Moves Businesses Forward",
@@ -43,10 +44,7 @@ const serviceJsonLd = {
 export default function TechSolutionPage() {
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(serviceJsonLd)} />
       <TechHero />
       <TechAbout />
       <TechSaaS />

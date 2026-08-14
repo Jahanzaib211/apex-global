@@ -20,7 +20,7 @@ const useCases = [
   {
     icon: Briefcase,
     title: "Business travel",
-    desc: "Executive commutes, client meetings, and airport runs across Riyadh&apos;s financial district.",
+    desc: "Executive commutes, client meetings, and airport runs across Riyadh’s financial district.",
   },
   {
     icon: Plane,
@@ -46,7 +46,7 @@ const faqItems = [
   },
   {
     q: "Do drivers know the diplomatic quarter and corporate zones?",
-    a: "Yes. Apex&apos;s Riyadh partners are accustomed to the Diplomatic Quarter, KAFD, King Abdullah Financial District and major hotel clusters.",
+    a: "Yes. Apex’s Riyadh partners are accustomed to the Diplomatic Quarter, KAFD, King Abdullah Financial District and major hotel clusters.",
   },
   {
     q: "Can Apex handle a multi-day business itinerary?",
@@ -97,10 +97,7 @@ export default function RiyadhCarRentalPage() {
                   <h3 className="font-display text-navy-600 mb-2 text-lg font-semibold">
                     {u.title}
                   </h3>
-                  <p
-                    className="text-ink-400 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: u.desc }}
-                  />
+                  <p className="text-ink-400 text-sm leading-relaxed">{u.desc}</p>
                 </div>
               );
             })}
@@ -160,10 +157,9 @@ export default function RiyadhCarRentalPage() {
                     />
                   </button>
                   {open && (
-                    <div
-                      className="text-ink-400 -mt-1 px-5 pb-5 text-sm leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: item.a }}
-                    />
+                    <div className="text-ink-400 -mt-1 px-5 pb-5 text-sm leading-relaxed">
+                      {item.a}
+                    </div>
                   )}
                 </div>
               );

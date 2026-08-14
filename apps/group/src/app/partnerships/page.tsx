@@ -9,6 +9,7 @@ import PartnershipFinalCTA from "@/components/partnerships/PartnershipFinalCTA";
 import { SITE_URL, url } from "@/lib/site-url";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
 import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Partnerships | Apex Group of Companies",
@@ -60,14 +61,8 @@ export default function PartnershipsPage() {
       <PartnershipCrossDiscovery />
       <PartnershipFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(contactSchema)} />
+      <script type="application/ld+json" {...jsonLdProps(orgSchema)} />
     </main>
   );
 }

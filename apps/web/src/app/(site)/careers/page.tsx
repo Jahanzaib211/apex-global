@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { LeadForm } from "@/components/lead-form";
 import { getJobs } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const revalidate = 300;
 
@@ -30,12 +31,7 @@ export default async function CareersPage() {
 
   return (
     <>
-      {jsonLd.length > 0 ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      ) : null}
+      {jsonLd.length > 0 ? <script type="application/ld+json" {...jsonLdProps(jsonLd)} /> : null}
 
       <Section tone="inverse" grid className="py-20 md:py-24">
         <SectionHeading

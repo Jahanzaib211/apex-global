@@ -15,6 +15,14 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 const ALGORITHM = "aes-256-gcm";
 const IV_BYTES = 12; // 96-bit nonce, the size GCM is specified for
 
+// GCM's authentication tag is the whole point of choosing GCM, and Node will
+// accept a truncated one — 4, 8, 12, 13, 14 or 15 bytes — unless it is told
+// what length to expect. A shorter tag is exponentially cheaper to forge, so
+// an attacker who can influence the stored envelope could downgrade the
+// integrity guarantee to nothing while decryption still reports success.
+// Pinning it to the full 16 bytes makes anything else fail closed.
+const TAG_BYTES = 16;
+
 export interface SealedSecret {
   ciphertext: string;
   iv: string;
@@ -41,7 +49,7 @@ export function seal(plaintext: string): SealedSecret {
   if (!plaintext) throw new Error("Refusing to seal an empty secret.");
 
   const iv = randomBytes(IV_BYTES);
-  const cipher = createCipheriv(ALGORITHM, key(), iv);
+  const cipher = createCipheriv(ALGORITHM, key(), iv, { authTagLength: TAG_BYTES });
   const ciphertext = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
 
   return {
@@ -55,7 +63,9 @@ export function seal(plaintext: string): SealedSecret {
 }
 
 export function open(sealed: Omit<SealedSecret, "lastFour">): string {
-  const decipher = createDecipheriv(ALGORITHM, key(), Buffer.from(sealed.iv, "base64"));
+  const decipher = createDecipheriv(ALGORITHM, key(), Buffer.from(sealed.iv, "base64"), {
+    authTagLength: TAG_BYTES,
+  });
   decipher.setAuthTag(Buffer.from(sealed.tag, "base64"));
 
   return Buffer.concat([

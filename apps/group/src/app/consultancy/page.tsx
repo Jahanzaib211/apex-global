@@ -10,6 +10,7 @@ import ConsultancyFAQ from "@/components/consultancy/ConsultancyFAQ";
 import ConsultancyCrossDiscovery from "@/components/consultancy/ConsultancyCrossDiscovery";
 import ConsultancyFinalCTA from "@/components/consultancy/ConsultancyFinalCTA";
 import { SITE_URL, url } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
   title: "Financial Consultancy | Apex Group | Private & Considered",
@@ -64,10 +65,7 @@ export default function ConsultancyPage() {
       <ConsultancyCrossDiscovery />
       <ConsultancyFinalCTA />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(financialServiceSchema) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(financialServiceSchema)} />
     </main>
   );
 }

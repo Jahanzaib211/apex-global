@@ -1,9 +1,20 @@
 /**
- * Renders the compliance programme strip under the marquee on Tech.
+ * The compliance programme strip, sitting at the foot of the page.
  *
- * Always visible — honest about in-progress vs verified state. The
- * "Verified" status is only ever claimed when an env var flips it at build
- * time; the "In progress" status never claims an audit completed.
+ * It used to be a light band high up, wedged between the tech marquee and the
+ * partner strip, where it interrupted the pitch to make a governance point.
+ * Compliance is reassurance, not a headline — it belongs where a reader looks
+ * once they are already interested.
+ *
+ * So it now renders last, on the same `--color-navy-900` as the closing CTA
+ * above it and the footer below, which makes the bottom of the page one
+ * continuous dark run rather than three stacked bands. The only seam is a
+ * hairline above it; there is deliberately no bottom border, so it flows
+ * straight into the footer.
+ *
+ * Always visible — honest about in-progress vs verified state. The "Verified"
+ * status is only ever claimed when an env var flips it at build time; the
+ * "In progress" status never claims an audit completed.
  */
 
 import Link from "next/link";
@@ -20,14 +31,15 @@ export function ComplianceStrip() {
   return (
     <section
       aria-label="Compliance programme"
-      className="border-y border-[var(--border-default)] bg-[var(--color-navy-50)] py-8"
+      className="border-t border-white/10 bg-[var(--color-navy-900)] py-10 text-[var(--color-navy-200)]"
     >
-      <div className="container-page flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-center">
-        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-[var(--color-navy-600)] uppercase">
-          <ShieldCheck size={14} aria-hidden />
+      <div className="container-page flex flex-wrap items-center justify-center gap-x-8 gap-y-5 text-center">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-[var(--color-canvas-100)] uppercase">
+          <ShieldCheck size={14} aria-hidden className="text-[var(--color-amber-400)]" />
           Compliance programme
         </span>
-        <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+
+        <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm">
           {badges.map((b) => {
             const isVerified = b.status === "verified";
             return (
@@ -35,25 +47,28 @@ export function ComplianceStrip() {
                 <Link
                   href={b.href}
                   className={
+                    // Both pills are translucent surfaces over the navy rather
+                    // than opaque chips, so they read as part of the footer
+                    // rather than pasted onto it.
                     isVerified
-                      ? "inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 font-medium text-emerald-800 transition hover:border-emerald-400 hover:text-emerald-900"
-                      : "inline-flex items-center gap-1.5 rounded-full border border-[var(--color-navy-200)] bg-white px-3 py-1 font-medium text-[var(--color-navy-700)] transition hover:border-[var(--color-gold-400)] hover:text-[var(--color-navy-900)]"
+                      ? "inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 font-medium text-emerald-300 transition-colors hover:border-emerald-400/70 hover:text-emerald-200"
+                      : "inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 font-medium text-[var(--color-canvas-100)] transition-colors hover:border-[var(--color-amber-400)]/60 hover:bg-white/10"
                   }
                   aria-label={
                     isVerified ? `${b.name} — verified` : `${b.name} — in progress, audit pending`
                   }
                 >
                   {isVerified ? (
-                    <ShieldCheck size={12} aria-hidden className="text-emerald-600" />
+                    <ShieldCheck size={12} aria-hidden className="text-emerald-400" />
                   ) : (
-                    <ShieldAlert size={12} aria-hidden className="text-amber-500" />
+                    <ShieldAlert size={12} aria-hidden className="text-[var(--color-amber-400)]" />
                   )}
                   {b.name}
                   <span
                     className={
                       isVerified
-                        ? "ml-1 text-[10px] tracking-wider text-emerald-700 uppercase"
-                        : "ml-1 text-[10px] tracking-wider text-amber-700 uppercase"
+                        ? "ml-1 text-[10px] tracking-wider text-emerald-400/90 uppercase"
+                        : "ml-1 text-[10px] tracking-wider text-[var(--color-amber-400)]/90 uppercase"
                     }
                   >
                     {isVerified ? "Verified" : "In progress"}
@@ -63,8 +78,9 @@ export function ComplianceStrip() {
             );
           })}
         </ul>
+
         {inProgressCount > 0 && (
-          <p className="basis-full text-center text-xs text-[var(--color-ink-400)]">
+          <p className="basis-full text-center text-xs text-[var(--color-navy-200)]/70">
             {inProgressCount > 1
               ? `${inProgressCount} audits in progress`
               : `${inProgressCount} audit in progress`}

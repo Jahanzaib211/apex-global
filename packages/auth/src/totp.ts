@@ -75,9 +75,17 @@ export interface SealedTotpSecret {
   tag: string;
 }
 
+// GCM's authentication tag is the whole point of choosing GCM, and Node will
+// accept a truncated one — 4, 8, 12, 13, 14 or 15 bytes — unless it is told
+// what length to expect. A shorter tag is exponentially cheaper to forge, so
+// an attacker who can influence the stored envelope could downgrade the
+// integrity guarantee to nothing while decryption still reports success.
+// Pinning it to the full 16 bytes makes anything else fail closed.
+const TAG_BYTES = 16;
+
 export function encryptTotpSecret(plaintext: string): SealedTotpSecret {
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", key(), iv);
+  const cipher = createCipheriv("aes-256-gcm", key(), iv, { authTagLength: TAG_BYTES });
   const enc = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   return {
     ciphertext: enc.toString("base64"),
@@ -87,7 +95,9 @@ export function encryptTotpSecret(plaintext: string): SealedTotpSecret {
 }
 
 export function decryptTotpSecret(sealed: SealedTotpSecret): string {
-  const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(sealed.iv, "base64"));
+  const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(sealed.iv, "base64"), {
+    authTagLength: TAG_BYTES,
+  });
   decipher.setAuthTag(Buffer.from(sealed.tag, "base64"));
   return Buffer.concat([
     decipher.update(Buffer.from(sealed.ciphertext, "base64")),

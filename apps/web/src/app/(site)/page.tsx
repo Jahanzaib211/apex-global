@@ -17,6 +17,7 @@ import {
   getTechProof,
 } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const revalidate = 300;
 
@@ -78,18 +79,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" {...jsonLdProps(jsonLd)} />
 
       <Hero />
 
       {/* ── The stack we operate, scrolling ─────────────────────────── */}
       <TechStackMarquee />
-
-      {/* ── Compliance programme, honest about in-progress vs verified ─ */}
-      <ComplianceStrip />
 
       {/* ── Partner strip ───────────────────────────────────────────── */}
       <Section tone="raised" className="py-12 md:py-14">
@@ -452,6 +447,13 @@ export default async function HomePage() {
           </ButtonLink>
         </div>
       </Section>
+
+      {/* ── Compliance programme ────────────────────────────────────────
+          Last, and on the same navy as the CTA above and the footer below, so
+          the foot of the page is one continuous dark run. It is reassurance
+          for a reader who is already interested, not a headline that should
+          interrupt the pitch. */}
+      <ComplianceStrip />
     </>
   );
 }

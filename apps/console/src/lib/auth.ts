@@ -57,6 +57,10 @@ export async function login(email: string, password: string): Promise<LoginResul
 
   if (!user?.passwordHash) {
     // Burn comparable time so a missing account is not detectably faster.
+    // The literal is not a credential and hashes nothing: it is a well-formed
+    // $2a$ cost-12 header followed by filler, so bcrypt.compare does the full
+    // key-derivation work and always returns false.
+    // nosemgrep: generic.secrets.security.detected-bcrypt-hash.detected-bcrypt-hash
     await bcrypt.compare(password, "$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinva");
     return invalid;
   }
