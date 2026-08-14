@@ -109,6 +109,11 @@ export function signS3({
   host: string;
   pathPrefix: string;
 } {
+  // Every use below must be `effectiveAmzDate`, not `amzDate`. The fallback
+  // existed but only fed `dateStamp`, so a call that omitted the parameter —
+  // the signature's whole point of being injectable is that it is optional —
+  // signed a canonical request containing the literal text "undefined". The
+  // presign helpers always pass a date, which is why production never saw it.
   const effectiveAmzDate = amzDate ?? new Date().toISOString().replace(/[:-]|\.\d{3}/g, "");
   const dateStamp = effectiveAmzDate.slice(0, 8);
   const { host, pathPrefix } = serveBase(config);
@@ -118,7 +123,7 @@ export function signS3({
   const canonicalQuerystring = [
     `X-Amz-Algorithm=AWS4-HMAC-SHA256`,
     `X-Amz-Credential=${encodeRfc3986(`${config.accessKey}/${dateStamp}/${config.region}/s3/aws4_request`)}`,
-    `X-Amz-Date=${amzDate}`,
+    `X-Amz-Date=${effectiveAmzDate}`,
     `X-Amz-Expires=${expires}`,
     `X-Amz-SignedHeaders=host`,
   ].join("&");
@@ -135,7 +140,7 @@ export function signS3({
 
   const stringToSign = [
     "AWS4-HMAC-SHA256",
-    amzDate,
+    effectiveAmzDate,
     `${dateStamp}/${config.region}/s3/aws4_request`,
     sha256(canonicalRequest),
   ].join("\n");

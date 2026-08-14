@@ -37,14 +37,19 @@
   "pnpm": {
     "overrides": {
       "@types/react": "^19.0.0",
-      "@types/react-dom": "^19.0.0"
-    }
+      "@types/react-dom": "^19.0.0",
+      "postcss": "^8.5.26",
+      "nanoid": "^3.3.18",
+      "sharp": "^0.35.3",
+      "vite": "^8.2.1"
+    },
+    "//overrides": "Transitive packages nothing in this repo declares directly, pinned because osv-scanner found CVEs in the versions their parents resolve to. Each entry is the lowest fixed release in the same major, so it is a patch bump for the dependent, not a version it has to know about. Remove an entry once every parent has moved past it on its own."
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.2",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
@@ -53,6 +58,7 @@
     "turbo": "^2.3.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "8.65.0",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.10",
+    "vite": "^8.2.1"
   }
 }
