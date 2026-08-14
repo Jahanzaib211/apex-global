@@ -134,8 +134,15 @@ export default function CareerDetailPage() {
                   <Briefcase className="h-6 w-6" />
                 </div>
                 <span className="eyebrow !text-gold-400 mb-3 block">{career.department}</span>
+                {/*
+                  The role title is already the page's <h1>, rendered by
+                  PageBanner. Repeating it verbatim as an <h2> gave the page two
+                  headings with identical text, which reads to a screen reader
+                  as two sections about the same thing. This card summarises the
+                  role, so it gets a heading that says that.
+                */}
                 <h2 className="font-display mb-7 text-3xl leading-tight font-bold text-white lg:text-4xl">
-                  {career.title}
+                  Role at a glance
                 </h2>
 
                 <div className="space-y-4 border-t border-white/10 pt-7">

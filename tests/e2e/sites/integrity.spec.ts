@@ -22,10 +22,16 @@ const IGNORABLE = [
   // Next cancels in-flight RSC prefetches when the pointer leaves a link. The
   // abort is the framework working as designed, not a broken request.
   /_rsc=/,
-  // Remote images from an external CDN are blocked by Chromium's opaque-response
-  // blocking in this environment. Their availability is not what this suite tests.
+  // Third-party origins. Their availability is not what this suite tests, and
+  // they are blocked or flaky in a sandboxed environment. apps/holdings and
+  // apps/outsourcing still pull their typefaces from Google Fonts with a
+  // stylesheet <link>; apps/group and apps/tours now self-host theirs.
   /images\.unsplash\.com/,
+  /fonts\.gstatic\.com/,
+  /fonts\.googleapis\.com/,
+  /static\.cloudflareinsights\.com/,
   /ERR_NETWORK_CHANGED/,
+  /ERR_ABORTED/,
   // React hydration diff warnings are caught by the dedicated check below.
   /Download the React DevTools/,
 ];
@@ -40,7 +46,23 @@ function collect(page: Page) {
   page.on("console", (msg: ConsoleMessage) => {
     if (msg.type() !== "error") return;
     const text = msg.text();
+    // "Failed to load resource: the server responded with a status of 404"
+    // carries no URL, so it cannot be attributed to an origin and cannot be
+    // filtered. The same failure is reported with its URL by the response and
+    // requestfailed handlers below, which is where it gets judged.
+    if (/^Failed to load resource:/.test(text)) return;
     if (!isIgnorable(text)) consoleErrors.push(text);
+  });
+
+  // Same-origin responses are ours and a 4xx/5xx is a real defect. Third-party
+  // origins are judged by IGNORABLE, because their availability is not what
+  // this suite tests.
+  page.on("response", (res) => {
+    const url = res.url();
+    if (res.status() < 400) return;
+    if (isIgnorable(url)) return;
+    if (!url.startsWith("http://127.0.0.1:")) return;
+    failedRequests.push(`GET ${url} :: HTTP ${res.status()}`);
   });
   page.on("pageerror", (err: Error) => {
     if (!isIgnorable(err.message)) pageErrors.push(err.message);
@@ -70,8 +92,12 @@ for (const site of SITES) {
         expect(response, `no response for ${route}`).not.toBeNull();
         expect(response!.status(), `${route} status`).toBeLessThan(400);
 
-        await page.waitForLoadState("networkidle").catch(() => {
-          /* a long-poll can keep the network busy; the assertions below still hold */
+        // Bounded on purpose. An unbounded networkidle wait can swallow the
+        // whole 45s test budget on a page with slow third-party images, and
+        // then the failure reads as "timeout" rather than naming the real
+        // problem. The assertions below hold either way.
+        await page.waitForLoadState("networkidle", { timeout: 8_000 }).catch(() => {
+          /* a long-poll or a blocked CDN can keep the network busy */
         });
 
         expect(pageErrors, `${route} threw`).toEqual([]);

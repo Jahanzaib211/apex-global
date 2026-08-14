@@ -76,12 +76,23 @@ for (const site of SITES) {
           for (const el of Array.from(document.querySelectorAll("button"))) {
             const rect = el.getBoundingClientRect();
             if (rect.width === 0 && rect.height === 0) continue;
+            // Simplified accessible-name computation. Images matter: a button
+            // wrapping <img alt="..."> takes its name from that alt, and
+            // omitting it reported every image button as nameless.
+            const labelledBy = el.getAttribute("aria-labelledby");
+            const imgAlt = Array.from(el.querySelectorAll("img"))
+              .map((img) => img.getAttribute("alt") ?? "")
+              .join(" ");
+            const svgTitle = Array.from(el.querySelectorAll("svg > title"))
+              .map((t) => t.textContent ?? "")
+              .join(" ");
             const name =
               (el.textContent ?? "").trim() ||
               el.getAttribute("aria-label") ||
               el.getAttribute("title") ||
-              (el.getAttribute("aria-labelledby") &&
-                document.getElementById(el.getAttribute("aria-labelledby")!)?.textContent) ||
+              (labelledBy && document.getElementById(labelledBy)?.textContent) ||
+              imgAlt.trim() ||
+              svgTitle.trim() ||
               "";
             if (!name.trim()) out.push(el.outerHTML.slice(0, 80));
           }

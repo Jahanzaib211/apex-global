@@ -59,6 +59,8 @@ export const SITES: readonly SiteSpec[] = [
       "/privacy",
       "/search",
       "/terms",
+      "/insights/apex-group-2026-outlook",
+      "/events/apex-group-summit-2026",
     ],
   },
   {
@@ -91,6 +93,11 @@ export const SITES: readonly SiteSpec[] = [
       "/services",
       "/site-visit",
       "/testimonials",
+      "/projects/avenue-residences",
+      "/insights/why-marketing-matters-in-pakistan-real-estate",
+      "/events/pre-launch-skyline-heights",
+      "/careers/property-consultant",
+      "/services/real-estate-marketing",
     ],
   },
   {
@@ -110,6 +117,8 @@ export const SITES: readonly SiteSpec[] = [
       "/services",
       "/services/bpo",
       "/services/tele-sales",
+      "/services/customer-experience",
+      "/services/dedicated-teams",
     ],
   },
   {
