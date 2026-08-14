@@ -92,10 +92,21 @@ jobs:
       - name: Unit tests
         if: ${{ !cancelled() }}
         run: pnpm test:coverage
+        # NODE_ENV is pinned per step because the runner inherits
+        # production from PM2 and three tools disagree about what they want:
+        # pnpm install skips devDependencies on production (hence
+        # --prod=false), `next build` fails prerendering on anything else, and
+        # React ships no `act` in its production build — under production all
+        # 31 @apex/ui tests die with "React.act is not a function". Pinning it
+        # at the step is the only place all three can be right at once.
+        env:
+          NODE_ENV: test
 
       - name: Build
         if: ${{ !cancelled() }}
         run: pnpm build
+        env:
+          NODE_ENV: production
 
       - name: Upload coverage
         if: ${{ !cancelled() }}

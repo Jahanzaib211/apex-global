@@ -92,6 +92,8 @@ jobs:
 
       - name: Build apps
         run: pnpm build
+        env:
+          NODE_ENV: production
 
       # The money path: ad click with UTM -> form submit -> Lead + Attribution
       # rows -> console inbox -> status change -> audit entry.

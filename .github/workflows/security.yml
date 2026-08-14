@@ -74,8 +74,17 @@ jobs:
             echo "::notice::Semgrep produced no report — the rule registry was probably unreachable. Not failing the build on an outage."
             exit 0
           fi
-          findings=$(python3 -c "import json;print(len(json.load(open('semgrep.sarif'))['runs'][0]['results']))")
-          echo "Semgrep findings: $findings"
+          # Count only findings that are NOT suppressed. Semgrep's terminal
+          # output omits `nosemgrep`-suppressed results, but its SARIF keeps
+          # them and tags each with suppressions:[{kind:"inSource"}] so a
+          # viewer can render them as suppressed. Counting raw `results`
+          # therefore failed the build on the three reviewed suppressions — the
+          # bcrypt timing literal, the loopback-only TLS relaxation, and the
+          # single audited JSON-LD sink — while a local scan reported zero.
+          count() { python3 -c "import json,sys;rs=json.load(open('semgrep.sarif'))['runs'][0]['results'];print(sum(1 for r in rs if bool(r.get('suppressions'))==(sys.argv[1]=='yes')))" "$1"; }
+          findings=$(count no)
+          suppressed=$(count yes)
+          echo "Semgrep findings: $findings (plus $suppressed reviewed suppression(s))"
           if [ "$findings" -gt 0 ]; then
             echo "::error::Semgrep found $findings issue(s). See the SARIF artifact and the log above."
             exit 1

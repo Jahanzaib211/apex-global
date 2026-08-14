@@ -66,8 +66,12 @@ jobs:
       - run: pnpm install --frozen-lockfile --prod=false
       - run: pnpm db:generate && pnpm db:push
       - run: pnpm lint && pnpm typecheck && pnpm test
+        env:
+          NODE_ENV: test
       - run: pnpm audit:credibility
       - run: pnpm build
+        env:
+          NODE_ENV: production
 
   deploy:
     name: Deploy to production
