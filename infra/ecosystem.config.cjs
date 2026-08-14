@@ -160,5 +160,30 @@ module.exports = {
       error_file: path.join(ROOT, "logs/apex-group.error.log"),
       out_file: path.join(ROOT, "logs/apex-group.out.log"),
     },
+    {
+      // GitHub Actions self-hosted runner.
+      //
+      // Under PM2 rather than the runner's own `svc.sh install`, which needs
+      // root: pm2-jahanzaib.service is already enabled at boot, so this gets
+      // the same persistence without adding a second supervisor or a sudo
+      // step to the deploy story.
+      //
+      // Why self-hosted at all: GitHub-hosted minutes are billed, and every
+      // workflow started failing with "recent account payments have failed or
+      // your spending limit needs to be increased". Self-hosted minutes are
+      // unmetered on a private repo. Workflows select it through the
+      // CI_RUNNER repository variable.
+      //
+      // One runner means one job at a time, which is deliberate — CI shares
+      // this box with the production sites.
+      ...base,
+      name: "github-runner",
+      cwd: require("os").homedir() + "/actions-runner",
+      script: "./run.sh",
+      interpreter: "bash",
+      max_memory_restart: "1024M",
+      error_file: path.join(ROOT, "logs/github-runner.error.log"),
+      out_file: path.join(ROOT, "logs/github-runner.out.log"),
+    },
   ],
 };
