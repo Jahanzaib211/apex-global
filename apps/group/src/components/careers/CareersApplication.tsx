@@ -53,7 +53,7 @@ export default function CareersApplication({
 }) {
   const [data, setData] = useState({
     ...initialState,
-    position: selectedVacancy?.title?.replace("[Placeholder] ", "") ?? "",
+    position: selectedVacancy?.title ?? "",
     companyOfInterest: selectedVacancy?.companyLabel ?? "Apex Group Office",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});

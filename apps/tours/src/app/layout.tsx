@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
+import { SITE_URL } from "@/lib/site-url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,6 +19,10 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  // Without metadataBase no canonical tag was emitted at all and every
+  // relative OpenGraph URL resolved against nothing.
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title: {
     default: "Apex Global Tours & Travels — Travel. Mobility. Pilgrimage.",
     template: "%s | Apex Global Tours & Travels",

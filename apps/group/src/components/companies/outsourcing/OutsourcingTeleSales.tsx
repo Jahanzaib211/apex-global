@@ -27,12 +27,12 @@ export default function OutsourcingTeleSales() {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <SectionHeading
-              eyebrow="Tele-Sales"
-              title="Sales Development and Tele-Sales Campaigns."
+              eyebrow="Telesales"
+              title="Sales Development and Telesales Campaigns."
             />
             <div className="text-charcoal/70 mt-8 space-y-5 text-base leading-7">
               <p>
-                Tele-sales is run as a sales function, not a calling exercise. Lists are qualified,
+                Telesales is run as a sales function, not a calling exercise. Lists are qualified,
                 talk tracks are designed around real buyer objections and performance is measured on
                 meetings set and pipeline generated — not raw dials.
               </p>

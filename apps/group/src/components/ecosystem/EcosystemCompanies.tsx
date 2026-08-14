@@ -13,7 +13,7 @@ const companies: CompanyRow[] = [
     "Apex Global Outsourcing",
     "Outsourcing",
     "Customer operations and support services structured around consistency, clarity and care.",
-    ["BPO", "Tele-sales", "Customer Support", "Operations"],
+    ["BPO", "Telesales", "Customer Support", "Operations"],
   ],
   [
     "Apex Tours & Travels",

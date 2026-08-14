@@ -19,14 +19,14 @@ import { SITE_URL } from "@/lib/site-url";
 export const metadata: Metadata = {
   title: "Apex Global Outsourcing | People. Process. Performance. Global Scale.",
   description:
-    "Apex Global Outsourcing delivers BPO, customer experience, tele-sales, lead generation, digital marketing and dedicated offshore teams built around your business.",
+    "Apex Global Outsourcing delivers BPO, customer experience, telesales, lead generation, digital marketing and dedicated offshore teams built around your business.",
 };
 
 const serviceJsonLd = {
   "@context": "https://schema.org",
   "@type": "Service",
   serviceType:
-    "BPO, Customer Experience, Tele-Sales, Lead Generation, Digital Marketing, Back-Office, Dedicated Teams",
+    "BPO, Customer Experience, Telesales, Lead Generation, Digital Marketing, Back-Office, Dedicated Teams",
   name: "Apex Global Outsourcing",
   provider: {
     "@type": "Organization",

@@ -27,13 +27,11 @@ export const metadata: Metadata = {
     siteName: BRAND.name,
     title: `${BRAND.name} — ${BRAND.tagline}`,
     description: BRAND.description,
-    images: [{ url: absoluteUrl(BRAND.ogImage), width: 1200, height: 630, alt: BRAND.name }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${BRAND.name} — ${BRAND.tagline}`,
     description: BRAND.description,
-    images: [absoluteUrl(BRAND.ogImage)],
   },
   robots: {
     index: true,

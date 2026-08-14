@@ -1,6 +1,9 @@
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 import { BookOpen, ArrowUpRight } from "lucide-react";
+import { APEX_GROUP } from "@/lib/apex-group";
+
+const TOURS_SITE = APEX_GROUP.find((c) => c.id === "apex-tours")!.href;
 
 const guides = [
   {
@@ -28,7 +31,7 @@ export default function ToursResources() {
         <SectionHeading
           eyebrow="TRAVEL RESOURCES"
           title="Helpful Information Before You Go."
-          subtitle="Plain-language guides to help you prepare for your journey. Placeholder content — these guides are being developed and will be available soon."
+          subtitle="Plain-language guides to help you prepare for your journey, published on the Apex Tours & Travels site."
         />
 
         <div className="bg-navy/10 mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-4">
@@ -42,11 +45,10 @@ export default function ToursResources() {
               </div>
               <h3 className="font-display text-navy mt-5 text-xl">{g.title}</h3>
               <p className="text-charcoal/65 mt-3 flex-1 text-sm leading-6">{g.summary}</p>
-              <p className="text-gold mt-4 text-[10px] tracking-[.2em] uppercase">
-                Placeholder — coming soon
-              </p>
               <a
-                href="#booking"
+                href={`${TOURS_SITE}/hajj-umrah/guide`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-navy hover:text-gold mt-4 inline-flex items-center gap-1 text-xs font-semibold tracking-[.18em] uppercase"
               >
                 Read guide <ArrowUpRight size={12} />

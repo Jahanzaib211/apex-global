@@ -27,7 +27,7 @@ const companies: CompanyRow[] = [
     "Reliable operations behind better customer experiences.",
     [
       "BPO",
-      "Tele-sales",
+      "Telesales",
       "Customer Support",
       "Back Office",
       "Quality Assurance",

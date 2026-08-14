@@ -24,7 +24,7 @@ export interface Insight {
 export const insights: Insight[] = [
   {
     slug: "apex-group-2026-outlook",
-    title: "[Placeholder] Apex Group 2026 Outlook: A Note From the Group Office",
+    title: "Apex Group 2026 Outlook: A Note From the Group Office",
     excerpt:
       "A placeholder look at the year ahead for the Group — cross-business coordination, sector priorities, and the themes that will shape our work across technology, outsourcing, travel, real estate and financial consultancy.",
     category: "Group News",
@@ -36,7 +36,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "cross-business-collaboration",
-    title: "[Placeholder] How Cross-Business Collaboration Shapes Our Day-to-Day",
+    title: "How Cross-Business Collaboration Shapes Our Day-to-Day",
     excerpt:
       "A placeholder note on how teams across our Group companies share context, infrastructure and customer relationships — and why that is a quiet advantage for the clients we serve.",
     category: "Group News",
@@ -47,7 +47,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "technology-delivery-models",
-    title: "[Placeholder] Choosing the Right Technology Delivery Model",
+    title: "Choosing the Right Technology Delivery Model",
     excerpt:
       "A placeholder exploration of how organizations think about delivery partners, in-house teams and managed models — and the questions worth asking before committing to one.",
     category: "Technology",
@@ -58,7 +58,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "outsourcing-quality-frameworks",
-    title: "[Placeholder] Building Quality Frameworks in Outsourced Operations",
+    title: "Building Quality Frameworks in Outsourced Operations",
     excerpt:
       "A placeholder look at the operating disciplines that distinguish mature outsourcing engagements from transactional ones — clear ownership, defined review cadences, and outcome measurement.",
     category: "Outsourcing",
@@ -69,7 +69,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "tours-tailored-itineraries",
-    title: "[Placeholder] The Case for Tailored Itineraries Over Template Travel",
+    title: "The Case for Tailored Itineraries Over Template Travel",
     excerpt:
       "A placeholder perspective on why meaningful travel rarely comes off the shelf — and how a properly designed itinerary balances structure with personal rhythm.",
     category: "Tours & Travels",
@@ -80,7 +80,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "real-estate-local-knowledge",
-    title: "[Placeholder] Why Local Knowledge Matters in Cross-Border Real Estate",
+    title: "Why Local Knowledge Matters in Cross-Border Real Estate",
     excerpt:
       "A placeholder look at the role of on-the-ground context when evaluating property decisions in unfamiliar markets, and what investors tend to overlook.",
     category: "Real Estate",
@@ -91,7 +91,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "financial-clarity",
-    title: "[Placeholder] Clarity Before Strategy: A First Step in Financial Consultancy",
+    title: "Clarity Before Strategy: A First Step in Financial Consultancy",
     excerpt:
       "A placeholder note on why the most useful first move in any financial conversation is rarely a product recommendation — it is a clear, organized view of where things stand.",
     category: "Financial Insights",
@@ -102,7 +102,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "corporate-update-q3",
-    title: "[Placeholder] Quarterly Corporate Update: Q3 Highlights From Across the Group",
+    title: "Quarterly Corporate Update: Q3 Highlights From Across the Group",
     excerpt:
       "A placeholder quarterly update summarizing activity across our Group businesses — projects in motion, partnerships explored, and operating lessons from the quarter.",
     category: "Corporate Updates",
@@ -113,7 +113,7 @@ export const insights: Insight[] = [
   },
   {
     slug: "upcoming-events-2026",
-    title: "[Placeholder] Looking Ahead: Events and Engagements for 2026",
+    title: "Looking Ahead: Events and Engagements for 2026",
     excerpt:
       "A placeholder preview of planned Group events, product conversations, pilgrimage programs and webinars for the coming year — and how to stay informed as dates firm up.",
     category: "Events",

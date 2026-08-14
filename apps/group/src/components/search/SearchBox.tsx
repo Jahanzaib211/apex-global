@@ -15,8 +15,8 @@ const pages = [
   [
     "Apex Global Outsourcing",
     "/companies/outsourcing",
-    "BPO, tele-sales and customer operations",
-    "outsourcing bpo tele-sales",
+    "BPO, telesales and customer operations",
+    "outsourcing bpo telesales tele-sales",
   ],
   [
     "Apex Tours & Travels",

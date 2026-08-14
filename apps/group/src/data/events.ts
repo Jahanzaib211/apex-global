@@ -22,7 +22,7 @@ export interface Event {
 export const events: Event[] = [
   {
     slug: "apex-group-summit-2026",
-    name: "[Placeholder] Apex Group Annual Summit 2026",
+    name: "Apex Group Annual Summit 2026",
     date: "2026-03-12",
     endDate: "2026-03-13",
     location: "Karachi, Pakistan",
@@ -34,7 +34,7 @@ export const events: Event[] = [
   },
   {
     slug: "tech-solution-product-briefing",
-    name: "[Placeholder] Tech Solution Product Briefing",
+    name: "Tech Solution Product Briefing",
     date: "2026-02-20",
     location: "Online Webinar",
     company: "tech-solution",
@@ -44,7 +44,7 @@ export const events: Event[] = [
   },
   {
     slug: "umrah-program-winter",
-    name: "[Placeholder] Winter Umrah Program",
+    name: "Winter Umrah Program",
     date: "2026-01-25",
     endDate: "2026-02-08",
     location: "Makkah & Madinah, Saudi Arabia",
@@ -55,7 +55,7 @@ export const events: Event[] = [
   },
   {
     slug: "holdings-project-launch",
-    name: "[Placeholder] Holdings Project Launch & Briefing",
+    name: "Holdings Project Launch & Briefing",
     date: "2026-04-04",
     location: "Lahore, Pakistan",
     company: "holdings",
@@ -65,7 +65,7 @@ export const events: Event[] = [
   },
   {
     slug: "financial-planning-webinar",
-    name: "[Placeholder] Financial Planning Webinar",
+    name: "Financial Planning Webinar",
     date: "2025-11-14",
     location: "Online Webinar",
     company: "consultancy",
@@ -75,7 +75,7 @@ export const events: Event[] = [
   },
   {
     slug: "outsourcing-industry-conference",
-    name: "[Placeholder] Outsourcing Industry Conference",
+    name: "Outsourcing Industry Conference",
     date: "2025-10-09",
     endDate: "2025-10-10",
     location: "Riyadh, Saudi Arabia",

@@ -9,7 +9,7 @@ export default function CompaniesIndexFuture() {
           title="More Companies Will Join the Group."
           subtitle="Apex is designed to expand thoughtfully. Future companies will add new sector capability while connecting to the same shared standards and long-term vision."
         />
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 md:grid-cols-5">
           {[
             "Tech Solution",
             "Outsourcing",
@@ -19,14 +19,6 @@ export default function CompaniesIndexFuture() {
           ].map((c) => (
             <div key={c} className="bg-navy p-5 text-center text-xs text-white">
               Apex {c}
-            </div>
-          ))}
-          {["06", "07", "08"].map((c) => (
-            <div
-              key={c}
-              className="border-gold text-navy border border-dashed p-5 text-center text-xs"
-            >
-              Coming Soon <span className="text-navy/45 mt-1 block text-[10px]">Company {c}</span>
             </div>
           ))}
         </div>

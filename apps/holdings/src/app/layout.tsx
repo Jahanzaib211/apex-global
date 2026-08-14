@@ -4,8 +4,13 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
+  // Without metadataBase every relative OpenGraph and canonical URL resolved
+  // against nothing, and no canonical tag was emitted at all.
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title: {
     default: "Apex Holdings — Building Value. Creating Opportunities.",
     template: "%s · Apex Holdings",
@@ -29,6 +34,8 @@ export const metadata: Metadata = {
       "A Pakistan-based real estate firm with a broad portfolio of projects and a long-term vision for development and ownership.",
     type: "website",
     locale: "en_PK",
+    url: SITE_URL,
+    siteName: "Apex Holdings",
   },
 };
 

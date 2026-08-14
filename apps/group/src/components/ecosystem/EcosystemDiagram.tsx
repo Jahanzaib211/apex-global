@@ -14,7 +14,7 @@ const companies = [
     name: "Outsourcing",
     short: "Outsourcing",
     desc: "Structured customer operations that help organizations serve people with consistency.",
-    services: "BPO · Tele-sales · Customer support",
+    services: "BPO · Telesales · Customer support",
     href: "/companies/outsourcing",
   },
   {

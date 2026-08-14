@@ -3,7 +3,7 @@
 import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const companies = [
   ["Apex Global Tech Solution", "/companies/tech-solution"],
@@ -25,11 +25,30 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCompanies, setOpenCompanies] = useState(false);
+  const companiesRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  /** Escape closes the submenu and a click outside dismisses it. */
+  useEffect(() => {
+    if (!openCompanies) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenCompanies(false);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      if (!companiesRef.current?.contains(e.target as Node)) setOpenCompanies(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [openCompanies]);
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all ${
@@ -50,31 +69,57 @@ export default function Header() {
           <Link href="/" className="hover:text-gold text-sm text-white">
             Home
           </Link>
+          {/*
+            This submenu opened on hover alone. On a touch device there is no
+            hover, so it never opened at all; with a keyboard the trigger
+            reported aria-expanded={false} over a permanently invisible panel.
+            Hover still works, and now so do click, keyboard focus, Escape and
+            outside-click. The trigger is a button rather than a link because
+            it toggles a menu — /companies stays reachable as the first item.
+          */}
           <div
-            className="group relative"
+            ref={companiesRef}
+            className="relative"
             onMouseEnter={() => setOpenCompanies(true)}
             onMouseLeave={() => setOpenCompanies(false)}
           >
-            <Link
-              href="/companies"
+            <button
+              type="button"
+              onClick={() => setOpenCompanies((v) => !v)}
               className="hover:text-gold inline-flex items-center gap-1 text-sm text-white"
-              aria-haspopup="true"
+              aria-haspopup="menu"
               aria-expanded={openCompanies}
+              aria-controls="companies-menu"
             >
-              Our Companies <ChevronDown size={14} />
-            </Link>
+              Our Companies
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${openCompanies ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
             <div
-              className={`bg-navy invisible absolute top-full left-0 mt-4 w-72 rounded-sm border border-white/10 p-3 opacity-0 shadow-xl transition ${
-                openCompanies ? "visible opacity-100" : ""
+              id="companies-menu"
+              className={`bg-navy absolute top-full left-0 mt-4 w-72 rounded-sm border border-white/10 p-3 shadow-xl transition ${
+                openCompanies ? "visible opacity-100" : "invisible opacity-0"
               }`}
               role="menu"
             >
+              <Link
+                href="/companies"
+                className="hover:text-gold block border-b border-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/5"
+                role="menuitem"
+                onClick={() => setOpenCompanies(false)}
+              >
+                All companies
+              </Link>
               {companies.map(([name, href]) => (
                 <Link
                   key={name}
                   href={href}
                   className="hover:text-gold block px-3 py-2 text-sm text-white/80 hover:bg-white/5"
                   role="menuitem"
+                  onClick={() => setOpenCompanies(false)}
                 >
                   {name}
                 </Link>
