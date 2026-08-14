@@ -9,9 +9,24 @@ import { expect, test } from "@playwright/test";
  * sideways. This file is the guard for that layout.
  */
 
+/**
+ * Scroll the graph section into view and wait for its canvas.
+ *
+ * The graph is below the fold and its 290 KB of node/link data is loaded on
+ * approach rather than shipped in the initial bundle, so it only exists once a
+ * visitor scrolls toward it — which is what these tests now do.
+ */
+async function openGraph(page: import("@playwright/test").Page) {
+  await page.goto("/");
+  const section = page.locator("#code-graph");
+  await section.scrollIntoViewIfNeeded();
+  await expect(section.getByTestId("repo-graph-canvas")).toBeVisible({ timeout: 20_000 });
+  return section;
+}
+
 test.describe("homepage repository graph", () => {
   test("the graph section is present and the canvas is centred", async ({ page }) => {
-    await page.goto("/");
+    await openGraph(page);
 
     const section = page.locator("#code-graph");
     await expect(section).toBeVisible();
@@ -37,7 +52,7 @@ test.describe("homepage repository graph", () => {
   });
 
   test("the drawn graph ink is centred in the canvas", async ({ page }) => {
-    await page.goto("/");
+    await openGraph(page);
 
     const canvas = page.getByTestId("repo-graph-canvas");
     await expect(canvas).toBeVisible();
@@ -98,7 +113,7 @@ test.describe("homepage repository graph", () => {
   });
 
   test("centred hero copy and no horizontal overflow", async ({ page }) => {
-    await page.goto("/");
+    await openGraph(page);
 
     const section = page.locator("#code-graph");
     const heading = section.getByRole("heading", { level: 2 });
@@ -121,7 +136,7 @@ test.describe("homepage repository graph", () => {
   });
 
   test("every node is clickable and opens real source", async ({ page }) => {
-    await page.goto("/");
+    await openGraph(page);
 
     const section = page.locator("#code-graph");
     const canvas = section.getByTestId("repo-graph-canvas");

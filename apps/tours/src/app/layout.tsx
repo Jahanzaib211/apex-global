@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -7,15 +7,28 @@ import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
 import { SITE_URL } from "@/lib/site-url";
 
-const inter = Inter({
-  subsets: ["latin"],
+/*
+ * Fonts are self-hosted rather than fetched through `next/font/google`.
+ *
+ * `next/font/google` downloads the woff2 files from fonts.gstatic.com at build
+ * time, which makes the build depend on a third-party network. It timed out on
+ * the CI runner (ETIMEDOUT after three retries) and failed the whole build.
+ * These are the same latin-subset files Google serves, committed alongside the
+ * app, so the build is hermetic and no visitor request reaches a Google domain.
+ */
+const inter = localFont({
+  src: "../fonts/inter-100-900-latin.woff2",
+  weight: "100 900",
   variable: "--font-sans",
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
 });
-const playfair = Playfair_Display({
-  subsets: ["latin"],
+const playfair = localFont({
+  src: "../fonts/playfair-display-400-900-latin.woff2",
+  weight: "400 900",
   variable: "--font-display",
   display: "swap",
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
 export const metadata: Metadata = {

@@ -2,7 +2,7 @@ import { ButtonLink, Card, OriginBadge, Section, SectionHeading, Stat } from "@a
 import Link from "next/link";
 import { ComplianceStrip } from "@/components/compliance-strip";
 import { Hero } from "@/components/hero";
-import { RepoGraph } from "@/components/repo-graph";
+import { RepoGraphLazy } from "@/components/repo-graph-lazy";
 import { TechStackMarquee } from "@/components/tech-stack-marquee";
 import {
   displayClient,
@@ -125,7 +125,7 @@ export default async function HomePage() {
           lede="Every symbol below is real, and every edge is a real dependency — parsed from the repository that builds this website, not a marketing mockup. Hover to trace a neighbourhood, click a node to read that file's actual source."
         />
         <div className="mt-10">
-          <RepoGraph />
+          <RepoGraphLazy />
         </div>
       </Section>
 
