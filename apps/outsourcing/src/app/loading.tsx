@@ -1,8 +1,17 @@
 import { Container } from "@/components/Container";
 
+/**
+ * Skeleton shown while a route segment streams in.
+ *
+ * A `div`, not a `main`: Next keeps this mounted alongside the incoming page
+ * during streaming, so a `main` here puts two `main` landmarks in the document
+ * at once. Assistive technology treats that as two primary regions, and the
+ * site-integrity suite fails the page for it. tours and holdings already got
+ * this right; group and outsourcing did not.
+ */
 export default function Loading() {
   return (
-    <main className="flex min-h-[60vh] items-center bg-white">
+    <div className="flex min-h-[60vh] items-center bg-white">
       <Container>
         <div className="mx-auto max-w-3xl py-24">
           <div className="bg-line h-3 w-32 animate-pulse rounded" />
@@ -17,6 +26,6 @@ export default function Loading() {
           </div>
         </div>
       </Container>
-    </main>
+    </div>
   );
 }

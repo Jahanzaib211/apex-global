@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { prisma } from "@apex/db";
 
 /**
  * Console authentication.
@@ -11,6 +12,21 @@ const EMAIL = process.env.ADMIN_EMAIL ?? "admin@apexglobal.local";
 const PASSWORD = process.env.ADMIN_PASSWORD ?? "";
 
 test.describe("console auth", () => {
+  // These tests deliberately submit wrong passwords, and the console locks an
+  // account after enough of them. Retries and repeated local runs accumulate,
+  // so the suite eventually locked the very account it was testing and the
+  // wrong-password case started reporting "temporarily locked" instead of the
+  // generic message. The lockout is correct; the test was carrying state
+  // between runs. Clearing it here makes each run start from the same place.
+  //
+  // This is the only place the suite reaches past HTTP into the database.
+  test.beforeEach(async () => {
+    await prisma.user.updateMany({
+      where: { email: EMAIL.toLowerCase() },
+      data: { failedLogins: 0, lockedUntil: null },
+    });
+  });
+
   test("redirects an unauthenticated visitor to the login page", async ({ page }) => {
     await page.goto("/leads");
     await expect(page).toHaveURL(/\/login\?next=%2Fleads/);

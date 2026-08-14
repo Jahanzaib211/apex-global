@@ -46,8 +46,9 @@ jobs:
       REDIS_URL: redis://localhost:6379
       AUTH_SECRET: ci_auth_secret_not_used_in_production_0000
       ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
-      NEXT_PUBLIC_SITE_URL: http://localhost:4300
-      CONSOLE_URL: http://localhost:4301
+      # The apps still need NEXT_PUBLIC_SITE_URL at build time; the suite
+      # addresses its own servers through the E2E_* overrides instead.
+      NEXT_PUBLIC_SITE_URL: http://localhost:4890
       AUTH_URL: http://localhost:4301
 
     steps:

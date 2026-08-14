@@ -46,6 +46,7 @@
     "//overrides": "Transitive packages nothing in this repo declares directly, pinned because osv-scanner found CVEs in the versions their parents resolve to. Each entry is the lowest fixed release in the same major, so it is a patch bump for the dependent, not a version it has to know about. Remove an entry once every parent has moved past it on its own."
   },
   "devDependencies": {
+    "@apex/db": "workspace:*",
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.2",
@@ -58,7 +59,7 @@
     "turbo": "^2.3.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "8.65.0",
-    "vitest": "^4.1.10",
-    "vite": "^8.2.1"
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
   }
 }

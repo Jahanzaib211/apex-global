@@ -9,6 +9,14 @@ import { test, expect } from "@playwright/test";
  * and an outsourcing RFP need different people. A shared token would look
  * identical in a screenshot and be wrong in the inbox, so the token is
  * asserted per site rather than just "some widget appeared".
+ *
+ * This lives under `surfaces`, not `public`, because every URL below is a live
+ * production address behind a Cloudflare tunnel. As a `public` spec it was
+ * gating CI on the public internet: a tunnel hiccup failed the build with no
+ * commit having changed. The invariant it protects — that no two sites share a
+ * token — is pinned hermetically in packages/site-kit/src/chatwoot.test.ts, so
+ * nothing is lost. What is checked here is deployment, which is the host's
+ * question to answer and not a runner's.
  */
 
 const CHAT_HOST = "https://chat.apexgroupcompanies.com";

@@ -1,8 +1,29 @@
+import { config as loadEnv } from "dotenv";
 import { defineConfig, devices } from "@playwright/test";
+
+// The suite is black-box by design and talks to the apps over HTTP. The one
+// exception is the console lockout reset, which needs DATABASE_URL — and the
+// app processes get it from dotenv, so the test runner should too.
+loadEnv();
+
 import { SITES, baseUrlFor } from "./tests/e2e/sites/site-matrix";
 
-const WEB_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:4300";
-const CONSOLE_URL = process.env.CONSOLE_URL ?? "http://localhost:4301";
+// Dedicated ports, for the same reason the marketing sites have them: 4300
+// and 4301 are bound by PM2 on the deploy host, so a suite that pointed at
+// them tested whatever production happened to be serving. That is not a
+// hypothetical — a local run did exactly this and reported seventeen failures
+// that were nothing but a PM2 process holding a build that had since been
+// replaced on disk. Every chunk 404'd, so the pages had no client JavaScript
+// at all, and the suite dutifully reported broken forms and a missing canvas.
+const WEB_TEST_PORT = 4890;
+const CONSOLE_TEST_PORT = 4891;
+// Deliberately E2E-prefixed rather than reading NEXT_PUBLIC_SITE_URL. That
+// variable is set in the repo `.env` to the *live* Tech URL, because the apps
+// build through it — so once this file started loading .env, the suite tried
+// to bind a web server to https://tech.apexgroupcompanies.com. An override
+// meant for the tests should have a name that only the tests use.
+const WEB_URL = process.env.E2E_WEB_URL ?? `http://localhost:${WEB_TEST_PORT}`;
+const CONSOLE_URL = process.env.E2E_CONSOLE_URL ?? `http://localhost:${CONSOLE_TEST_PORT}`;
 const isCI = !!process.env.CI;
 
 export default defineConfig({
@@ -97,22 +118,20 @@ export default defineConfig({
   ],
 
   webServer: [
-    ...(isCI
-      ? [
-          {
-            command: "pnpm --filter @apex/web start",
-            url: WEB_URL,
-            reuseExistingServer: false,
-            timeout: 120_000,
-          },
-          {
-            command: "pnpm --filter @apex/console start",
-            url: CONSOLE_URL,
-            reuseExistingServer: false,
-            timeout: 120_000,
-          },
-        ]
-      : []),
+    // Started everywhere, not only in CI. The local run used to skip these and
+    // address whatever answered on the production port instead.
+    {
+      command: `PORT=${WEB_TEST_PORT} pnpm --filter @apex/web start`,
+      url: WEB_URL,
+      reuseExistingServer: false,
+      timeout: 180_000,
+    },
+    {
+      command: `PORT=${CONSOLE_TEST_PORT} pnpm --filter @apex/console start`,
+      url: CONSOLE_URL,
+      reuseExistingServer: false,
+      timeout: 180_000,
+    },
     // `reuseExistingServer: false` is load-bearing. These sites' production
     // ports are already bound by PM2 on the deploy host, so reusing whatever
     // answers would test the live Next 14 build instead of the one under test.

@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e ../../.env -- next dev -p 4301",
+    "dev": "dotenv -e ../../.env -- next dev -p ${PORT:-4301}",
     "build": "dotenv -e ../../.env -- next build",
-    "start": "dotenv -e ../../.env -- next start -p 4301",
+    "start": "dotenv -e ../../.env -- next start -p ${PORT:-4301}",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

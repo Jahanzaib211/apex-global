@@ -20,11 +20,24 @@ async function openGraph(page: import("@playwright/test").Page) {
   await page.goto("/");
   const section = page.locator("#code-graph");
   await section.scrollIntoViewIfNeeded();
-  await expect(section.getByTestId("repo-graph-canvas")).toBeVisible({ timeout: 20_000 });
+
+  // The placeholder is the same box as the canvas, so waiting for the section
+  // to be visible proves nothing — wait for the chunk to actually arrive and
+  // paint. The budget is generous on purpose: a full suite run has six Next
+  // servers answering on one machine, and this is the only request in the
+  // suite that pulls a 290 KB chunk on demand. At 20s it failed intermittently
+  // under that load and passed every time in isolation, which is a statement
+  // about the test host, not about the page — a visitor fetches this from one
+  // idle server.
+  await expect(section.getByTestId("repo-graph-canvas")).toBeVisible({ timeout: 60_000 });
   return section;
 }
 
 test.describe("homepage repository graph", () => {
+  // The default 45s per-test budget would cap the wait in openGraph before it
+  // expired, which would make the longer timeout there decorative.
+  test.describe.configure({ timeout: 90_000 });
+
   test("the graph section is present and the canvas is centred", async ({ page }) => {
     await openGraph(page);
 

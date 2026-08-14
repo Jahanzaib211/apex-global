@@ -17,7 +17,7 @@ import type { ApexSiteId } from "./site";
  * environment is what makes it per-site: all five apps build from one root
  * `.env`, so anything read from there is necessarily the same value everywhere.
  *
- * `tests/e2e/public/group-chat-widget.spec.ts` asserts each live site serves
+ * `tests/e2e/surfaces/group-chat-widget.spec.ts` asserts each live site serves
  * its own token.
  */
 

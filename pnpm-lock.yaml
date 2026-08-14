@@ -16,6 +16,9 @@ importers:
 
   .:
     devDependencies:
+      '@apex/db':
+        specifier: workspace:*
+        version: link:packages/db
       '@eslint/js':
         specifier: ^9.17.0
         version: 9.39.5
