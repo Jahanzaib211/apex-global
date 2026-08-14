@@ -156,11 +156,7 @@ export default function Home() {
               packages. Travel with confidence.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <TactileLink
-                href="/custom-package"
-                id="hero-cta-primary"
-                className="btn-primary"
-              >
+              <TactileLink href="/custom-package" id="hero-cta-primary" className="btn-primary">
                 Plan Your Journey <ArrowRight size={16} />
               </TactileLink>
               <a href="#services" className="btn-secondary">

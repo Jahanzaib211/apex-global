@@ -47,8 +47,12 @@ function collect(page: Page) {
   });
   page.on("requestfailed", (req: Request) => {
     const url = req.url();
-    if (isIgnorable(url)) return;
-    failedRequests.push(`${req.method()} ${url} :: ${req.failure()?.errorText ?? "unknown"}`);
+    const reason = req.failure()?.errorText ?? "unknown";
+    // Match on the failure reason as well as the origin. ERR_NETWORK_CHANGED
+    // is environmental and can strike any host, so filtering by URL alone let
+    // it through whenever a third-party origin happened to be the victim.
+    if (isIgnorable(url) || isIgnorable(reason)) return;
+    failedRequests.push(`${req.method()} ${url} :: ${reason}`);
   });
 
   return { consoleErrors, pageErrors, failedRequests };

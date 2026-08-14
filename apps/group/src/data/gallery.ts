@@ -26,8 +26,7 @@ export const galleryItems: GalleryItem[] = [
     title: "A Shared Vision in Motion",
     category: "Group Events",
     date: "2025-01-18",
-    caption:
-      "From a Group gathering bringing Apex companies together around the year ahead.",
+    caption: "From a Group gathering bringing Apex companies together around the year ahead.",
     featured: true,
     company: "group",
   },

@@ -181,7 +181,7 @@ large enough, nor that the caps sum below host RAM.
 That churn, together with a k3s reconcile storm, drove the disk-IO pressure that
 **hard-locked this machine three times** (2026-08-12 08:11, 2026-08-12 22:18,
 2026-08-13 09:30) and stalled it repeatedly. In each case RAM was over 40% free
-— the box ran out of *swap* while thrashing the disk, never out of RAM, which is
+— the box ran out of _swap_ while thrashing the disk, never out of RAM, which is
 why no host-wide OOM killer ever fired.
 
 **A cap that is too tight is its own outage.** Raised sogo to 1g on 2026-08-14;

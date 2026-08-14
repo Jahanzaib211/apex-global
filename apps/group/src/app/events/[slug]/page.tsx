@@ -158,8 +158,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                       backgroundSize: "30px 30px",
                     }}
                   />
-                  <span className="bg-navy/80 text-gold absolute top-3 right-3 inline-flex items-center px-2 py-1 text-[9px] font-semibold tracking-[.2em] uppercase backdrop-blur">
-                  </span>
+                  <span className="bg-navy/80 text-gold absolute top-3 right-3 inline-flex items-center px-2 py-1 text-[9px] font-semibold tracking-[.2em] uppercase backdrop-blur"></span>
                 </div>
                 <figcaption className="text-charcoal/65 p-3 text-xs">{cap}</figcaption>
               </figure>

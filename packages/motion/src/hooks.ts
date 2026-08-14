@@ -220,8 +220,7 @@ export function useSpring(target: number, enabled = true): number {
       state.current.value += state.current.velocity * dt;
 
       const settled =
-        Math.abs(state.current.value - target) < 0.001 &&
-        Math.abs(state.current.velocity) < 0.001;
+        Math.abs(state.current.value - target) < 0.001 && Math.abs(state.current.velocity) < 0.001;
 
       if (settled) {
         state.current = { value: target, velocity: 0 };

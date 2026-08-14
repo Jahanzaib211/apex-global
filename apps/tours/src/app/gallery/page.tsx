@@ -25,8 +25,8 @@ export default function GalleryPage() {
             <div className="eyebrow mb-3">Browse by category</div>
             <h2 className="heading-lg mb-3">Destinations, vehicles, and pilgrim journeys</h2>
             <p className="prose-body">
-              We are building a library of customer-approved photography from across our routes.
-              The categories below show the journeys we publish photography from.
+              We are building a library of customer-approved photography from across our routes. The
+              categories below show the journeys we publish photography from.
             </p>
           </div>
 
@@ -46,8 +46,8 @@ export default function GalleryPage() {
                 About this gallery
               </h3>
               <p className="text-ink-400 text-sm leading-relaxed">
-                The categories above represent the journeys Apex publishes; new photography is added to
-                publish. Final imagery will be added only after customer approval. No stock
+                The categories above represent the journeys Apex publishes; new photography is added
+                to publish. Final imagery will be added only after customer approval. No stock
                 photography is used to misrepresent our actual services.
               </p>
             </div>

@@ -43,8 +43,7 @@ export default function HoldingsGallery() {
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-white/80">
                 <ImageIcon size={28} className="text-gold/80" />
-                <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                </p>
+                <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase"></p>
                 <p className="font-editorial mt-2 text-sm">{t.caption}</p>
               </div>
             </div>

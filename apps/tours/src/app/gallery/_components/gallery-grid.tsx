@@ -89,9 +89,7 @@ export function GalleryGrid() {
             <div className="text-[10px] font-semibold tracking-wider text-white/70 uppercase">
               {t.category}
             </div>
-            <div className="absolute right-2 bottom-2 left-2 text-[10px] text-white/60 italic">
-              
-            </div>
+            <div className="absolute right-2 bottom-2 left-2 text-[10px] text-white/60 italic"></div>
           </div>
         ))}
       </div>

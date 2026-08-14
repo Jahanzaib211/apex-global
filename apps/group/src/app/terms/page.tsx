@@ -194,9 +194,11 @@ const sections: LegalSection[] = [
     title: "Contact",
     content: (
       <p>
-        Questions about these terms may be sent to the contact form at apex.apexgroupcompanies.com/contact, or by post to 31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan.
-        Please reference “Website Terms” in your message. Apex Group of Companies (Pvt) Ltd is the
-        contact entity unless a specific service agreement identifies another group company.
+        Questions about these terms may be sent to the contact form at
+        apex.apexgroupcompanies.com/contact, or by post to 31-20, Sector CCD Main Blvd, Sector M7
+        Lake City, Lahore, Pakistan. Please reference “Website Terms” in your message. Apex Group of
+        Companies (Pvt) Ltd is the contact entity unless a specific service agreement identifies
+        another group company.
       </p>
     ),
   },

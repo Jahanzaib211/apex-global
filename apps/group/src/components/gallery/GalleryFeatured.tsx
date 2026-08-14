@@ -16,8 +16,7 @@ export default function GalleryFeatured({
         <span className="bg-gold text-navy absolute top-6 left-6 px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase">
           {item.category}
         </span>
-        <span className="absolute bottom-6 left-6 text-xs tracking-wider text-white/45 uppercase">
-        </span>
+        <span className="absolute bottom-6 left-6 text-xs tracking-wider text-white/45 uppercase"></span>
       </div>
       <div className="flex flex-col justify-center p-8 md:p-12">
         <p className="text-gold text-xs tracking-[.2em] uppercase">Featured moment</p>

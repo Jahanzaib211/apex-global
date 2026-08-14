@@ -113,7 +113,9 @@ export default function ContactForm() {
     try {
       const result = await submitGroupContact(data);
       if (!result.ok) {
-        setServerError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        setServerError(
+          "We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.",
+        );
         return;
       }
       setSubmitted(true);

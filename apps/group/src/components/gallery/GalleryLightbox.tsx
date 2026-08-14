@@ -28,8 +28,7 @@ export default function GalleryLightbox({
         >
           <X size={18} />
         </button>
-        <div className="flex aspect-video items-center justify-center bg-[radial-gradient(circle_at_70%_30%,rgba(242,169,0,.45),transparent_22%),linear-gradient(135deg,#24365d,#0b1431)]">
-                  </div>
+        <div className="flex aspect-video items-center justify-center bg-[radial-gradient(circle_at_70%_30%,rgba(242,169,0,.45),transparent_22%),linear-gradient(135deg,#24365d,#0b1431)]"></div>
         <div className="p-7 md:p-10">
           <div className="flex flex-wrap gap-2">
             <span className="bg-gold text-navy px-2 py-1 text-[10px] font-bold tracking-wider uppercase">

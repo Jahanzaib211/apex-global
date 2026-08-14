@@ -244,9 +244,7 @@ export function termsOfUse(ctx: LegalContext): LegalDocument {
       },
       {
         title: "Severability",
-        body: [
-          "If any provision of these terms is found unenforceable, the rest remain in force.",
-        ],
+        body: ["If any provision of these terms is found unenforceable, the rest remain in force."],
       },
       ...(ctx.extraSections ?? []),
       {

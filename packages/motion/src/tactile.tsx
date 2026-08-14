@@ -38,7 +38,11 @@ interface Ripple {
   y: number;
 }
 
-export function useTactile({ pressScale = 0.97, ripple = true, sheen = true }: TactileOptions = {}) {
+export function useTactile({
+  pressScale = 0.97,
+  ripple = true,
+  sheen = true,
+}: TactileOptions = {}) {
   const reduced = usePrefersReducedMotion();
   const [pressed, setPressed] = useState(false);
   const [point, setPoint] = useState({ x: 50, y: 50, on: false });
@@ -200,7 +204,14 @@ export function Tactile({
   const extra = Tag === "button" ? { type, disabled } : {};
 
   return (
-    <Tag className={className} onClick={onClick} id={id} aria-label={ariaLabel} {...extra} {...props}>
+    <Tag
+      className={className}
+      onClick={onClick}
+      id={id}
+      aria-label={ariaLabel}
+      {...extra}
+      {...props}
+    >
       {children}
       {overlay}
     </Tag>

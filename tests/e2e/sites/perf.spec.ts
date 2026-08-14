@@ -76,7 +76,6 @@ for (const site of SITES) {
       expect(fps, `sustained frame rate on ${site.id}`).toBeGreaterThanOrEqual(30);
     });
 
-
     test("the field costs less than a third of the idle frame budget", async ({ browser }) => {
       // Compare against the same page with the field off, so the number means
       // "what the effect costs" rather than "how fast this machine is".

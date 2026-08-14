@@ -35,9 +35,7 @@ export function LegalDocumentPage({ doc }: { doc: LegalDocument }) {
           {doc.sections.map((section, i) => (
             <section key={section.title} className="mb-12 last:mb-0">
               <h2 className="font-display text-navy text-2xl font-bold">
-                <span className="text-amber2 mr-3 text-base">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <span className="text-amber2 mr-3 text-base">{String(i + 1).padStart(2, "0")}</span>
                 {section.title}
               </h2>
               {section.body.map((p) => (

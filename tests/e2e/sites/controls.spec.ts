@@ -125,8 +125,11 @@ for (const site of SITES) {
           const rect = a.getBoundingClientRect();
           const style = getComputedStyle(a);
           const visible =
-            rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" &&
-            style.display !== "none" && style.opacity !== "0";
+            rect.width > 0 &&
+            rect.height > 0 &&
+            style.visibility !== "hidden" &&
+            style.display !== "none" &&
+            style.opacity !== "0";
           if (!visible) continue;
           // Key on label + destination, not destination alone. A nav that has
           // both a "Contact" link and a "Talk to Apex" button pointing at
@@ -225,8 +228,10 @@ for (const site of SITES) {
         for (const r of found) repeats.push(`${route}: ${r}`);
       }
 
-      expect(repeats, "the same heading rendered more than once — usually a duplicated section")
-        .toEqual([]);
+      expect(
+        repeats,
+        "the same heading rendered more than once — usually a duplicated section",
+      ).toEqual([]);
     });
 
     test("every form control is labelled", async ({ page }) => {

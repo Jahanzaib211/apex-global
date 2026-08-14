@@ -34,7 +34,9 @@ export default function EventRegistrationForm({ eventSlug }: { eventSlug: string
     try {
       const result = await submitEventRegistration({ ...data, eventSlug });
       if (!result.ok) {
-        setServerError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        setServerError(
+          "We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.",
+        );
         return;
       }
       setSubmitted(true);

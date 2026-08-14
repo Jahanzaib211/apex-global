@@ -42,7 +42,9 @@ export default function HoldingsSiteVisits() {
     try {
       const result = await submitSiteVisit({ ...form, source });
       if (!result.ok) {
-        setError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        setError(
+          "We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.",
+        );
         return;
       }
       setSubmitted(true);

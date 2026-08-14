@@ -91,8 +91,7 @@ export default function HoldingsPortfolio() {
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                   <Building2 size={32} className="text-gold" />
-                  <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase">
-                  </p>
+                  <p className="text-gold/70 mt-3 text-[10px] tracking-[.2em] uppercase"></p>
                 </div>
                 <div className="absolute top-3 right-3">
                   <StatusBadge status={p.status} />
@@ -107,9 +106,7 @@ export default function HoldingsPortfolio() {
                 <p className="text-charcoal/65 mt-3 text-sm leading-6">
                   Developer: <span className="text-charcoal/80">On request</span>
                 </p>
-                <p className="text-charcoal/40 mt-1 text-[10px] italic">
-                  Representative project
-                </p>
+                <p className="text-charcoal/40 mt-1 text-[10px] italic">Representative project</p>
                 <a
                   href="#site-visits"
                   className="text-navy hover:text-gold mt-5 inline-flex items-center gap-1 text-xs font-semibold tracking-[.18em] uppercase"

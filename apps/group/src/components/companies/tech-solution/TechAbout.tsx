@@ -44,8 +44,7 @@ export default function TechAbout() {
                 Operating footprint at a glance
               </p>
               <p className="text-charcoal/55 mt-2 text-xs leading-6">
-                Verified metrics are published on the Group profile
-                once available.
+                Verified metrics are published on the Group profile once available.
               </p>
 
               <div className="mt-8 grid grid-cols-2 gap-6">

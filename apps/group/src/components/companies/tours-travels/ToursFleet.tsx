@@ -36,7 +36,7 @@ export default function ToursFleet() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                   <Car size={36} className="text-gold" />
                   <p className="text-gold mt-3 text-xs tracking-[.18em] uppercase">{v.type}</p>
-                                  </div>
+                </div>
               </div>
 
               <div className="flex flex-1 flex-col p-6">

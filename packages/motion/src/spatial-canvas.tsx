@@ -385,7 +385,13 @@ export function SpatialCanvas({
         <canvas
           id={id}
           ref={canvasRef}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            display: "block",
+          }}
         />
       )}
     </div>

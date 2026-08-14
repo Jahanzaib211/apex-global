@@ -126,7 +126,11 @@ function Hero() {
         Spatial field sits between the cover photograph and the copy, so the
         hero gains depth without losing the image the section is built around.
       */}
-      <SpatialCanvas className="pointer-events-none absolute inset-0 z-[1]" density={700} intensity={0.65} />
+      <SpatialCanvas
+        className="pointer-events-none absolute inset-0 z-[1]"
+        density={700}
+        intensity={0.65}
+      />
       {/* Cover image */}
       <div className="absolute inset-0">
         <Image

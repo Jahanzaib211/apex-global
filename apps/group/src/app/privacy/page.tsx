@@ -222,9 +222,10 @@ const sections: LegalSection[] = [
     content: (
       <p>
         For privacy questions, rights requests, or concerns, contact [privacy email] or write to
-        31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan. Please identify the nature of your request and the Apex
-        Group company involved. The data controller is Apex Group of Companies (Pvt) Ltd, subject to
-        the specific arrangement and jurisdiction applicable to your enquiry.
+        31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan. Please identify the
+        nature of your request and the Apex Group company involved. The data controller is Apex
+        Group of Companies (Pvt) Ltd, subject to the specific arrangement and jurisdiction
+        applicable to your enquiry.
       </p>
     ),
   },

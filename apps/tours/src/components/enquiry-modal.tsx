@@ -189,8 +189,11 @@ export function EnquiryModal({
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="field-label" htmlFor="enq-full-name">Full name *</label>
-                <input id="enq-full-name"
+                <label className="field-label" htmlFor="enq-full-name">
+                  Full name *
+                </label>
+                <input
+                  id="enq-full-name"
                   className="field"
                   required
                   value={form.name}
@@ -198,8 +201,11 @@ export function EnquiryModal({
                 />
               </div>
               <div>
-                <label className="field-label" htmlFor="enq-phone">Phone *</label>
-                <input id="enq-phone"
+                <label className="field-label" htmlFor="enq-phone">
+                  Phone *
+                </label>
+                <input
+                  id="enq-phone"
                   className="field"
                   required
                   value={form.phone}
@@ -207,16 +213,22 @@ export function EnquiryModal({
                 />
               </div>
               <div>
-                <label className="field-label" htmlFor="enq-whatsapp">WhatsApp</label>
-                <input id="enq-whatsapp"
+                <label className="field-label" htmlFor="enq-whatsapp">
+                  WhatsApp
+                </label>
+                <input
+                  id="enq-whatsapp"
                   className="field"
                   value={form.whatsapp}
                   onChange={(e) => update("whatsapp", e.target.value)}
                 />
               </div>
               <div>
-                <label className="field-label" htmlFor="enq-email">Email</label>
-                <input id="enq-email"
+                <label className="field-label" htmlFor="enq-email">
+                  Email
+                </label>
+                <input
+                  id="enq-email"
                   type="email"
                   className="field"
                   value={form.email}
@@ -229,8 +241,11 @@ export function EnquiryModal({
               <>
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="field-label" htmlFor="enq-pickup-location">Pickup location *</label>
-                    <input id="enq-pickup-location"
+                    <label className="field-label" htmlFor="enq-pickup-location">
+                      Pickup location *
+                    </label>
+                    <input
+                      id="enq-pickup-location"
                       className="field"
                       required
                       value={form.pickup}
@@ -238,16 +253,22 @@ export function EnquiryModal({
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-drop-off-location">Drop-off location</label>
-                    <input id="enq-drop-off-location"
+                    <label className="field-label" htmlFor="enq-drop-off-location">
+                      Drop-off location
+                    </label>
+                    <input
+                      id="enq-drop-off-location"
                       className="field"
                       value={form.dropoff}
                       onChange={(e) => update("dropoff", e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-date">Date *</label>
-                    <input id="enq-date"
+                    <label className="field-label" htmlFor="enq-date">
+                      Date *
+                    </label>
+                    <input
+                      id="enq-date"
                       type="date"
                       className="field"
                       required
@@ -256,8 +277,11 @@ export function EnquiryModal({
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-time">Time</label>
-                    <input id="enq-time"
+                    <label className="field-label" htmlFor="enq-time">
+                      Time
+                    </label>
+                    <input
+                      id="enq-time"
                       type="time"
                       className="field"
                       value={form.time}
@@ -265,8 +289,11 @@ export function EnquiryModal({
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-vehicle-preference">Vehicle preference</label>
-                    <select id="enq-vehicle-preference"
+                    <label className="field-label" htmlFor="enq-vehicle-preference">
+                      Vehicle preference
+                    </label>
+                    <select
+                      id="enq-vehicle-preference"
                       className="field"
                       value={form.vehicle}
                       onChange={(e) => update("vehicle", e.target.value)}
@@ -281,8 +308,11 @@ export function EnquiryModal({
                     </select>
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-drive-type">Drive type</label>
-                    <select id="enq-drive-type"
+                    <label className="field-label" htmlFor="enq-drive-type">
+                      Drive type
+                    </label>
+                    <select
+                      id="enq-drive-type"
                       className="field"
                       value={form.driveType}
                       onChange={(e) => update("driveType", e.target.value)}
@@ -293,8 +323,11 @@ export function EnquiryModal({
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="field-label" htmlFor="enq-rental-duration">Rental duration</label>
-                    <input id="enq-rental-duration"
+                    <label className="field-label" htmlFor="enq-rental-duration">
+                      Rental duration
+                    </label>
+                    <input
+                      id="enq-rental-duration"
                       className="field"
                       placeholder="e.g. 3 days, 1 week"
                       value={form.duration}
@@ -309,8 +342,11 @@ export function EnquiryModal({
               <>
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="field-label" htmlFor="enq-package-type">Package type *</label>
-                    <select id="enq-package-type"
+                    <label className="field-label" htmlFor="enq-package-type">
+                      Package type *
+                    </label>
+                    <select
+                      id="enq-package-type"
                       className="field"
                       required
                       value={form.type}
@@ -326,8 +362,11 @@ export function EnquiryModal({
                     </select>
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-departure-city">Departure city *</label>
-                    <input id="enq-departure-city"
+                    <label className="field-label" htmlFor="enq-departure-city">
+                      Departure city *
+                    </label>
+                    <input
+                      id="enq-departure-city"
                       className="field"
                       required
                       value={form.departure}
@@ -335,8 +374,11 @@ export function EnquiryModal({
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-number-of-travelers">Number of travelers *</label>
-                    <input id="enq-number-of-travelers"
+                    <label className="field-label" htmlFor="enq-number-of-travelers">
+                      Number of travelers *
+                    </label>
+                    <input
+                      id="enq-number-of-travelers"
                       className="field"
                       required
                       value={form.travelers}
@@ -361,8 +403,11 @@ export function EnquiryModal({
                     </div>
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-preferred-dates">Preferred dates</label>
-                    <input id="enq-preferred-dates"
+                    <label className="field-label" htmlFor="enq-preferred-dates">
+                      Preferred dates
+                    </label>
+                    <input
+                      id="enq-preferred-dates"
                       className="field"
                       placeholder="e.g. Nov 2026, flexible"
                       value={form.date}
@@ -370,8 +415,11 @@ export function EnquiryModal({
                     />
                   </div>
                   <div>
-                    <label className="field-label" htmlFor="enq-hotel-preference">Hotel preference</label>
-                    <select id="enq-hotel-preference"
+                    <label className="field-label" htmlFor="enq-hotel-preference">
+                      Hotel preference
+                    </label>
+                    <select
+                      id="enq-hotel-preference"
                       className="field"
                       value={form.hotel}
                       onChange={(e) => update("hotel", e.target.value)}
@@ -384,8 +432,11 @@ export function EnquiryModal({
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="field-label" htmlFor="enq-transportation">Transportation</label>
-                    <select id="enq-transportation"
+                    <label className="field-label" htmlFor="enq-transportation">
+                      Transportation
+                    </label>
+                    <select
+                      id="enq-transportation"
                       className="field"
                       value={form.transport}
                       onChange={(e) => update("transport", e.target.value)}
@@ -398,8 +449,11 @@ export function EnquiryModal({
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="field-label" htmlFor="enq-budget-range-per-person-optional">Budget range (per person, optional)</label>
-                    <input id="enq-budget-range-per-person-optional"
+                    <label className="field-label" htmlFor="enq-budget-range-per-person-optional">
+                      Budget range (per person, optional)
+                    </label>
+                    <input
+                      id="enq-budget-range-per-person-optional"
                       className="field"
                       placeholder="e.g. PKR 250,000 — 400,000"
                       value={form.budget}
@@ -411,8 +465,11 @@ export function EnquiryModal({
             )}
 
             <div className="mt-4">
-              <label className="field-label" htmlFor="enq-message">Message</label>
-              <textarea id="enq-message"
+              <label className="field-label" htmlFor="enq-message">
+                Message
+              </label>
+              <textarea
+                id="enq-message"
                 className="field min-h-[100px]"
                 rows={4}
                 value={form.message}

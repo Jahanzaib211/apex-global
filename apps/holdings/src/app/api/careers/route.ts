@@ -49,7 +49,6 @@ export async function POST(req: NextRequest): Promise<Response> {
     payload: body,
   });
 
-
   // Forward into the Apex CRM. The local file above stays as the backstop: it
   // is written first and proves the enquiry arrived even if the CRM was
   // unreachable. A failure here never fails the submission.
@@ -62,10 +61,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       interestSlug: (body.role || "").trim() || undefined,
       message: (body.cover || body.message || "").trim() || undefined,
       jobTitle: (body.role || "").trim() || undefined,
-      requirements: [
-        body.role && `Role: ${body.role}`,
-        body.resumeUrl && `CV: ${body.resumeUrl}`,
-      ]
+      requirements: [body.role && `Role: ${body.role}`, body.resumeUrl && `CV: ${body.resumeUrl}`]
         .filter(Boolean)
         .join("\n"),
       attribution: body.attribution,

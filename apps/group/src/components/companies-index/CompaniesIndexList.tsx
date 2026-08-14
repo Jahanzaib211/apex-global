@@ -97,8 +97,8 @@ export default function CompaniesIndexList() {
                   standards and long-term perspective.
                 </p>
                 <p className="text-charcoal/60 mt-4 max-w-2xl leading-7">
-                  Specific company information is shared on enquiry and maintained through the
-                  Group content system.
+                  Specific company information is shared on enquiry and maintained through the Group
+                  content system.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2">
                   {(chips as string[]).map((c) => (

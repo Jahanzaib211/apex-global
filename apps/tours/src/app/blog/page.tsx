@@ -143,9 +143,9 @@ export default function BlogPage() {
                   About these guides
                 </h3>
                 <p className="text-ink-400 text-sm leading-relaxed">
-                  Travel, visa, religious and government requirements change frequently. Treat
-                  these as orientation, and confirm the current position with the relevant
-                  authority — or with us — before you rely on it for a booking.
+                  Travel, visa, religious and government requirements change frequently. Treat these
+                  as orientation, and confirm the current position with the relevant authority — or
+                  with us — before you rely on it for a booking.
                 </p>
               </div>
             </div>
