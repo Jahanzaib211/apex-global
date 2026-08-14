@@ -60,11 +60,13 @@ declare global {
 export function ChatLauncher({ chatwootUrl, chatwootToken, label }: ChatLauncherProps) {
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
+  // Whether the visitor has shown intent to chat. The SDK is not fetched
+  // until this is true — see the injection effect below for why.
+  const [wanted, setWanted] = useState(false);
   const sdkReadyRef = useRef(false);
   const pendingOpenRef = useRef(false);
 
-  // Client-only render: `document` does not exist in RSC, and the mount
-  // happens on the first interaction anyway (widget SDK is lazy).
+  // Client-only render: `document` does not exist in RSC.
   useEffect(() => {
     setReady(true);
   }, []);
@@ -95,8 +97,21 @@ export function ChatLauncher({ chatwootUrl, chatwootToken, label }: ChatLauncher
     };
   }, [ready]);
 
+  // The Chatwoot SDK is 382 KB of JavaScript across 26 requests — more than
+  // twice this entire application's bundle — and it pulls a Cloudflare
+  // analytics beacon in behind it. This effect used to run on mount, so every
+  // visitor paid all of it whether or not they ever opened chat, and the
+  // Lighthouse budget went from 183 KB (inside its 180 KB allowance) to
+  // 576 KB. Nobody saw it because the performance job had never completed a
+  // run on the self-hosted runner.
+  //
+  // Now it loads on intent. `pointerenter` and `focus` on the launcher start
+  // the fetch before the click lands, so in practice the window still opens
+  // immediately; a click that beats the download is queued by
+  // `pendingOpenRef` and honoured on `chatwoot:ready`. The comment above this
+  // component always claimed the SDK was lazy — now it is.
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !wanted) return;
     const script = document.createElement("script");
     script.src = `${chatwootUrl.replace(/\/$/, "")}/packs/js/sdk.js`;
     script.async = true;
@@ -112,16 +127,19 @@ export function ChatLauncher({ chatwootUrl, chatwootToken, label }: ChatLauncher
     };
     document.body.appendChild(script);
     return () => {
-      document.body.removeChild(script);
+      script.remove();
     };
-  }, [ready, chatwootUrl, chatwootToken]);
+  }, [ready, wanted, chatwootUrl, chatwootToken]);
 
   return (
     <div className="fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2 sm:right-6 sm:bottom-6">
       <button
         type="button"
         aria-expanded={open}
+        onPointerEnter={() => setWanted(true)}
+        onFocus={() => setWanted(true)}
         onClick={() => {
+          setWanted(true);
           // Chatwoot's own toggle opens and closes the conversation window;
           // the closing animation runs in-place rather than tearing the
           // iframe out of the DOM. If the SDK is still loading, queue the

@@ -64,6 +64,26 @@ for (const site of SITES) {
       await expect(page.locator("body")).toBeVisible();
       expect(await page.title()).not.toBe("");
 
+      // The SDK is deliberately not fetched until a real visitor interacts:
+      // it is 382 KB over 26 requests and was putting every page three times
+      // over its script budget. So the test has to behave like a visitor
+      // before it can assert the widget mounted. Tech gates on its own
+      // launcher button; the four marketing sites gate on any of pointerdown,
+      // keydown, touchstart or scroll.
+      const launcher = page.getByRole("button", { name: /talk to a real person|chat/i });
+      if (
+        await launcher
+          .first()
+          .isVisible()
+          .catch(() => false)
+      ) {
+        await launcher.first().click();
+      } else {
+        await page.mouse.move(10, 10);
+        await page.mouse.down();
+        await page.mouse.up();
+      }
+
       // The widget injects a same-name iframe once the SDK has run. Waiting on
       // the iframe rather than the script tag proves the SDK executed, not
       // merely that a <script> was appended.
