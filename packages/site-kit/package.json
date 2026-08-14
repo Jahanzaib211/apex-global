@@ -15,7 +15,8 @@
     "./lead-schema": "./src/lead-schema.ts",
     "./form-guards": "./src/form-guards.ts",
     "./forward-lead": "./src/forward-lead.ts",
-    "./legal": "./src/legal.ts"
+    "./legal": "./src/legal.ts",
+    "./chatwoot": "./src/chatwoot.ts"
   },
   "scripts": {
     "lint": "eslint src",

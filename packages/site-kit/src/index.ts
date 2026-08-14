@@ -25,3 +25,4 @@ export * from "./brand";
 export * from "./nav";
 export * from "./forward-lead";
 export * from "./legal";
+export * from "./chatwoot";

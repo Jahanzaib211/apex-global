@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { chatwootFor } from "@apex/site-kit/chatwoot";
 
 /**
  * Apex live chat (self-hosted Chatwoot).
@@ -20,8 +21,11 @@ declare global {
   }
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_CHATWOOT_URL ?? "";
-const TOKEN = process.env.NEXT_PUBLIC_CHATWOOT_TOKEN ?? "";
+// This site's own inbox, not a shared environment variable: all five apps
+// build from one root .env, so a NEXT_PUBLIC_ token there is necessarily the
+// same value everywhere and would funnel every brand's conversations into one
+// inbox. See packages/site-kit/src/chatwoot.ts.
+const { baseUrl: BASE_URL, websiteToken: TOKEN } = chatwootFor("apex-group");
 
 export function ApexChat(): null {
   useEffect(() => {
