@@ -56,6 +56,18 @@ export default defineConfig({
       // sites' assertions four times over. Each test title names its site.
       name: "sites",
       testMatch: /sites\/.*\.spec\.ts/,
+      testIgnore: /sites\/perf\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Frame-rate measurement, pinned to one worker. Run in parallel with the
+      // other projects the same page reports anywhere from 11 to 52fps,
+      // because the measurement competes with three other browsers for the
+      // CPU. A flaky performance gate is worse than none.
+      name: "perf",
+      testMatch: /sites\/perf\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
       use: { ...devices["Desktop Chrome"] },
     },
     {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTactile } from "@apex/motion/tactile";
 
 interface Props {
   variant?: "primary" | "secondary" | "outline-gold" | "ghost";
@@ -14,6 +15,8 @@ interface Props {
    * plus `scroll-margin-top` accounting for the sticky header.
    */
   anchor?: boolean;
+  /** DOM id, so a hero CTA can be addressed directly by tests and analytics. */
+  id?: string;
 }
 
 const BASE =
@@ -46,10 +49,14 @@ export default function Button({
   onClick,
   anchor = false,
   className = "",
+  id,
   children,
 }: Props) {
   const cls = `${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`.trim();
   const [hash, setHash] = useState<string | null>(null);
+  // Press physics from @apex/motion, so a button here feels the same as one on
+  // Tours, Holdings or Outsourcing.
+  const { props: tactile, overlay } = useTactile();
 
   if (href && (anchor || href.startsWith("#"))) {
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -70,26 +77,31 @@ export default function Button({
     return (
       <a
         href={href}
+        id={id}
         onClick={handleClick}
         aria-current={hash === href ? "true" : undefined}
         className={cls}
+        {...tactile}
       >
         {children}
+        {overlay}
       </a>
     );
   }
 
   if (href) {
     return (
-      <a href={href} className={cls}>
+      <a href={href} id={id} className={cls} {...tactile}>
         {children}
+        {overlay}
       </a>
     );
   }
 
   return (
-    <button type="button" onClick={onClick} className={cls}>
+    <button type="button" id={id} onClick={onClick} className={cls} {...tactile}>
       {children}
+      {overlay}
     </button>
   );
 }

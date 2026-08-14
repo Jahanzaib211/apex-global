@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { NAV_LINKS, type ServiceNav } from "@/lib/nav";
+import { BrandMark } from "@apex/motion/brand-mark";
 
 const isActive = (pathname: string, href: string) =>
   href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
@@ -46,14 +47,16 @@ export default function Navbar() {
           className="mr-8 flex shrink-0 items-center gap-3"
           aria-label="Apex Global Outsourcing — Home"
         >
-          <Image
-            src="/logo.png"
-            alt="Apex Global Outsourcing"
-            width={260}
-            height={86}
-            className="h-16 w-auto"
-            priority
-          />
+          <BrandMark>
+            <Image
+              src="/logo.png"
+              alt="Apex Global Outsourcing"
+              width={260}
+              height={86}
+              className="h-16 w-auto"
+              priority
+            />
+          </BrandMark>
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">

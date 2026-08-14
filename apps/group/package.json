@@ -13,6 +13,7 @@
     "clean": "rm -rf .next .next/standalone/.next"
   },
   "dependencies": {
+    "@apex/motion": "workspace:*",
     "@apex/site-kit": "workspace:*",
     "@radix-ui/react-slot": "^1.1.1",
     "lucide-react": "^0.460.0",

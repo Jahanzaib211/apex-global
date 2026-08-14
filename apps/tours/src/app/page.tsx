@@ -17,6 +17,9 @@ import {
 import { EnquireButton } from "@/components/enquire-button";
 import { ServiceCard } from "@/components/service-card";
 import { BRAND, WHATSAPP_LINK } from "@/lib/brand";
+import { SpatialCanvas } from "@apex/motion/spatial-canvas";
+import { LivingBorder } from "@apex/motion/living-border";
+import { TactileLink } from "@/components/tactile-link";
 
 const heroTiles = [
   { label: "Pakistan · Self-Drive", className: "bg-navy-500" },
@@ -134,9 +137,17 @@ function CityChips({ cities }: { cities: string[][] }) {
 export default function Home() {
   return (
     <>
-      {/* 1. Hero */}
-      <section className="bg-navy-grad grain relative overflow-hidden">
-        <div className="container-page relative grid items-center gap-12 py-20 text-white md:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-32">
+      {/* 1. Hero — spatial field behind, glass content in front */}
+      <section className="bg-navy-grad relative overflow-hidden">
+        {/*
+          The particle field replaces the static `grain` texture. It is
+          aria-hidden and absolutely positioned, so it adds nothing to the
+          accessibility tree and the content below is readable before it
+          paints. Under reduced motion or without WebGL it renders the same
+          gradient the section always had.
+        */}
+        <SpatialCanvas className="pointer-events-none absolute inset-0" density={820} />
+        <div className="container-page relative z-10 grid items-center gap-12 py-20 text-white md:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-32">
           <div className="animate-fade-up">
             <div className="eyebrow !text-gold-300 mb-5">Welcome to {BRAND.name}</div>
             <h1 className="heading-xl max-w-2xl !text-white">{BRAND.promise}</h1>
@@ -145,9 +156,13 @@ export default function Home() {
               packages. Travel with confidence.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/custom-package" className="btn-primary">
+              <TactileLink
+                href="/custom-package"
+                id="hero-cta-primary"
+                className="btn-primary"
+              >
                 Plan Your Journey <ArrowRight size={16} />
-              </Link>
+              </TactileLink>
               <a href="#services" className="btn-secondary">
                 Explore Services <ArrowRight size={16} />
               </a>
@@ -156,20 +171,18 @@ export default function Home() {
           <div className="animate-fade-up [animation-delay:150ms]">
             <div className="grid grid-cols-2 gap-3 md:gap-4">
               {heroTiles.map((tile) => (
-                <div
-                  key={tile.label}
-                  className={`${tile.className} relative flex min-h-36 items-end overflow-hidden rounded-2xl p-4 md:min-h-48 md:p-5`}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                  <span className="relative text-xs font-semibold tracking-wide md:text-sm">
-                    {tile.label}
-                  </span>
-                </div>
+                <LivingBorder key={tile.label} radius={16} width={1}>
+                  <div
+                    className={`${tile.className} relative flex min-h-36 items-end overflow-hidden rounded-2xl p-4 md:min-h-48 md:p-5`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <span className="relative text-xs font-semibold tracking-wide md:text-sm">
+                      {tile.label}
+                    </span>
+                  </div>
+                </LivingBorder>
               ))}
             </div>
-            <p className="mt-4 text-center text-xs text-white/55">
-              
-            </p>
           </div>
         </div>
         {/* Scroll-to-explore — anchors to the Trust strip below. The fixed

@@ -1,0 +1,33 @@
+{
+  "name": "@apex/motion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared spatial and motion primitives for the Apex marketing sites.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./spatial-canvas": "./src/spatial-canvas.tsx",
+    "./brand-mark": "./src/brand-mark.tsx",
+    "./living-border": "./src/living-border.tsx",
+    "./tactile": "./src/tactile.tsx",
+    "./hooks": "./src/hooks.ts",
+    "./tokens": "./src/tokens.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo node_modules coverage"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@apex/config": "workspace:*",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.8.2",
+    "vitest": "^2.1.8"
+  }
+}

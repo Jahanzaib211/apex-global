@@ -59,6 +59,9 @@ if (isProd) securityHeaders.push({ key: "Content-Security-Policy", value: csp })
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Workspace packages ship TypeScript source, not a build artifact, so Next
+  // has to compile them alongside the app.
+  transpilePackages: ["@apex/motion"],
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   compress: true,

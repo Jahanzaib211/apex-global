@@ -28,6 +28,8 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import { events, insights, services, stats, testimonials } from "@/data/content";
 import { site } from "@/data/site";
+import { SpatialCanvas } from "@apex/motion/spatial-canvas";
+import { TactileLink } from "@/components/tactile-link";
 
 /* ---------------------------------------------------------------------------
  * Static content pulled from data — no fabricated numbers.
@@ -120,6 +122,11 @@ function GoldRule() {
 function Hero() {
   return (
     <section className="bg-ink relative isolate overflow-hidden text-white">
+      {/*
+        Spatial field sits between the cover photograph and the copy, so the
+        hero gains depth without losing the image the section is built around.
+      */}
+      <SpatialCanvas className="pointer-events-none absolute inset-0 z-[1]" density={700} intensity={0.65} />
       {/* Cover image */}
       <div className="absolute inset-0">
         <Image
@@ -160,9 +167,9 @@ function Hero() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link href="/projects" className="btn-accent">
+            <TactileLink href="/projects" id="hero-cta-primary" className="btn-accent">
               Explore Projects <ArrowRight className="h-4 w-4" />
-            </Link>
+            </TactileLink>
             <Link href="/contact" className="btn-ghost-light">
               Talk to Our Team
             </Link>

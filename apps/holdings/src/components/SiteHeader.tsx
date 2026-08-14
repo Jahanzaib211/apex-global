@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import { SiteLogo } from "./SiteLogo";
 import { nav, site } from "@/data/site";
+import { BrandMark } from "@apex/motion/brand-mark";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -39,7 +40,9 @@ export function SiteHeader() {
       }`}
     >
       <div className="container-x flex h-20 items-center justify-between">
-        <SiteLogo />
+        <BrandMark>
+          <SiteLogo />
+        </BrandMark>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 lg:flex">

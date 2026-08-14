@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { BrandMark } from "@apex/motion/brand-mark";
 
 const companies = [
   ["Apex Global Tech Solution", "/companies/tech-solution"],
@@ -57,13 +58,15 @@ export default function Header() {
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" aria-label="Apex Group of Companies home">
-          <Image
-            src="/logo.png"
-            alt="Apex Group of Companies"
-            width={132}
-            height={52}
-            className="h-12 w-auto object-contain"
-          />
+          <BrandMark>
+            <Image
+              src="/logo.png"
+              alt="Apex Group of Companies"
+              width={132}
+              height={52}
+              className="h-12 w-auto object-contain"
+            />
+          </BrandMark>
         </Link>
         <nav className="hidden items-center gap-5 lg:flex">
           <Link href="/" className="hover:text-gold text-sm text-white">

@@ -1,5 +1,6 @@
 import Container from "@/components/Container";
 import Button from "./Button";
+import { SpatialCanvas } from "@apex/motion/spatial-canvas";
 
 /**
  * Hero — the apex group's front page.
@@ -19,6 +20,12 @@ import Button from "./Button";
 export default function Hero() {
   return (
     <section className="bg-navy relative flex min-h-screen items-center overflow-hidden pt-20 text-white">
+      {/*
+        Spatial field sits behind the existing grid and glow, not instead of
+        them — the grid gives the composition its structure and still renders
+        when the field does not (reduced motion, no WebGL).
+      */}
+      <SpatialCanvas className="pointer-events-none absolute inset-0" density={760} />
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -45,7 +52,7 @@ export default function Hero() {
           individuals, entrepreneurs and businesses with strategic guidance.
         </p>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Button href="#companies" anchor variant="primary" size="lg">
+          <Button href="#companies" anchor variant="primary" size="lg" id="hero-cta-primary">
             Explore Our Companies
           </Button>
           <Button href="#contact" anchor variant="secondary" size="lg">

@@ -23,6 +23,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SERVICES, ROUTE_META } from "@/lib/nav";
 import { BRAND } from "@/lib/brand";
+import { SpatialCanvas } from "@apex/motion/spatial-canvas";
+import { TactileLink } from "@/components/tactile-link";
 
 void ROUTE_META;
 
@@ -33,6 +35,7 @@ export default function Home() {
 
       {/* HERO */}
       <section className="from-navy-dark via-navy to-slate2-dark relative overflow-hidden bg-gradient-to-br pt-32 pb-24 text-white">
+        <SpatialCanvas className="pointer-events-none absolute inset-0" density={760} />
         <div className="bg-hero-grid absolute inset-0 opacity-60" />
         <div className="bg-amber2/20 absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full blur-3xl" />
         <div className="bg-amber2/10 absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl" />
@@ -52,9 +55,9 @@ export default function Home() {
                 dedicated teams and professionally managed outsourcing solutions.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
-                <Link href="/contact" className="btn-primary">
+                <TactileLink href="/contact" id="hero-cta-primary" className="btn-primary">
                   Talk to Our Team <ArrowRight size={18} />
-                </Link>
+                </TactileLink>
                 <Link href="/services" className="btn-on-dark">
                   Explore Our Services
                 </Link>

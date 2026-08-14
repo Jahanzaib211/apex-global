@@ -288,3 +288,14 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Palette for @apex/motion. The shared spatial layer, brand tilt, living
+ * borders and press physics read only these three custom properties, which is
+ * how four sites share one interaction language without looking alike.
+ */
+:root {
+  --apex-motion-primary: #0B1431;
+  --apex-motion-accent: #F5A524;
+  --apex-motion-depth: #070E20;
+}

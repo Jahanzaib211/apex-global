@@ -18,3 +18,14 @@ body {
   background: #f2a900;
   color: #0b1431;
 }
+
+/*
+ * Palette for @apex/motion. The shared spatial layer, brand tilt, living
+ * borders and press physics read only these three custom properties, which is
+ * how four sites share one interaction language without looking alike.
+ */
+:root {
+  --apex-motion-primary: #0B1431;
+  --apex-motion-accent: #F2A900;
+  --apex-motion-depth: #060C1F;
+}

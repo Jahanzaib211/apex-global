@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X, ChevronDown, Plane } from "lucide-react";
 import { NAV, BRAND, WHATSAPP_LINK } from "@/lib/brand";
+import { BrandMark } from "@apex/motion/brand-mark";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -14,11 +15,9 @@ export function SiteHeader() {
       <div className="container-page flex h-16 items-center justify-between lg:h-20">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
-          <img
-            src="/logo.png"
-            alt={BRAND.name}
-            className="h-9 w-auto transition group-hover:scale-105 lg:h-11"
-          />
+          <BrandMark>
+            <img src="/logo.png" alt={BRAND.name} className="h-9 w-auto lg:h-11" />
+          </BrandMark>
           <div className="hidden leading-tight sm:block">
             <div className="font-display text-navy-600 text-base font-bold lg:text-lg">
               Apex Global
