@@ -58,7 +58,6 @@ jobs:
       # The apps still need NEXT_PUBLIC_SITE_URL at build time; the suite
       # addresses its own servers through the E2E_* overrides instead.
       NEXT_PUBLIC_SITE_URL: http://localhost:4890
-      AUTH_URL: http://localhost:4301
 
     steps:
       - uses: actions/checkout@v4
@@ -75,8 +74,21 @@ jobs:
       - run: pnpm db:generate && pnpm db:push && pnpm db:seed
       - run: pnpm --filter @apex/db provision:master
 
+      # `--with-deps` installs OS packages through apt and therefore needs
+      # root. A GitHub-hosted runner has passwordless sudo; this box
+      # deliberately does not, and the step failed with "sudo: A terminal is
+      # required to authenticate". The system libraries are already present
+      # here — the suite runs on this host — so the browser-only install is
+      # the correct fallback rather than a workaround. Probing with `sudo -n`
+      # keeps the workflow correct on both kinds of runner.
       - name: Install browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          if sudo -n true 2>/dev/null; then
+            pnpm exec playwright install --with-deps chromium
+          else
+            echo "::notice::No passwordless sudo; installing the browser only. OS dependencies are expected to be present already."
+            pnpm exec playwright install chromium
+          fi
 
       - name: Build apps
         run: pnpm build
