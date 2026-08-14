@@ -19,6 +19,15 @@ concurrency:
 # to start with "recent account payments have failed or your spending limit
 # needs to be increased" until the runner existed. Unset it and everything
 # falls back to ubuntu-latest.
+# Every install passes --prod=false. Without it the whole pipeline fails on a
+# self-hosted runner: PM2 supervises the runner and exports NODE_ENV=production
+# to it, every job inherits that, and pnpm then prints
+# "devDependencies: skipped because NODE_ENV is set to production" and installs
+# 121 packages instead of 768. turbo, prettier, vitest and typescript are all
+# devDependencies, so lint, typecheck, test, build and the format check each
+# died with "not found" on a tree that was never installed. The runner's own
+# environment is fixed too, but a build should not depend on the ambient
+# NODE_ENV of whatever supervises its runner.
 jobs:
   deploy:
     name: Deploy to staging
@@ -73,7 +82,7 @@ jobs:
             cd "${APEX_STAGING_PATH:-$HOME/apex-global}"
             git fetch --all --prune
             git reset --hard origin/main
-            pnpm install --frozen-lockfile
+            pnpm install --frozen-lockfile --prod=false
             pnpm db:generate
             pnpm db:migrate
             pnpm build

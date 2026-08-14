@@ -20,6 +20,15 @@ concurrency:
 # to start with "recent account payments have failed or your spending limit
 # needs to be increased" until the runner existed. Unset it and everything
 # falls back to ubuntu-latest.
+# Every install passes --prod=false. Without it the whole pipeline fails on a
+# self-hosted runner: PM2 supervises the runner and exports NODE_ENV=production
+# to it, every job inherits that, and pnpm then prints
+# "devDependencies: skipped because NODE_ENV is set to production" and installs
+# 121 packages instead of 768. turbo, prettier, vitest and typescript are all
+# devDependencies, so lint, typecheck, test, build and the format check each
+# died with "not found" on a tree that was never installed. The runner's own
+# environment is fixed too, but a build should not depend on the ambient
+# NODE_ENV of whatever supervises its runner.
 jobs:
   credibility:
     name: Credibility audit
@@ -52,7 +61,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --prod=false
 
       # Seeded, not empty: the gate is only meaningful against the content we
       # actually publish, and an empty database trivially passes every rule.
@@ -181,7 +190,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --prod=false
       - run: pnpm db:generate && pnpm db:push && pnpm db:seed
       - run: pnpm --filter @apex/web build
 
