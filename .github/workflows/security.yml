@@ -83,7 +83,7 @@ jobs:
           echo "Clean — no Semgrep findings."
 
       - if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: semgrep-sarif
           path: semgrep.sarif
@@ -127,7 +127,7 @@ jobs:
           echo "Clean — no known vulnerabilities in the lockfile."
 
       - if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: osv-sarif
           path: osv.sarif
