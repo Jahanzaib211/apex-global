@@ -114,6 +114,7 @@ module.exports = {
       // so a broken migration cannot take the public hostname down.
       ...base,
       name: "apex-outsourcing",
+      env: { NODE_ENV: "production", PORT: "3100" },
       script: "pnpm",
       args: "--filter @apex/outsourcing start",
       max_memory_restart: "512M",
@@ -126,6 +127,7 @@ module.exports = {
       // 127.0.0.1:3102 so the apex-holdings Cloudflare tunnel keeps serving.
       ...base,
       name: "apex-holdings",
+      env: { NODE_ENV: "production", PORT: "3102" },
       script: "pnpm",
       args: "--filter @apex/holdings start",
       max_memory_restart: "512M",
@@ -138,6 +140,7 @@ module.exports = {
       // 127.0.0.1:3001 so the apex-tours Cloudflare tunnel keeps serving.
       ...base,
       name: "apex-tours",
+      env: { NODE_ENV: "production", PORT: "3001" },
       script: "pnpm",
       args: "--filter @apex/tours start",
       max_memory_restart: "512M",
@@ -150,6 +153,7 @@ module.exports = {
       // the apex-group Cloudflare tunnel keeps serving.
       ...base,
       name: "apex-group",
+      env: { NODE_ENV: "production", PORT: "3103" },
       script: "pnpm",
       args: "--filter @apex/group start",
       max_memory_restart: "512M",
