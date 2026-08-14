@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useState } from "react";
 import { TECH_SECTIONS } from "@/lib/tech-stack";
 

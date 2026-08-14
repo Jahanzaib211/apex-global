@@ -68,8 +68,14 @@ export function ClientSiteHeader() {
                 </Link>
 
                 {/* CSS-driven disclosure: no JS, no hydration cost, and it still
-                    opens on keyboard focus via focus-within. */}
-                <div className="invisible absolute top-full left-0 w-72 translate-y-1 pt-2 opacity-0 transition-[opacity,transform] duration-[var(--duration-fast)] group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                    opens on keyboard focus via focus-within.
+
+                    `pointer-events-none` while closed is load-bearing. The panel
+                    is always in the DOM and positioned over the trigger, so
+                    without it the closed panel still takes hits and Lighthouse
+                    reports the trigger and every child link as failing
+                    target-size for insufficient spacing. */}
+                <div className="pointer-events-none invisible absolute top-full left-0 w-72 translate-y-1 pt-2 opacity-0 transition-[opacity,transform] duration-[var(--duration-fast)] group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                   <ul className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-2 shadow-[var(--shadow-lg)]">
                     {item.children.map((child) => (
                       <li key={child.href}>

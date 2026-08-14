@@ -18,6 +18,26 @@ jobs:
     name: Credibility audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    # The audit reads published content out of the database. Without a
+    # database the job failed on every run since it was written — not because
+    # any content was indefensible, but because Prisma had nothing to connect
+    # to. Same service definition as the CI workflow.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: apex
+          POSTGRES_PASSWORD: apex_ci
+          POSTGRES_DB: apex_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U apex -d apex_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://apex:apex_ci@localhost:5432/apex_test?schema=public
+
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -26,6 +46,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+
+      # Seeded, not empty: the gate is only meaningful against the content we
+      # actually publish, and an empty database trivially passes every rule.
+      - name: Prepare database
+        run: pnpm db:generate && pnpm db:push && pnpm db:seed
 
       # Fails on: missing `origin` on a published proof/product entry, a named
       # client without recorded consent, banned superlatives, unsourced metrics,
@@ -109,6 +134,16 @@ jobs:
       # Budgets live in .lighthouserc.json: mobile LCP <= 2.0s,
       # performance >= 95, CLS <= 0.05, landing-page JS <= 180KB.
       # A visual effect that breaks the budget gets removed, not waived.
+      #
+      # Two assertions were dropped because they could never pass rather than
+      # because anything was waived:
+      #   - render-blocking-resources: this audit no longer reports a score
+      #     (scoreDisplayMode is now "metricSavings"), so asserting minScore on
+      #     it yielded NaN on every URL. categories:performance already
+      #     accounts for render blocking.
+      #   - categories:seo on /lp/*: ad landing pages set robots noindex on
+      #     purpose, which Lighthouse scores as an SEO failure (0.63). The
+      #     assertion now applies to every indexable page and skips those.
       - name: Lighthouse CI
         run: |
           pnpm dlx @lhci/cli@0.14.x autorun

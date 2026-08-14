@@ -14,7 +14,7 @@ const COPY: Record<Origin, { label: string; tone: string; title: string }> = {
   BUILT_BY_APEX: {
     label: "Built by Apex",
     title: "Designed and written by the Apex engineering team.",
-    tone: "bg-[var(--bg-accent-subtle)] text-[var(--color-amber-800)] border-[var(--color-amber-300)]",
+    tone: "bg-[var(--bg-accent-subtle)] text-[var(--ink-accent)] border-[var(--color-amber-300)]",
   },
   OPERATED_BY_APEX: {
     label: "Operated by Apex",

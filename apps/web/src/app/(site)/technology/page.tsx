@@ -256,18 +256,20 @@ export default async function TechnologyPage() {
                         </h4>
                         <dl className="mt-4 flex flex-col gap-5">
                           {e.evidence.map((ev) => (
-                            <div key={ev.id}>
-                              <dd className="font-display text-lg font-semibold text-[var(--ink-primary)]">
-                                {ev.value}
-                              </dd>
-                              <dt className="mt-0.5 text-sm text-[var(--ink-secondary)]">
+                            <div key={ev.id} className="flex flex-col">
+                              <dt className="order-2 mt-0.5 text-sm text-[var(--ink-secondary)]">
                                 {ev.label}
                               </dt>
+                              <dd className="font-display order-1 text-lg font-semibold text-[var(--ink-primary)]">
+                                {ev.value}
+                              </dd>
                               {/* The source is the point. A figure without one
-                                  does not get published. */}
-                              <p className="text-2xs mt-1 text-[var(--ink-muted)]">
+                                  does not get published. A <dl> may only contain
+                                  <dt>/<dd> pairs, so this is a second <dd>
+                                  rather than the <p> it used to be. */}
+                              <dd className="text-2xs order-3 mt-1 text-[var(--ink-muted)]">
                                 Source: {ev.source}
-                              </p>
+                              </dd>
                             </div>
                           ))}
                         </dl>

@@ -93,8 +93,7 @@ export function Logo({
   animated = false,
 }: LogoProps) {
   const stacked = orientation === "stacked";
-  const ink =
-    variant === "inverse" ? "text-[var(--color-canvas-0)]" : "text-[var(--color-navy-500)]";
+  const ink = variant === "inverse" ? "text-[var(--color-canvas-0)]" : "text-[var(--ink-primary)]";
 
   return (
     <span
@@ -119,7 +118,7 @@ export function Logo({
           ].join(" ")}
         >
           APEX GLOBAL
-        </span>
+        </span>{" "}
         <span
           className={[
             "font-display font-medium",

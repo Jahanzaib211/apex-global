@@ -27,11 +27,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: github/codeql-action/init@v3
+      # CodeQL needs code scanning enabled, and on a private repository that
+      # requires GitHub Advanced Security. This one is private with GHAS off,
+      # so every run failed with "Code scanning is not enabled for this
+      # repository" — a configuration error reported as a red build on every
+      # commit, which trains people to ignore the security workflow.
+      #
+      # Ask first and skip cleanly when it is unavailable. The moment GHAS is
+      # enabled, or the repository is made public, this starts analysing again
+      # with no edit needed.
+      - name: Is code scanning available?
+        id: capability
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/code-scanning/alerts?per_page=1" >/dev/null 2>&1; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Code scanning is not enabled for this repository. On a private repo it requires GitHub Advanced Security. Skipping CodeQL."
+          fi
+
+      - if: steps.capability.outputs.available == 'true'
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           queries: security-and-quality
 
-      - uses: github/codeql-action/analyze@v3
+      - if: steps.capability.outputs.available == 'true'
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"

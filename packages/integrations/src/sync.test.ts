@@ -32,7 +32,7 @@ vi.mock("./vault", () => ({ open }));
 vi.mock("./twenty", async (importOriginal) => {
   // Keep the real id/name helpers — they are pure and already tested, and
   // stubbing them would hide a change in the external-id contract.
-  const actual = await importOriginal<typeof import("./twenty")>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     clientFromConfig: () => ({ upsertCompany, upsertPerson }),

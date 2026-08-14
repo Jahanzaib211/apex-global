@@ -133,7 +133,6 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string): WebG
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     // Surfacing this matters: a shader that fails to compile renders nothing,
     // which looks identical to "the section is meant to be empty".
-    // eslint-disable-next-line no-console
     console.error("[apex-motion] shader compile failed:", gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
@@ -159,7 +158,6 @@ function link(
   gl.deleteShader(fs);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    // eslint-disable-next-line no-console
     console.error("[apex-motion] program link failed:", gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
     return null;

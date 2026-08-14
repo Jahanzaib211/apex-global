@@ -24,20 +24,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # No staging host has ever been configured, so this guard failed in
+      # about eight seconds on every push to main — a red X that means "not
+      # set up", not "the deploy broke". Report that as a skip and let the
+      # rest of the job run only when there is somewhere to deploy to.
+      #
+      # Production for the marketing sites is a PM2 cutover on the deploy host
+      # itself; see infra/CUTOVER.md. Configure STAGING_SSH_HOST, _USER and
+      # _KEY to bring this pipeline into use.
       - name: Guard — required secrets present
+        id: guard
         run: |
+          missing=""
           for v in STAGING_SSH_HOST STAGING_SSH_USER STAGING_SSH_KEY; do
-            if [ -z "${!v:-}" ]; then
-              echo "::error::Missing secret $v. Configure it before staging deploys will run."
-              exit 1
-            fi
+            if [ -z "${!v:-}" ]; then missing="$missing $v"; fi
           done
+          if [ -n "$missing" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Staging deploy skipped — no staging host configured (missing:$missing)."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
         env:
           STAGING_SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
           STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
           STAGING_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
 
       - name: Set up SSH
+        if: steps.guard.outputs.configured == 'true'
         run: |
           install -m 700 -d ~/.ssh
           printf '%s' "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
@@ -45,6 +59,7 @@ jobs:
           ssh-keyscan -H "${{ secrets.STAGING_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Pull, migrate, restart
+        if: steps.guard.outputs.configured == 'true'
         run: |
           ssh -o BatchMode=yes "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" bash -se <<'REMOTE'
             set -euo pipefail
@@ -63,6 +78,7 @@ jobs:
           REMOTE
 
       - name: Smoke test
+        if: steps.guard.outputs.configured == 'true'
         run: |
           # /api/health reports database reachability, not just "the process
           # is listening" — a homepage 200 can be served from cache while the

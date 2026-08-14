@@ -85,10 +85,13 @@ export default async function CaseStudyPage({ params }: Props) {
         <Section tone="raised" className="py-12 md:py-14">
           <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {study.metrics.map((m) => (
-              <div key={m.id}>
-                <dd className="font-display text-3xl font-semibold">{m.value}</dd>
-                <dt className="mt-1 text-sm text-[var(--ink-secondary)]">{m.label}</dt>
-                <p className="text-2xs mt-1 text-[var(--ink-muted)]">Source: {m.source}</p>
+              <div key={m.id} className="flex flex-col">
+                <dt className="order-2 mt-1 text-sm text-[var(--ink-secondary)]">{m.label}</dt>
+                <dd className="font-display order-1 text-3xl font-semibold">{m.value}</dd>
+                {/* A second <dd>, not a <p>: a <dl> may only contain dt/dd. */}
+                <dd className="text-2xs order-3 mt-1 text-[var(--ink-muted)]">
+                  Source: {m.source}
+                </dd>
               </div>
             ))}
           </dl>
