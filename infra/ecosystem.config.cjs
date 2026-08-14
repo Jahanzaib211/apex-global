@@ -181,13 +181,19 @@ module.exports = {
       cwd: require("os").homedir() + "/actions-runner",
       script: "./run.sh",
       interpreter: "bash",
-      // PM2 defaults a managed process to NODE_ENV=production, and the runner
-      // passes its environment straight to every job it executes. pnpm then
-      // skips devDependencies — turbo, prettier, vitest, typescript — and the
-      // whole pipeline fails with "turbo: not found" on a tree that was never
-      // installed. This process is a supervisor, not a Node application; the
-      // only thing NODE_ENV does here is corrupt the builds it hosts.
-      env: { NODE_ENV: "development" },
+      // Explicit, because the runner hands this environment to every job it
+      // executes and two tools read it in opposite directions:
+      //
+      //   pnpm install  skips devDependencies when it is "production", which
+      //                 is why every workflow installs with --prod=false.
+      //   next build    requires "production" and fails prerendering /404 with
+      //                 "<Html> should not be imported outside of
+      //                 pages/_document" on anything else.
+      //
+      // Setting it to "development" to satisfy the first breaks the second —
+      // that was tried, and it failed four of the six app builds. The install
+      // flag is the correct lever; this value stays production.
+      env: { NODE_ENV: "production" },
       max_memory_restart: "1024M",
       error_file: path.join(ROOT, "logs/github-runner.error.log"),
       out_file: path.join(ROOT, "logs/github-runner.out.log"),
