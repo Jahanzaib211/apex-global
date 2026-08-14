@@ -5,6 +5,7 @@ import CareersValues from "@/components/careers/CareersValues";
 import CareersProcess from "@/components/careers/CareersProcess";
 import CareersCrossDiscovery from "@/components/careers/CareersCrossDiscovery";
 import CareersFinalCTA from "@/components/careers/CareersFinalCTA";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata = {
   title: "Careers | Apex Group of Companies",
@@ -23,7 +24,7 @@ const jobPostingSchema = {
   hiringOrganization: {
     "@type": "Organization",
     name: "Apex Group of Companies (Pvt) Ltd",
-    sameAs: "https://apexgroup.pk",
+    sameAs: SITE_URL,
     logo: "/logo.png",
   },
   jobLocation: {

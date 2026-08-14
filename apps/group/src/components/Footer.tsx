@@ -3,6 +3,9 @@ import Link from "next/link";
 import { Instagram, Facebook, Linkedin } from "lucide-react";
 import { APEX_GROUP } from "@/lib/apex-group";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
+import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
+
+const BRAND = DEFAULT_BRANDS["apex-group"]!;
 
 const SOCIAL_GLYPH: Record<string, React.ComponentType<{ className?: string }>> = {
   linkedin: Linkedin,
@@ -97,36 +100,45 @@ export default function Footer() {
             ["Leadership", "/leadership"],
             ["Careers", "/careers"],
             ["News", "/insights"],
-            ["Events", "/insights"],
-            ["Gallery", "/about"],
+            ["Events", "/events"],
+            ["Gallery", "/gallery"],
           ]}
         />
         <div>
           <h3 className="text-gold mb-5 text-xs font-semibold tracking-[.2em] uppercase">
             Contact
           </h3>
+          {/*
+            This block carried three dead contact routes: a `support@` mailto to
+            a mailbox that does not exist, `tel:+920000000000` rendered as
+            "+92 (0) 000 000 0000", and `wa.me/920000000000`. All three are now
+            the real values from `@apex/site-kit/brand`, except the email, which
+            is dropped in favour of the contact form — the channel that actually
+            reaches the CRM.
+          */}
           <p className="text-sm leading-6 text-white/70">
-            Head Office
+            Registered Office
             <br />
-            Pakistan
+            {BRAND.contactAddress}
           </p>
           <a
-            href="mailto:hello@apexgroup.pk"
+            href={`tel:${BRAND.contactPhone!.replace(/\s+/g, "")}`}
             className="hover:text-gold mt-4 block text-sm text-white/70"
           >
-            hello@apexgroup.pk
+            {BRAND.contactPhone}
           </a>
-          <a href="tel:+920000000000" className="hover:text-gold mt-2 block text-sm text-white/70">
-            +92 (0) 000 000 0000
-          </a>
-          <a
-            href="https://wa.me/920000000000"
-            className="mt-3 inline-flex items-center gap-2 text-sm text-green-400"
-          >
-            ● WhatsApp
-          </a>
+          {BRAND.whatsapp && (
+            <a
+              href={`https://wa.me/${BRAND.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-green-400 hover:text-green-300"
+            >
+              ● WhatsApp {BRAND.whatsappDisplay}
+            </a>
+          )}
           <Link
-            href="#contact"
+            href="/consultancy#consultancy-form"
             className="bg-gold text-navy mt-6 block px-4 py-3 text-center text-sm font-semibold hover:bg-white"
           >
             Request Financial Consultancy

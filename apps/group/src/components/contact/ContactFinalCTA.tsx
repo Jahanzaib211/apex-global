@@ -22,7 +22,7 @@ export default function ContactFinalCTA() {
           <Button href="/consultancy" variant="secondary" size="lg">
             Request Financial Consultancy
           </Button>
-          <Button href="/about#our-businesses" variant="outline-gold" size="lg">
+          <Button href="/companies" variant="outline-gold" size="lg">
             View Our Companies <ArrowRight size={14} />
           </Button>
         </div>

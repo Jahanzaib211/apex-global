@@ -12,6 +12,7 @@ import ToursGallery from "@/components/companies/tours-travels/ToursGallery";
 import ToursBooking from "@/components/companies/tours-travels/ToursBooking";
 import ToursCrossDiscovery from "@/components/companies/tours-travels/ToursCrossDiscovery";
 import ToursFinalCTA from "@/components/companies/tours-travels/ToursFinalCTA";
+import { url } from "@/lib/site-url";
 
 export const metadata = {
   title: "Apex Global Tours & Travels | Car Rentals, Hajj & Umrah | Apex Group",
@@ -51,7 +52,7 @@ const localBusinessSchema = {
   "@type": "LocalBusiness",
   name: "Apex Global Tours & Travels",
   parentOrganization: { "@type": "Organization", name: "Apex Group of Companies" },
-  url: "https://apexgroup.pk/companies/tours-travels",
+  url: url("/companies/tours-travels"),
   areaServed: [
     { "@type": "Country", name: "Pakistan" },
     { "@type": "Country", name: "Saudi Arabia" },

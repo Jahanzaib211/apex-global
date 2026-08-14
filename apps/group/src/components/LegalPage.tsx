@@ -2,6 +2,7 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
+import { url } from "@/lib/site-url";
 
 export type LegalSection = {
   title: string;
@@ -131,7 +132,7 @@ export function WebPageSchema({
           "@type": "WebPage",
           name,
           description,
-          url: `https://apexgroup.example${path}`,
+          url: url(path),
         }),
       }}
     />

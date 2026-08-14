@@ -3,6 +3,7 @@ import InsightsGridSection from "@/components/insights/InsightsGridSection";
 import InsightsNewsletter from "@/components/insights/InsightsNewsletter";
 import InsightsCTA from "@/components/insights/InsightsCTA";
 import { insights } from "@/data/insights";
+import { SITE_URL, url } from "@/lib/site-url";
 
 export const metadata = {
   title: "News & Insights | Apex Group of Companies",
@@ -14,13 +15,13 @@ const blogSchema = {
   "@context": "https://schema.org",
   "@type": "Blog",
   name: "Apex Group Insights",
-  url: "https://apexgroup.pk/insights",
+  url: url("/insights"),
   description:
     "News, perspectives and updates from across the Apex Group of Companies and its specialized businesses.",
   publisher: {
     "@type": "Organization",
     name: "Apex Group of Companies (Pvt) Ltd",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
     logo: "/logo.png",
   },
 };
@@ -32,7 +33,7 @@ const itemListSchema = {
   itemListElement: insights.map((i, idx) => ({
     "@type": "ListItem",
     position: idx + 1,
-    url: `https://apexgroup.pk/insights/${i.slug}`,
+    url: url(`/insights/${i.slug}`),
     name: i.title,
   })),
 };

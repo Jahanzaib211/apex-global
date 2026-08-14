@@ -6,6 +6,9 @@ import PartnershipForm from "@/components/partnerships/PartnershipForm";
 import PartnershipExpectations from "@/components/partnerships/PartnershipExpectations";
 import PartnershipCrossDiscovery from "@/components/partnerships/PartnershipCrossDiscovery";
 import PartnershipFinalCTA from "@/components/partnerships/PartnershipFinalCTA";
+import { SITE_URL, url } from "@/lib/site-url";
+import { APEX_SOCIALS } from "@apex/site-kit/social";
+import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
 
 export const metadata = {
   title: "Partnerships | Apex Group of Companies",
@@ -17,13 +20,13 @@ const contactSchema = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
   name: "Partnerships — Apex Group of Companies",
-  url: "https://apexgroup.pk/partnerships",
+  url: url("/partnerships"),
   description:
     "Partnership enquiries for Apex Group — technology, real estate, travel, outsourcing, strategic and financial/professional partnerships.",
   publisher: {
     "@type": "Organization",
     name: "Apex Group of Companies (Pvt) Ltd",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
   },
 };
 
@@ -31,15 +34,15 @@ const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Apex Group of Companies (Pvt) Ltd",
-  url: "https://apexgroup.pk",
+  url: SITE_URL,
   logo: "/logo.png",
   description:
     "A diversified group operating specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
-  sameAs: ["https://www.linkedin.com/company/apexgroup", "https://www.facebook.com/apexgroup"],
+  sameAs: APEX_SOCIALS.map((s) => s.href),
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "partnerships",
-    email: "partnerships@apexgroup.pk",
+    telephone: DEFAULT_BRANDS["apex-group"]!.contactPhone,
     areaServed: ["PK", "SA"],
     availableLanguage: ["English"],
   },

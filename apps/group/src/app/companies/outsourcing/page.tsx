@@ -14,6 +14,7 @@ import OutsourcingIndustries from "@/components/companies/outsourcing/Outsourcin
 import OutsourcingCaseStudies from "@/components/companies/outsourcing/OutsourcingCaseStudies";
 import OutsourcingCrossDiscovery from "@/components/companies/outsourcing/OutsourcingCrossDiscovery";
 import OutsourcingFinalCTA from "@/components/companies/outsourcing/OutsourcingFinalCTA";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Apex Global Outsourcing | People. Process. Performance. Global Scale.",
@@ -30,7 +31,7 @@ const serviceJsonLd = {
   provider: {
     "@type": "Organization",
     name: "Apex Group of Companies",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
   },
   areaServed: {
     "@type": "Place",

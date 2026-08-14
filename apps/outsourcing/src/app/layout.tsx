@@ -4,6 +4,7 @@ import "./globals.css";
 import { BRAND, absoluteUrl } from "@/lib/brand";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
+import { APEX_SOCIALS } from "@apex/site-kit/social";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
@@ -60,7 +61,7 @@ const ORG_JSONLD = {
   url: BRAND.siteUrl,
   logo: absoluteUrl("/logo.png"),
   description: BRAND.description,
-  sameAs: [],
+  sameAs: APEX_SOCIALS.map((s) => s.href),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

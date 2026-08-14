@@ -13,6 +13,7 @@ import TechIndustries from "@/components/companies/tech-solution/TechIndustries"
 import TechCaseStudies from "@/components/companies/tech-solution/TechCaseStudies";
 import TechCrossDiscovery from "@/components/companies/tech-solution/TechCrossDiscovery";
 import TechFinalCTA from "@/components/companies/tech-solution/TechFinalCTA";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Apex Global Tech Solution | Technology That Moves Businesses Forward",
@@ -29,7 +30,7 @@ const serviceJsonLd = {
   provider: {
     "@type": "Organization",
     name: "Apex Group of Companies",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
   },
   areaServed: {
     "@type": "Place",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 import { Check, Send, Mail, Phone, MessageCircle, AlertCircle } from "lucide-react";
@@ -65,6 +65,22 @@ export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  /**
+   * Preselect the enquiry type from `?type=` so the Direct Channels cards can
+   * route here. Those cards used to be `mailto:` links to per-team addresses
+   * that do not exist as mailboxes; they now deep-link to this form with the
+   * right team already chosen.
+   *
+   * Read from `window.location` in an effect rather than `useSearchParams` so
+   * the page stays statically prerenderable without a Suspense boundary.
+   */
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("type");
+    if (requested && (ENQUIRY_TYPES as readonly string[]).includes(requested)) {
+      setData((d) => ({ ...d, enquiryType: requested }));
+    }
+  }, []);
 
   const update = (key: keyof typeof initialState, value: string) => {
     setData((d) => ({ ...d, [key]: value }));

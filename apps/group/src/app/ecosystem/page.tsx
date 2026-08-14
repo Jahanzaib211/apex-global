@@ -6,6 +6,7 @@ import EcosystemCompanies from "@/components/ecosystem/EcosystemCompanies";
 import EcosystemFuture from "@/components/ecosystem/EcosystemFuture";
 import EcosystemCrossDiscovery from "@/components/ecosystem/EcosystemCrossDiscovery";
 import EcosystemFinalCTA from "@/components/ecosystem/EcosystemFinalCTA";
+import { url } from "@/lib/site-url";
 const subsidiaries = [
   "Apex Global Tech Solution",
   "Apex Global Outsourcing",
@@ -31,7 +32,7 @@ export default function EcosystemPage() {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Apex Group of Companies",
-            url: "https://apexgroup.example/ecosystem",
+            url: url("/ecosystem"),
             department: subsidiaries.map((name) => ({ "@type": "Organization", name })),
           }),
         }}

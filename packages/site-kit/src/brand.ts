@@ -14,7 +14,15 @@ export interface Brand {
   readonly name: string;
   /** Short label used in compact contexts (footer copyright, mobile nav). */
   readonly shortLabel: string;
-  /** Public hostname with no scheme — `apexgroupcompanies.com` style. */
+  /**
+   * This site's public hostname, no scheme — `tours.apexgroupcompanies.com`.
+   *
+   * Must equal `APEX_PUBLIC_HOSTNAMES[siteId]`; a test pins that. The field
+   * used to mean the registrable domain for four entries
+   * (`apexgroupcompanies.com`) and a full host for the fifth
+   * (`apexholdings.pk`, which is not even where Holdings serves any more), so
+   * it could not be used for anything without checking which sense applied.
+   */
   readonly hostname: string;
   /** One-line tagline used in the hero, footer, og:description, etc. */
   readonly tagline: string;
@@ -32,6 +40,17 @@ export interface Brand {
   readonly contactEmail?: string;
   /** Single-line postal address. */
   readonly contactAddress?: string;
+  /**
+   * WhatsApp number in wa.me form — digits only, country code first, no `+`.
+   *
+   * Optional on purpose. `org.whatsapp` is empty in the live settings, and a
+   * WhatsApp CTA pointing at a number nobody answers is worse than no CTA, so
+   * consumers gate the button on this being non-empty rather than shipping a
+   * made-up number (it was `923001234567`).
+   */
+  readonly whatsapp?: string;
+  /** Human-formatted rendering of `whatsapp`, e.g. `+92 306 642 2442`. */
+  readonly whatsappDisplay?: string;
   /** WhatsApp CTA — full `https://wa.me/...` URL with prefilled text. */
   readonly whatsappHref?: string;
 }
@@ -55,24 +74,51 @@ export function defineBrand(input: Brand): Brand {
  * this const is the **default** the migrated app falls back to when the
  * JSON file is missing (a fresh checkout before configuration).
  */
+/**
+ * The group's real, published contact facts.
+ *
+ * Single source of truth is the Tech app's `settings` table — `org.phone` and
+ * `org.address`, edited from the console and read at runtime by `apps/web`.
+ * The four marketing sites are statically built and have no database, so the
+ * values are mirrored here rather than fetched; update both together.
+ *
+ * They replace `+92 300 123 4567`, which was on three sites and is not a real
+ * number. There is deliberately no `contactEmail`: `org.email` is empty in the
+ * live settings, and inventing one is exactly the mistake being corrected.
+ */
+const GROUP_PHONE = "+92 42 3229 4384";
+const GROUP_ADDRESS = "31-20, Sector CCD Main Blvd, Sector M7 Lake City, Lahore, Pakistan";
+
+/**
+ * wa.me form: country code first, digits only, no `+`.
+ *
+ * `org.whatsapp` is currently empty in the live settings, but this number is
+ * the one seeded in `packages/db/prisma/content/site.ts` and confirmed as
+ * Apex's real WhatsApp — it was cleared from the database, not retired. Restore
+ * `org.whatsapp` in the console so the Tech site and these four agree.
+ */
+const GROUP_WHATSAPP = "923066422442";
+const GROUP_WHATSAPP_DISPLAY = "+92 306 642 2442";
+
 export const DEFAULT_BRANDS: Readonly<Record<string, Brand>> = {
   "apex-group": {
     name: "Apex Group of Companies",
     shortLabel: "Apex Group",
-    hostname: "apexgroupcompanies.com",
+    hostname: "apex.apexgroupcompanies.com",
     tagline: "Six companies. One operating group.",
     logoSrc: "/logo.png",
     logoAlt: "Apex Group of Companies",
     primaryColor: "#0b1d3a",
     accentColor: "#c89b3c",
-    contactPhone: "+92 300 123 4567",
-    contactEmail: "[email protected]",
-    contactAddress: "Karachi · Lahore · Riyadh",
+    contactPhone: GROUP_PHONE,
+    contactAddress: GROUP_ADDRESS,
+    whatsapp: GROUP_WHATSAPP,
+    whatsappDisplay: GROUP_WHATSAPP_DISPLAY,
   },
   "apex-tech": {
     name: "Apex Global Tech Solution",
     shortLabel: "Apex Tech",
-    hostname: "apexgroupcompanies.com",
+    hostname: "tech.apexgroupcompanies.com",
     tagline: "We build and operate SaaS products and deliver technology solutions.",
     logoSrc: "/logo.png",
     logoAlt: "Apex Global Tech Solution",
@@ -82,19 +128,21 @@ export const DEFAULT_BRANDS: Readonly<Record<string, Brand>> = {
   "apex-tours": {
     name: "Apex Global Tours & Travels (Pvt) Ltd",
     shortLabel: "Apex Tours",
-    hostname: "apexgroupcompanies.com",
+    hostname: "tours.apexgroupcompanies.com",
     tagline: "Your Journey. Our Responsibility.",
     logoSrc: "/logo.png",
     logoAlt: "Apex Global Tours & Travels",
     primaryColor: "#0b1d3a",
     accentColor: "#c89b3c",
-    contactPhone: "+92 300 123 4567",
-    contactAddress: "Pakistan · Saudi Arabia",
+    contactPhone: GROUP_PHONE,
+    contactAddress: GROUP_ADDRESS,
+    whatsapp: GROUP_WHATSAPP,
+    whatsappDisplay: GROUP_WHATSAPP_DISPLAY,
   },
   "apex-outsourcing": {
     name: "Apex Global Outsourcing",
     shortLabel: "Apex Outsourcing",
-    hostname: "apexgroupcompanies.com",
+    hostname: "outsourcing.apexgroupcompanies.com",
     tagline: "BPO and back-office teams, end to end.",
     logoSrc: "/logo.png",
     logoAlt: "Apex Global Outsourcing",
@@ -104,13 +152,15 @@ export const DEFAULT_BRANDS: Readonly<Record<string, Brand>> = {
   "apex-holdings": {
     name: "Apex Holdings",
     shortLabel: "Apex Holdings",
-    hostname: "apexholdings.pk",
+    hostname: "holdings.apexgroupcompanies.com",
     tagline: "Real estate and property development across Pakistan.",
     logoSrc: "/logo.png",
     logoAlt: "Apex Holdings",
     primaryColor: "#0b1d3a",
     accentColor: "#c89b3c",
-    contactPhone: "+92 300 123 4567",
-    contactAddress: "Lahore, Pakistan",
+    contactPhone: GROUP_PHONE,
+    contactAddress: GROUP_ADDRESS,
+    whatsapp: GROUP_WHATSAPP,
+    whatsappDisplay: GROUP_WHATSAPP_DISPLAY,
   },
 } as const;

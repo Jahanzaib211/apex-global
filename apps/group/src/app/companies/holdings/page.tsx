@@ -12,6 +12,7 @@ import HoldingsSiteVisits from "@/components/companies/holdings/HoldingsSiteVisi
 import HoldingsGallery from "@/components/companies/holdings/HoldingsGallery";
 import HoldingsCrossDiscovery from "@/components/companies/holdings/HoldingsCrossDiscovery";
 import HoldingsFinalCTA from "@/components/companies/holdings/HoldingsFinalCTA";
+import { url } from "@/lib/site-url";
 
 export const metadata = {
   title: "Apex Holdings | Real Estate Marketing & Future Development | Apex Group",
@@ -36,7 +37,7 @@ const realEstateAgentSchema = {
   "@type": "RealEstateAgent",
   name: "Apex Holdings",
   parentOrganization: { "@type": "Organization", name: "Apex Group of Companies" },
-  url: "https://apexgroup.pk/companies/holdings",
+  url: url("/companies/holdings"),
   areaServed: { "@type": "Country", name: "Pakistan" },
   address: { "@type": "PostalAddress", addressCountry: "PK" },
 };

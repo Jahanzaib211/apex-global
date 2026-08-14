@@ -9,6 +9,7 @@ import ConsultancySecurity from "@/components/consultancy/ConsultancySecurity";
 import ConsultancyFAQ from "@/components/consultancy/ConsultancyFAQ";
 import ConsultancyCrossDiscovery from "@/components/consultancy/ConsultancyCrossDiscovery";
 import ConsultancyFinalCTA from "@/components/consultancy/ConsultancyFinalCTA";
+import { SITE_URL, url } from "@/lib/site-url";
 
 export const metadata = {
   title: "Financial Consultancy | Apex Group | Private & Considered",
@@ -20,11 +21,11 @@ const financialServiceSchema = {
   "@context": "https://schema.org",
   "@type": "FinancialService",
   name: "Apex Group Financial Consultancy",
-  url: "https://apexgroup.pk/consultancy",
+  url: url("/consultancy"),
   provider: {
     "@type": "Organization",
     name: "Apex Group of Companies",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
   },
   areaServed: { "@type": "Country", name: "Pakistan" },
   hasOfferCatalog: {

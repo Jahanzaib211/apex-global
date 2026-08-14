@@ -971,11 +971,11 @@ function Step6({
             I understand that the information I provide will be used by Apex Group of Companies to
             evaluate and respond to my consultancy request and to contact me regarding the enquiry.
             I have read and accept the{" "}
-            <a href="#privacy" className="text-gold underline">
+            <a href="/privacy" className="text-gold underline">
               Privacy Policy
             </a>{" "}
             and{" "}
-            <a href="#terms" className="text-gold underline">
+            <a href="/terms" className="text-gold underline">
               Terms
             </a>
             .

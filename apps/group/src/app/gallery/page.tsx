@@ -10,6 +10,7 @@ import GalleryUploadInfo from "@/components/gallery/GalleryUploadInfo";
 import GalleryCTA from "@/components/gallery/GalleryCTA";
 import galleryItems from "@/data/gallery";
 import type { GalleryItem } from "@/data/gallery";
+import { url } from "@/lib/site-url";
 export default function GalleryPage() {
   const [filtered, setFiltered] = useState(galleryItems);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
@@ -40,8 +41,8 @@ export default function GalleryPage() {
             "@type": "ImageGallery",
             name: "Apex Group Gallery",
             description: "Moments from across Apex Group of Companies",
-            url: "https://apexgroup.example/gallery",
-            image: galleryItems.map((i) => `https://apexgroup.example/gallery/${i.id}`),
+            url: url("/gallery"),
+            image: galleryItems.map((i) => url(`/gallery/${i.id}`)),
           }),
         }}
       />

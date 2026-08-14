@@ -7,6 +7,8 @@ import OurBusinesses from "@/components/about/OurBusinesses";
 import GroupEcosystem from "@/components/about/GroupEcosystem";
 import OurFuture from "@/components/about/OurFuture";
 import AboutFinalCTA from "@/components/about/AboutFinalCTA";
+import { SITE_URL } from "@/lib/site-url";
+import { APEX_SOCIALS } from "@apex/site-kit/social";
 
 export const metadata = {
   title: "About | Apex Group of Companies",
@@ -18,11 +20,11 @@ const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Apex Group of Companies (Pvt) Ltd",
-  url: "https://apexgroup.pk",
+  url: SITE_URL,
   logo: "/logo.png",
   description:
     "A diversified group operating specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
-  sameAs: ["https://www.linkedin.com/company/apexgroup", "https://www.facebook.com/apexgroup"],
+  sameAs: APEX_SOCIALS.map((s) => s.href),
 };
 
 export default function AboutPage() {

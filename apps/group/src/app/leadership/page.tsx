@@ -4,6 +4,7 @@ import LeadershipMessage from "@/components/leadership/LeadershipMessage";
 import LeadershipPhilosophy from "@/components/leadership/LeadershipPhilosophy";
 import GroupDirection from "@/components/leadership/GroupDirection";
 import LeadershipCTA from "@/components/leadership/LeadershipCTA";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata = {
   title: "Leadership | Apex Group of Companies",
@@ -19,7 +20,7 @@ const personJsonLd = {
   worksFor: {
     "@type": "Organization",
     name: "Apex Group of Companies",
-    url: "https://apexgroup.pk",
+    url: SITE_URL,
   },
 };
 

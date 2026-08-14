@@ -84,6 +84,9 @@ export const APEX_PUBLIC_HOSTNAMES: Readonly<Record<ApexSiteId, string>> = {
  * The `fallback` argument lets sites with a non-4300 dev port (e.g. the
  * `@apex/web` donor binds to 4300, the four migrated siblings bind to
  * 3001-3103) override without setting an env var.
+ *
+ * Prefer `siteUrlFor(siteId)` for anything that reaches a crawler — see the
+ * note there on why a bare env read is not safe in this monorepo.
  */
 export function siteUrl(fallback = "http://localhost:4300"): string {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? fallback).replace(/\/$/, "");
@@ -92,6 +95,51 @@ export function siteUrl(fallback = "http://localhost:4300"): string {
 /** Join `siteUrl()` with a path, adding the leading slash if missing. */
 export function absoluteUrl(path: string): string {
   return `${siteUrl()}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+/**
+ * The canonical public origin for one specific Apex site.
+ *
+ * `siteUrl()` reads `NEXT_PUBLIC_SITE_URL` and trusts it. That is wrong here:
+ * there is a single root `.env` holding
+ * `NEXT_PUBLIC_SITE_URL=https://tech.apexgroupcompanies.com`, and all five
+ * apps build through `dotenv -e ../../.env`. So a production build of any
+ * non-Tech site inlined **Tech's** hostname into its own canonical tag,
+ * og:url, og:image and sitemap. A canonical pointing at a different site is a
+ * deindexing risk, not a cosmetic bug, and `NEXT_PUBLIC_*` is inlined at build
+ * time so a restart never corrects it.
+ *
+ * This resolver is self-correcting: the env var is honoured only when it
+ * actually names this site's host (so per-environment overrides and local
+ * loopback still work), and otherwise the compiled-in canonical hostname wins.
+ * A misconfigured or shared env can no longer publish the wrong domain.
+ */
+export function siteUrlFor(siteId: ApexSiteId, devFallback = "http://localhost:4300"): string {
+  const canonical = `https://${APEX_PUBLIC_HOSTNAMES[siteId]}`;
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
+
+  if (fromEnv) {
+    let host: string | undefined;
+    try {
+      host = new URL(fromEnv).hostname;
+    } catch {
+      host = undefined;
+    }
+    // Honour the override only when it names this site. A loopback or
+    // *.localhost origin is always allowed so dev and E2E can point anywhere.
+    if (host === APEX_PUBLIC_HOSTNAMES[siteId]) return fromEnv;
+    if (host === "localhost" || host === "127.0.0.1" || host?.endsWith(".localhost")) {
+      return fromEnv;
+    }
+  }
+
+  return process.env.NODE_ENV === "production" ? canonical : devFallback;
+}
+
+/** Join `siteUrlFor(siteId)` with a path, adding the leading slash if missing. */
+export function absoluteUrlFor(siteId: ApexSiteId, path: string, devFallback?: string): string {
+  const base = siteUrlFor(siteId, devFallback);
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 /* ------------------------------------------------------------------ */

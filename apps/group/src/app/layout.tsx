@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
+import { SITE_URL } from "@/lib/site-url";
 
 const display = Playfair_Display({
   subsets: ["latin"],
@@ -25,11 +26,16 @@ export const metadata: Metadata = {
   description:
     "Apex Group of Companies brings together specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
   icons: { icon: "/logo.png" },
-  metadataBase: new URL("https://apexgroup.example"),
+  metadataBase: new URL(SITE_URL),
+  // metadataBase alone does not emit <link rel="canonical">; without this the
+  // site shipped no canonical tag on any page.
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Apex Group of Companies",
     description: "One Group. Multiple Businesses. One Vision.",
     type: "website",
+    url: SITE_URL,
+    siteName: "Apex Group of Companies",
   },
 };
 
