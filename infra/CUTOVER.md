@@ -122,3 +122,61 @@ Neither blocks the cutover; both are values only Apex can supply.
    Every site now routes to its contact form, which reaches the CRM. If Apex
    wants a published address, create the mailbox first and confirm it both
    receives and sends before putting it on a page.
+
+## If a self-hosted CI job fails on a tool that is obviously installed
+
+Symptom: `turbo: not found`, `prettier: not found`, `vitest: not found` — on a
+step whose YAML has not changed, for a commit that builds and tests clean on a
+workstation. It looks like a broken workflow. It is not.
+
+Read the install step's own output, near the end:
+
+```
+devDependencies: skipped because NODE_ENV is set to production
+Packages: +121
+```
+
+121 of 768. PM2 defaults a managed process to `NODE_ENV=production`; the
+runner is supervised by PM2; the runner passes its environment to every job it
+executes. `turbo`, `prettier`, `vitest` and `typescript` are devDependencies,
+so the entire pipeline runs against a tree that was never installed.
+
+Two guards are in place, and both should stay:
+
+- Every workflow installs with `--prod=false`, so a build never depends on the
+  ambient `NODE_ENV` of whatever supervises its runner.
+- `infra/ecosystem.config.cjs` sets `NODE_ENV=development` on the
+  `github-runner` entry. It is a supervisor, not a Node application.
+
+To check the live process:
+
+```bash
+pid=$(ps -eo pid,args | awk '/Runner\.Listener run/ && !/awk/ {print $1; exit}')
+tr '\0' '\n' < /proc/$pid/environ | grep NODE_ENV     # expect: development
+```
+
+The general lesson, which cost a session: a self-hosted runner inherits the
+environment of whatever starts it. When CI fails on something that cannot
+possibly be wrong, compare the job's environment to a working shell before
+touching the workflow.
+
+## Do not trust a build directory you did not just produce
+
+A related trap, same session. `apps/web/.next` ended up with prerendered HTML
+from one compilation and static chunks from another, so every `/_next/static`
+request 404'd, the pages shipped no client JavaScript, and the E2E suite
+reported seventeen unrelated "failures" — dead forms, a missing canvas, broken
+sign-in. The apps were fine.
+
+Check consistency before believing a test run:
+
+```bash
+for a in web console group holdings outsourcing tours; do
+  printf '%-12s ' "$a"
+  grep -oh 'webpack-[a-f0-9]*\.js' apps/$a/.next/server/app/*.html 2>/dev/null | head -1
+  ls apps/$a/.next/static/chunks/webpack-*.js 2>/dev/null | xargs -n1 basename | head -1
+done
+```
+
+The two hashes must match for every app. If they do not, `rm -rf apps/*/.next`
+and rebuild before drawing any conclusion from a failing test.
