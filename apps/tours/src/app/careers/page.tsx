@@ -1,5 +1,5 @@
-import { Briefcase, Compass, Heart, Building2, Users, ArrowRight, Mail } from "lucide-react";
-import { BRAND } from "@/lib/brand";
+import { Briefcase, Compass, Heart, Building2, Users, ArrowRight } from "lucide-react";
+import { ApplicationForm } from "./_components/application-form";
 import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
@@ -161,10 +161,15 @@ export default function CareersPage() {
                 <div className="text-ink-300 mb-5 text-xs">
                   <span className="text-ink-500 font-semibold">Location:</span> {r.location}
                 </div>
+                {/*
+                  A plain <a>, not next/link: the form reads ?role= in a mount
+                  effect, and a client-side navigation would not remount it, so
+                  the role would silently fail to preselect. This page is a
+                  server component, so an onClick handler is not an option
+                  either.
+                */}
                 <a
-                  href={`mailto:${BRAND.email}?subject=${encodeURIComponent(
-                    `Application — ${r.title}`,
-                  )}`}
+                  href={`/careers?role=${encodeURIComponent(r.title)}#apply`}
                   className="btn-ghost w-full"
                 >
                   Apply <ArrowRight size={16} />
@@ -192,25 +197,8 @@ export default function CareersPage() {
             ))}
           </div>
 
-          <div className="card mt-10 flex flex-col items-start gap-5 p-6 md:flex-row md:items-center md:p-7">
-            <div className="bg-gold-100 text-gold-600 flex h-12 w-12 flex-none items-center justify-center rounded-xl">
-              <Mail size={22} />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-display text-navy-600 mb-1 text-lg font-semibold">
-                Send your CV to {BRAND.email}
-              </h3>
-              <p className="text-ink-400 text-sm">
-                Mention the role title in the subject line. We review applications on a rolling
-                basis.
-              </p>
-            </div>
-            <a
-              href={`mailto:${BRAND.email}?subject=${encodeURIComponent("General application")}`}
-              className="btn-primary flex-none"
-            >
-              Email us <ArrowRight size={16} />
-            </a>
+          <div id="apply" className="mt-12 scroll-mt-28">
+            <ApplicationForm roles={ROLES.map((r) => r.title)} />
           </div>
         </div>
       </section>
@@ -226,8 +214,8 @@ export default function CareersPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <EnquireButton mode="general" label="Send a general enquiry" />
-            <a href={`mailto:${BRAND.email}`} className="btn-secondary">
-              Email careers
+            <a href="#apply" className="btn-secondary">
+              Apply with a general application
             </a>
           </div>
         </div>

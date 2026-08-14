@@ -105,7 +105,11 @@ export default function PartnershipForm() {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      await submitPartnershipEnquiry(data);
+      const result = await submitPartnershipEnquiry(data);
+      if (!result.ok) {
+        setServerError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        return;
+      }
       setSubmitted(true);
       setData(initialState);
     } catch {

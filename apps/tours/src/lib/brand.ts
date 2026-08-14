@@ -20,7 +20,6 @@ export const BRAND = {
   whatsapp: SHARED.whatsapp ?? "",
   whatsappDisplay: SHARED.whatsappDisplay ?? "",
   phone: SHARED.contactPhone!,
-  email: "support@apexgroupcompanies.com",
   hqCity: "Karachi, Lahore & Riyadh",
   address: "Pakistan · Saudi Arabia · offices in Karachi, Lahore, and Riyadh",
 };

@@ -223,7 +223,11 @@ export default function ConsultancyForm() {
     }
     setSubmitting(true);
     try {
-      await submitConsultancyRequest({ ...form, source });
+      const result = await submitConsultancyRequest({ ...form, source });
+      if (!result.ok) {
+        setError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        return;
+      }
       setSubmitted(true);
     } finally {
       setSubmitting(false);

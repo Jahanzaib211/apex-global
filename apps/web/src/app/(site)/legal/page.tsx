@@ -73,6 +73,13 @@ const DOCS = [
       "How we make the site usable for everyone, the standard we target, and how to report a barrier.",
     updated: "3 August 2026",
   },
+  {
+    href: "/legal/security",
+    title: "Security and compliance",
+    summary:
+      "How the estate is secured, where each compliance framework stands, and how to report a vulnerability.",
+    updated: "13 August 2026",
+  },
 ] as const;
 
 export default function LegalHubPage() {

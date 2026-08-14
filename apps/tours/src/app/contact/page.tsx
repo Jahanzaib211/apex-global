@@ -1,4 +1,4 @@
-import { Mail, Phone, MessageCircle, MapPin, Clock, FileText, MapPinned } from "lucide-react";
+import { Send, Phone, MessageCircle, MapPin, Clock, FileText, MapPinned } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
@@ -26,11 +26,11 @@ const CONTACT_METHODS = [
     href: `tel:${BRAND.phone.replace(/\s+/g, "")}`,
   },
   {
-    icon: Mail,
-    label: "Email",
-    value: BRAND.email,
-    note: "We respond within 1 working day",
-    href: `mailto:${BRAND.email}`,
+    icon: Send,
+    label: "Enquiry form",
+    value: "Send an enquiry",
+    note: "Reaches our team directly — we respond within 1 working day",
+    href: "#enquiry",
   },
   {
     icon: MapPin,
@@ -139,7 +139,7 @@ export default function ContactPage() {
                     <span>Intercity routes in Pakistan and Saudi Arabia</span>
                   </li>
                 </ul>
-                <div className="mt-auto">
+                <div id="enquiry" className="mt-auto scroll-mt-28">
                   <EnquireButton mode="general" label="Open enquiry form" fullWidth />
                   <p className="text-ink-300 mt-3 text-center text-xs">
                     Form opens in a modal — your details stay with Apex only.

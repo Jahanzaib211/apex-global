@@ -1,6 +1,14 @@
 "use server";
 
-import { recordGroupEnquiry } from "@/lib/group-enquiry";
+/**
+ * Every action here returned a hard-coded `{ ok: true }` and threw away the
+ * `RecordResult` from `recordGroupEnquiry`, so a visitor saw a confirmation
+ * even when the enquiry was spooled to disk (CRM unreachable) or dropped
+ * outright (no email in the payload). `recordGroupEnquiry`'s own contract
+ * says the caller "should be able to see what happened, and to decide whether
+ * to soften what it tells the visitor" — now it can.
+ */
+import { recordGroupEnquiry, type RecordResult } from "@/lib/group-enquiry";
 
 export type ConsultancyPayload = {
   source: string;
@@ -57,11 +65,10 @@ export type ConsultancyPayload = {
   };
 };
 
-export async function submitConsultancyRequest(payload: ConsultancyPayload): Promise<{ ok: true }> {
-  await recordGroupEnquiry({
+export async function submitConsultancyRequest(payload: ConsultancyPayload): Promise<RecordResult> {
+  return await recordGroupEnquiry({
     source: "Apex Group — Consultancy request",
     interestType: "consultancy",
     payload,
   });
-  return { ok: true };
 }

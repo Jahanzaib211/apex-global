@@ -32,7 +32,11 @@ export default function EventRegistrationForm({ eventSlug }: { eventSlug: string
     if (!validate()) return;
     setSubmitting(true);
     try {
-      await submitEventRegistration({ ...data, eventSlug });
+      const result = await submitEventRegistration({ ...data, eventSlug });
+      if (!result.ok) {
+        setServerError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        return;
+      }
       setSubmitted(true);
       setData({ fullName: "", email: "", phone: "", notes: "" });
     } catch {

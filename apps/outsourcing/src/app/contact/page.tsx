@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Mail, Phone, MapPin, Globe, CheckCircle2, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -73,6 +73,23 @@ export default function ContactPage() {
 
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  /**
+   * Prefill from `?role=` so the careers page's "Apply Now" carries which job
+   * the applicant clicked. It used to link here bare, so the role was lost and
+   * every application arrived as an unlabelled general enquiry.
+   *
+   * Read from `window.location` in an effect rather than `useSearchParams` so
+   * the page stays statically prerenderable without a Suspense boundary.
+   */
+  useEffect(() => {
+    const role = new URLSearchParams(window.location.search).get("role");
+    if (!role) return;
+    setForm((f) => ({
+      ...f,
+      message: f.message || `Application for the ${role} role.`,
+    }));
+  }, []);
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -193,8 +210,9 @@ export default function ContactPage() {
               </div>
             ) : (
               <form
+                id="contact-form"
                 onSubmit={submit}
-                className="border-line space-y-5 rounded-2xl border bg-white p-6 md:p-8"
+                className="border-line scroll-mt-28 space-y-5 rounded-2xl border bg-white p-6 md:p-8"
                 noValidate
               >
                 <div className="grid gap-5 md:grid-cols-2">

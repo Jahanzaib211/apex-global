@@ -21,7 +21,11 @@ export default function InsightsNewsletter() {
     }
     setSubmitting(true);
     try {
-      await submitNewsletterSubscription({ email });
+      const result = await submitNewsletterSubscription({ email });
+      if (!result.ok) {
+        setError("We couldn't sign you up just now. Please try again in a moment.");
+        return;
+      }
       setDone(true);
       setEmail("");
     } catch {

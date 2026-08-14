@@ -1,5 +1,6 @@
 import { ButtonLink, Card, OriginBadge, Section, SectionHeading, Stat } from "@apex/ui";
 import Link from "next/link";
+import { ComplianceStrip } from "@/components/compliance-strip";
 import { Hero } from "@/components/hero";
 import { RepoGraph } from "@/components/repo-graph";
 import { TechStackMarquee } from "@/components/tech-stack-marquee";
@@ -86,6 +87,9 @@ export default async function HomePage() {
 
       {/* ── The stack we operate, scrolling ─────────────────────────── */}
       <TechStackMarquee />
+
+      {/* ── Compliance programme, honest about in-progress vs verified ─ */}
+      <ComplianceStrip />
 
       {/* ── Partner strip ───────────────────────────────────────────── */}
       <Section tone="raised" className="py-12 md:py-14">

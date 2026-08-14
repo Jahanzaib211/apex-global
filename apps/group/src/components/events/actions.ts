@@ -1,6 +1,14 @@
 "use server";
 
-import { recordGroupEnquiry } from "@/lib/group-enquiry";
+/**
+ * Every action here returned a hard-coded `{ ok: true }` and threw away the
+ * `RecordResult` from `recordGroupEnquiry`, so a visitor saw a confirmation
+ * even when the enquiry was spooled to disk (CRM unreachable) or dropped
+ * outright (no email in the payload). `recordGroupEnquiry`'s own contract
+ * says the caller "should be able to see what happened, and to decide whether
+ * to soften what it tells the visitor" — now it can.
+ */
+import { recordGroupEnquiry, type RecordResult } from "@/lib/group-enquiry";
 
 export type EventRegistrationPayload = {
   eventSlug: string;
@@ -12,20 +20,18 @@ export type EventRegistrationPayload = {
 
 export async function submitEventRegistration(
   payload: EventRegistrationPayload,
-): Promise<{ ok: true }> {
-  await recordGroupEnquiry({
+): Promise<RecordResult> {
+  return await recordGroupEnquiry({
     source: "Apex Group — Event registration",
     interestType: "event",
     payload,
   });
-  return { ok: true };
 }
 
-export async function submitEventsNewsletter(payload: { email: string }): Promise<{ ok: true }> {
-  await recordGroupEnquiry({
+export async function submitEventsNewsletter(payload: { email: string }): Promise<RecordResult> {
+  return await recordGroupEnquiry({
     source: "Apex Group — Events newsletter",
     interestType: "newsletter",
     payload,
   });
-  return { ok: true };
 }

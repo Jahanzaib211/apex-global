@@ -21,6 +21,7 @@ const source = "Apex Holdings";
 
 export default function HoldingsSiteVisits() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -39,8 +40,14 @@ export default function HoldingsSiteVisits() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await submitSiteVisit({ ...form, source });
+      const result = await submitSiteVisit({ ...form, source });
+      if (!result.ok) {
+        setError("We couldn't submit that just now. Please try again in a moment, or call us if it keeps happening.");
+        return;
+      }
       setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again in a moment.");
     } finally {
       setSubmitting(false);
     }
@@ -74,6 +81,14 @@ export default function HoldingsSiteVisits() {
               </div>
             ) : (
               <form onSubmit={onSubmit} className="bg-cream grid gap-4 p-8 md:p-10">
+                {error && (
+                  <p
+                    role="alert"
+                    className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                  >
+                    {error}
+                  </p>
+                )}
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field label="Name" required>
                     <input

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   poweredByHeader: false,
 
   // The design system and DB client are workspace TypeScript, not build output.
@@ -9,6 +9,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["@apex/ui"],
   },
+
+  // Self-contained server bundle for the PM2 deploy.
+  output: "standalone",
 
   async headers() {
     return [

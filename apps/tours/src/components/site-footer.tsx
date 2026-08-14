@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, MessageCircle, MapPin, Camera } from "lucide-react";
+import { Phone, MessageCircle, MapPin, Camera } from "lucide-react";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
 
 // The inline Facebook / Instagram / LinkedIn SVGs that lived here were removed
@@ -128,12 +128,6 @@ export function SiteFooter() {
                 <Phone size={16} className="text-gold-400" />
                 <a href={`tel:${BRAND.phone}`} className="hover:text-gold-400">
                   {BRAND.phone}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Mail size={16} className="text-gold-400" />
-                <a href={`mailto:${BRAND.email}`} className="hover:text-gold-400">
-                  {BRAND.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">

@@ -1,8 +1,28 @@
 /**
- * Site-level constants. Contact details and the canonical URL come from the
- * database at runtime (console → Settings), so nothing here is a hardcoded
- * business fact that would go stale.
+ * Site-level constants — Tech-specific nav and footer legal paths.
+ *
+ * Cross-site constants (GROUP_COMPANIES, siteUrl, absoluteUrl) live in
+ * `@apex/site-kit/site` so the five Apex sites cannot drift apart. Anything
+ * unique to the Tech site stays here.
+ *
+ * Contact details (phone, email, address) come from the database at runtime
+ * (console → Settings), so nothing here is a hardcoded business fact that
+ * would go stale.
  */
+
+import {
+  type GroupCompany,
+  siteUrl as _siteUrl,
+  absoluteUrl as _absoluteUrl,
+  withSelf,
+} from "@apex/site-kit/site";
+
+/** Re-export the cross-site helpers so existing imports keep working. */
+export const siteUrl = _siteUrl;
+export const absoluteUrl = _absoluteUrl;
+
+/** Six entries; the row for `apex-tech` is marked `self: true`. */
+export const GROUP_COMPANIES: readonly GroupCompany[] = withSelf("apex-tech");
 
 export const NAV = [
   {
@@ -44,31 +64,6 @@ export const NAV = [
   { label: "Client login", href: "/portal/login" },
 ] as const;
 
-/**
- * The Apex group of companies.
- *
- * The single source of truth for the group cross-links, published in this
- * site's footer and mirrored in the footers of the other four properties.
- * Five sites listing each other from five hand-maintained copies is how a
- * dead link ends up on every one of them at once.
- *
- * `self` marks the entry for the site doing the rendering, which links to `/`
- * rather than out to itself.
- *
- * Every entry here must answer 200. Apex Cloud was pulled from this list while
- * it returned 502 (mailcow's mariadb could not write its PID file) and
- * restored once that was fixed — a dead entry here is a dead link in five
- * footers at once, not one.
- */
-export const GROUP_COMPANIES = [
-  { label: "Apex Group of Companies", href: "https://apex.apexgroupcompanies.com" },
-  { label: "Apex Global Tech Solution", href: "https://tech.apexgroupcompanies.com", self: true },
-  { label: "Apex Cloud", href: "https://cloud.apexgroupcompanies.com" },
-  { label: "Apex Tours", href: "https://tours.apexgroupcompanies.com" },
-  { label: "Apex Outsourcing", href: "https://outsourcing.apexgroupcompanies.com" },
-  { label: "Apex Holdings", href: "https://holdings.apexgroupcompanies.com" },
-] as const;
-
 export const FOOTER_LEGAL = [
   { label: "Privacy", href: "/legal/privacy" },
   { label: "Terms", href: "/legal/terms" },
@@ -78,11 +73,3 @@ export const FOOTER_LEGAL = [
   { label: "Accessibility", href: "/legal/accessibility" },
   { label: "All legal documents", href: "/legal" },
 ] as const;
-
-export function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:4300").replace(/\/$/, "");
-}
-
-export function absoluteUrl(path: string): string {
-  return `${siteUrl()}${path.startsWith("/") ? path : `/${path}`}`;
-}

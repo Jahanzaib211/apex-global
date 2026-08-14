@@ -214,7 +214,10 @@ export default function CareersPage() {
                     </span>
                   </div>
                 </div>
-                <Link href="/contact" className="btn-primary text-sm">
+                <Link
+                  href={`/contact?role=${encodeURIComponent(r.title)}#contact-form`}
+                  className="btn-primary text-sm"
+                >
                   Apply Now <ArrowRight size={16} />
                 </Link>
               </article>
