@@ -1,10 +1,18 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * The live-chat widget (Chatwoot, proxied through the Next origin): the
- * site hides Chatwoot's own bubble and ships a custom launcher that calls
- * `$chatwoot.toggle()`. Walk it like a visitor — SDK loads, launcher is on
- * the page, clicking opens a usable conversation window.
+ * The live-chat widget on the deployed Tech site.
+ *
+ * This walks a **live production hostname**, so it belongs with the other
+ * host-audit specs rather than in the per-commit gate — it says nothing about
+ * the build in the pull request, and it fails on a CI runner for reasons that
+ * have nothing to do with the change.
+ *
+ * The SDK is served by the Chatwoot host, not proxied through the Next origin.
+ * The previous assertion fetched `/packs/js/sdk.js` from
+ * tech.apexgroupcompanies.com, which answers 404; the widget was working the
+ * whole time, loading the script from chat.apexgroupcompanies.com as the
+ * component actually does.
  */
 
 test.describe("Chatwoot widget", () => {
@@ -13,10 +21,10 @@ test.describe("Chatwoot widget", () => {
     const launcher = page.getByRole("button", { name: /talk to|chat with|start chat/i });
     await expect(launcher).toBeVisible({ timeout: 20_000 });
 
-    const sdk = await page.request.get("https://tech.apexgroupcompanies.com/packs/js/sdk.js", {
+    const sdk = await page.request.get("https://chat.apexgroupcompanies.com/packs/js/sdk.js", {
       timeout: 20_000,
     });
-    expect(sdk.ok(), "chatwoot SDK (proxied through the tunnel) should be served").toBeTruthy();
+    expect(sdk.ok(), "chatwoot SDK should be served by the chat host").toBeTruthy();
   });
 
   test("opening the widget shows a usable conversation window", async ({ page }) => {

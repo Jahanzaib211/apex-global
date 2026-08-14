@@ -45,11 +45,18 @@ export default defineConfig({
       testMatch: /console\/.*\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: CONSOLE_URL },
     },
-    {
-      name: "surfaces",
-      testMatch: /surfaces\/.*\.spec\.ts/,
-      use: { ...devices["Desktop Chrome"] },
-    },
+    // Host audit, not a build gate: these probe the deploy host's loopback
+    // services and the live Cloudflare tunnels. A CI runner has neither, so
+    // the project is skipped there and run on the host instead.
+    ...(isCI
+      ? []
+      : [
+          {
+            name: "surfaces",
+            testMatch: /surfaces\/.*\.spec\.ts/,
+            use: { ...devices["Desktop Chrome"] },
+          },
+        ]),
     {
       // One project, not one per site: the sites/ specs address each origin
       // absolutely from SITES, so a per-site project would re-run all four

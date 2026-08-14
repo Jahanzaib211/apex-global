@@ -52,7 +52,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+      # provision:master creates the portal owner the portal specs sign in as;
+      # db:seed only loads content, so without this the portal flows failed on
+      # a login form that could not succeed.
       - run: pnpm db:generate && pnpm db:push && pnpm db:seed
+      - run: pnpm --filter @apex/db provision:master
 
       - name: Install browsers
         run: pnpm exec playwright install --with-deps chromium
