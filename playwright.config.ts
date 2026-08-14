@@ -66,17 +66,27 @@ export default defineConfig({
       testIgnore: /sites\/perf\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
-    {
-      // Frame-rate measurement, pinned to one worker. Run in parallel with the
-      // other projects the same page reports anywhere from 11 to 52fps,
-      // because the measurement competes with three other browsers for the
-      // CPU. A flaky performance gate is worse than none.
-      name: "perf",
-      testMatch: /sites\/perf\.spec\.ts/,
-      fullyParallel: false,
-      workers: 1,
-      use: { ...devices["Desktop Chrome"] },
-    },
+    // Frame-rate measurement, pinned to a single worker: run in parallel the
+    // same page reports anywhere from 11 to 52fps, because the measurement
+    // competes for the CPU.
+    //
+    // That pin only holds *within* this project — Playwright still runs
+    // projects alongside each other, so in CI perf was contending with the
+    // whole rest of the suite, and a shared runner with software rendering
+    // makes the number meaningless anyway. It is therefore skipped in CI and
+    // run deliberately on real hardware:
+    //   pnpm exec playwright test --project=perf
+    ...(isCI
+      ? []
+      : [
+          {
+            name: "perf",
+            testMatch: /sites\/perf\.spec\.ts/,
+            fullyParallel: false,
+            workers: 1,
+            use: { ...devices["Desktop Chrome"] },
+          },
+        ]),
     {
       // Travel and property traffic is overwhelmingly mobile; if the money path
       // breaks on a phone it breaks where it costs us.

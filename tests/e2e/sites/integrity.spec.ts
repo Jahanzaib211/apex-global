@@ -273,10 +273,13 @@ for (const site of SITES) {
         (m) => new URL(m[1]!).hostname,
       );
       expect(hosts.length, "sitemap entries").toBeGreaterThan(0);
-      expect(
-        Array.from(new Set(hosts)).filter((h) => h !== site.host),
-        "sitemap URLs on a foreign host",
-      ).toEqual([]);
+      // Loopback is expected when the build was given a loopback
+      // NEXT_PUBLIC_SITE_URL, which is what CI does. What must never appear is
+      // another Apex property's hostname — the same rule as the canonical tag.
+      const foreign = Array.from(new Set(hosts)).filter(
+        (h) => h !== site.host && h !== "localhost" && h !== "127.0.0.1",
+      );
+      expect(foreign, "sitemap URLs on a foreign host").toEqual([]);
     });
   });
 }
