@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   // Without metadataBase every relative OpenGraph and canonical URL resolved
   // against nothing, and no canonical tag was emitted at all.
   metadataBase: new URL(SITE_URL),
+  // Each site is its own Search Console property, so each needs its own
+  // token — one shared value cannot verify five hostnames. Left undefined
+  // when unset so no empty meta tag is emitted.
+  verification: process.env.GOOGLE_SITE_VERIFICATION_HOLDINGS
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION_HOLDINGS }
+    : undefined,
   // A URL *instance* (not the string "/") is the fix: Next resolves an
   // instance against the current pathname (`new URL(pathname, url)` in
   // resolvers/resolve-basics.js), so every page canonicalises to itself.

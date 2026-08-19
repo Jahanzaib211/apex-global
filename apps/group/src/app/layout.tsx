@@ -52,6 +52,12 @@ export const metadata: Metadata = {
     "Apex Group of Companies brings together specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
   icons: { icon: "/logo.png" },
   metadataBase: new URL(SITE_URL),
+  // Each site is its own Search Console property, so each needs its own
+  // token — one shared value cannot verify five hostnames. Left undefined
+  // when unset so no empty meta tag is emitted.
+  verification: process.env.GOOGLE_SITE_VERIFICATION_GROUP
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION_GROUP }
+    : undefined,
   // metadataBase alone does not emit <link rel="canonical">; without this the
   // site shipped no canonical tag on any page.
   // A URL *instance* (not the string "/") is the fix: Next resolves an

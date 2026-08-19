@@ -9,6 +9,12 @@ import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
+  // Each site is its own Search Console property, so each needs its own
+  // token — one shared value cannot verify five hostnames. Left undefined
+  // when unset so no empty meta tag is emitted.
+  verification: process.env.GOOGLE_SITE_VERIFICATION_OUTSOURCING
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION_OUTSOURCING }
+    : undefined,
   title: {
     default: `${BRAND.name} — ${BRAND.tagline}`,
     template: `%s — ${BRAND.name}`,
