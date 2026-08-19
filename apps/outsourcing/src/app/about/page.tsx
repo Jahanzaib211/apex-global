@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: ROUTE_META["/about"]!.description,
   alternates: { canonical: "/about" },
   openGraph: {
+    // Declaring openGraph replaces the root layout\'s entire node, which
+    // dropped its image. The generated card lives at /opengraph-image.
+    images: ["/opengraph-image"],
     title: ROUTE_META["/about"]!.title,
     description: ROUTE_META["/about"]!.description,
     url: "/about",

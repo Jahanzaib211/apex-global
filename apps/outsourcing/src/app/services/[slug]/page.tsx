@@ -25,6 +25,9 @@ export async function generateMetadata({
     description: c.tagline,
     alternates: { canonical: `/services/${slug}` },
     openGraph: {
+    // Declaring openGraph replaces the root layout\'s entire node, which
+    // dropped its image. The generated card lives at /opengraph-image.
+    images: ["/opengraph-image"],
       title: c.title,
       description: c.tagline,
       url: `/services/${slug}`,

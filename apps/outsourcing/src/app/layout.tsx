@@ -55,6 +55,9 @@ export const metadata: Metadata = {
   alternates: { canonical: new URL(BRAND.siteUrl) },
   icons: { icon: "/favicon.ico", apple: "/logo.png" },
   openGraph: {
+    // Declaring openGraph replaces the root layout\'s entire node, which
+    // dropped its image. The generated card lives at /opengraph-image.
+    images: ["/opengraph-image"],
     type: "website",
     locale: BRAND.locale,
     url: BRAND.siteUrl,
