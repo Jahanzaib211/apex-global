@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
+import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   // Without metadataBase every relative OpenGraph and canonical URL resolved
@@ -55,6 +57,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+        {/* The site shipped no structured data. Organization and WebSite
+            belong once at the root; per-page schemas sit with their route. */}
+        <script type="application/ld+json" {...jsonLdProps(organizationSchema)} />
+        <script type="application/ld+json" {...jsonLdProps(websiteSchema)} />
       </head>
       <body className="bg-white font-sans text-slate-700 antialiased">
         <SiteHeader />

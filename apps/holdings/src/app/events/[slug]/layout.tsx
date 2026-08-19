@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
+import { eventSchema, breadcrumbs } from "@/lib/structured-data";
 import { events } from "@/data/content";
 
 /**
@@ -23,6 +25,32 @@ export async function generateMetadata({
   };
 }
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const item = events.find((e) => e.slug === slug);
+  if (!item) return children;
+  const schema = eventSchema({
+    title: item.title,
+    description: item.description,
+    date: item.date,
+    location: item.location,
+    slug: item.slug,
+  });
+  const trail = breadcrumbs([
+    { name: "Events", path: "/events" },
+    { name: item.title, path: `/events/${item.slug}` },
+  ]);
+  return (
+    <>
+      <script type="application/ld+json" {...jsonLdProps(schema)} />
+      <script type="application/ld+json" {...jsonLdProps(trail)} />
+      {children}
+    </>
+  );
 }

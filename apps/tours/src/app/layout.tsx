@@ -6,6 +6,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
 import { SITE_URL } from "@/lib/site-url";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
+import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 
 /*
  * Fonts are self-hosted rather than fetched through `next/font/google`.
@@ -70,6 +72,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        {/* The site shipped no structured data at all. Organization and
+            WebSite belong once, at the root; per-page schemas are emitted
+            by the route that owns them. */}
+        <script type="application/ld+json" {...jsonLdProps(organizationSchema)} />
+        <script type="application/ld+json" {...jsonLdProps(websiteSchema)} />
+      </head>
       <body className="flex min-h-screen flex-col">
         <SiteHeader />
         <main className="flex-1">{children}</main>

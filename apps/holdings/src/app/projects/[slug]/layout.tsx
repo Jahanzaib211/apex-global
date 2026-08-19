@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { jsonLdProps } from "@apex/site-kit/json-ld";
+import { projectSchema, breadcrumbs } from "@/lib/structured-data";
 import { projectBySlug } from "@/data/projects";
 
 /**
@@ -23,6 +25,31 @@ export async function generateMetadata({
   };
 }
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const item = projectBySlug(slug);
+  if (!item) return children;
+  const schema = projectSchema({
+    name: item.name,
+    summary: item.summary,
+    city: item.city,
+    slug: item.slug,
+  });
+  const trail = breadcrumbs([
+    { name: "Projects", path: "/projects" },
+    { name: item.name, path: `/projects/${item.slug}` },
+  ]);
+  return (
+    <>
+      <script type="application/ld+json" {...jsonLdProps(schema)} />
+      <script type="application/ld+json" {...jsonLdProps(trail)} />
+      {children}
+    </>
+  );
 }
