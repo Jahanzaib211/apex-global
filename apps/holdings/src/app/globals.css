@@ -40,7 +40,10 @@
     @apply max-w-8xl mx-auto px-5 sm:px-8 lg:px-12;
   }
   .eyebrow {
-    @apply tracking-wide-3 text-brand-accent inline-block text-[11px] font-medium uppercase;
+    /* text-brand-accent (#E8B02A) is 1.97:1 on white — well under the 4.5:1
+       AA minimum, and this class renders on every page. gold-700 is the
+       same hue at 6.37:1 and is already in the palette. */
+    @apply tracking-wide-3 text-gold-700 inline-block text-[11px] font-medium uppercase;
   }
   .h-display {
     @apply font-display text-ink;

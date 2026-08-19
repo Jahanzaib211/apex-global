@@ -21,11 +21,11 @@ export async function generateMetadata({
   const c = servicesContent[slug];
   if (!c) return { title: "Service not found" };
   return {
-    title: `${c.title} — Apex Global Outsourcing`,
+    title: c.title,
     description: c.tagline,
     alternates: { canonical: `/services/${slug}` },
     openGraph: {
-      title: `${c.title} — Apex Global Outsourcing`,
+      title: c.title,
       description: c.tagline,
       url: `/services/${slug}`,
     },

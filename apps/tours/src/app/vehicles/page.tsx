@@ -141,33 +141,33 @@ function VehicleCard({ v }: { v: Vehicle }) {
       <p className="text-ink-400 mb-5 text-sm">{v.use}</p>
 
       <dl className="mb-5 grid grid-cols-2 gap-3 text-sm">
-        <div className="flex items-start gap-2">
-          <Users size={16} className="text-gold-500 mt-0.5 shrink-0" />
-          <div>
-            <dt className="text-navy-600 font-semibold">Capacity</dt>
-            <dd className="text-ink-400">{v.capacity} passengers</dd>
-          </div>
+        <div>
+          <dt className="text-navy-600 flex items-center gap-2 font-semibold">
+            <Users size={16} className="text-gold-500 shrink-0" />
+            Capacity
+          </dt>
+          <dd className="text-ink-400 pl-6">{v.capacity} passengers</dd>
         </div>
-        <div className="flex items-start gap-2">
-          <Luggage size={16} className="text-gold-500 mt-0.5 shrink-0" />
-          <div>
-            <dt className="text-navy-600 font-semibold">Luggage</dt>
-            <dd className="text-ink-400">{v.luggage}</dd>
-          </div>
+        <div>
+          <dt className="text-navy-600 flex items-center gap-2 font-semibold">
+            <Luggage size={16} className="text-gold-500 shrink-0" />
+            Luggage
+          </dt>
+          <dd className="text-ink-400 pl-6">{v.luggage}</dd>
         </div>
-        <div className="flex items-start gap-2">
-          <CheckCircle2 size={16} className="text-gold-500 mt-0.5 shrink-0" />
-          <div>
-            <dt className="text-navy-600 font-semibold">Transmission</dt>
-            <dd className="text-ink-400">{v.transmission}</dd>
-          </div>
+        <div>
+          <dt className="text-navy-600 flex items-center gap-2 font-semibold">
+            <CheckCircle2 size={16} className="text-gold-500 shrink-0" />
+            Transmission
+          </dt>
+          <dd className="text-ink-400 pl-6">{v.transmission}</dd>
         </div>
-        <div className="flex items-start gap-2">
-          <Fuel size={16} className="text-gold-500 mt-0.5 shrink-0" />
-          <div>
-            <dt className="text-navy-600 font-semibold">Fuel</dt>
-            <dd className="text-ink-400">{v.fuel}</dd>
-          </div>
+        <div>
+          <dt className="text-navy-600 flex items-center gap-2 font-semibold">
+            <Fuel size={16} className="text-gold-500 shrink-0" />
+            Fuel
+          </dt>
+          <dd className="text-ink-400 pl-6">{v.fuel}</dd>
         </div>
       </dl>
 

@@ -96,7 +96,7 @@ export default function InsightsPage() {
                       {item.excerpt}
                     </p>
                     <span className="text-ink mt-6 inline-flex items-center gap-2 text-sm font-bold">
-                      Read more <ArrowUpRight className="h-4 w-4" />
+                      Read more <ArrowUpRight aria-hidden className="h-4 w-4" />
                     </span>
                   </div>
                 </Link>

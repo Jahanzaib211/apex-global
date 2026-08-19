@@ -12,7 +12,12 @@ export function SiteLogo({
     <Link
       href="/"
       className={`group inline-flex items-center gap-3 ${className}`}
-      aria-label="Apex Holdings Home"
+      // No aria-label: it read "Apex Holdings Home" while the visible text is
+      // "APEX HOLDINGS / MARKETING & DEVELOPMENTS". WCAG 2.5.3 (Label in Name)
+      // requires the accessible name to contain the visible label, so the
+      // override actively broke voice control — saying "Apex Holdings
+      // marketing" would not match the element. The visible text is a perfectly
+      // good accessible name on its own.
     >
       <span className="relative h-9 w-9 overflow-hidden sm:h-10 sm:w-10">
         <span

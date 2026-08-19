@@ -225,15 +225,15 @@ export default function UmrahPackagesPage() {
                     {fields.map((f) => {
                       const FIcon = f.icon;
                       return (
-                        <div key={f.label} className="flex gap-2">
-                          <FIcon
-                            size={16}
-                            className={`text-gold-500 flex-none mt-0.5${f.rotate ? "rotate-45" : ""}`}
-                          />
-                          <div>
-                            <dt className="text-navy-600 font-semibold">{f.label}</dt>
-                            <dd className="text-ink-400">{f.value}</dd>
-                          </div>
+                        <div key={f.label}>
+                          <dt className="text-navy-600 flex items-center gap-2 font-semibold">
+                            <FIcon
+                              size={16}
+                              className={`text-gold-500 flex-none${f.rotate ? " rotate-45" : ""}`}
+                            />
+                            {f.label}
+                          </dt>
+                          <dd className="text-ink-400 pl-6">{f.value}</dd>
                         </div>
                       );
                     })}

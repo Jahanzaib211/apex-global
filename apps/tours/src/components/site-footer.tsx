@@ -31,9 +31,9 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
+            <h2 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
               Services
-            </h4>
+            </h2>
             <ul className="space-y-2 text-sm text-white/80">
               <li>
                 <Link className="hover:text-gold-400" href="/pakistan-car-rental">
@@ -79,9 +79,9 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
+            <h2 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
               Company
-            </h4>
+            </h2>
             <ul className="space-y-2 text-sm text-white/80">
               <li>
                 <Link className="hover:text-gold-400" href="/about">
@@ -117,9 +117,9 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
+            <h2 className="text-gold-400 mb-4 text-sm font-semibold tracking-wider uppercase">
               Get in Touch
-            </h4>
+            </h2>
             <ul className="space-y-3 text-sm text-white/80">
               <li className="flex items-center gap-2.5">
                 <MessageCircle size={16} className="text-[#25D366]" />

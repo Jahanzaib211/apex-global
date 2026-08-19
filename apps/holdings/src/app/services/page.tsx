@@ -92,9 +92,13 @@ export default function ServicesPage() {
                   <p className="mt-3 leading-relaxed text-slate-600">{service.intro}</p>
                   <Link
                     href={`/services/${service.slug}`}
+                    // "Read more" x4 on one page tells a screen-reader user
+                    // nothing about the destination, and Lighthouse scores it
+                    // as a link-text failure.
+                    aria-label={`Read more about ${service.title}`}
                     className="tracking-wide-1 text-ink group-hover:text-gold-500 mt-7 inline-flex items-center gap-2 text-sm font-semibold uppercase"
                   >
-                    Read more <Icons.ArrowRight className="h-4 w-4" />
+                    Read more <Icons.ArrowRight aria-hidden className="h-4 w-4" />
                   </Link>
                 </article>
               );

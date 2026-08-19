@@ -96,37 +96,37 @@ export const ROUTE_META: Record<string, { title: string; description: string }> 
       "Scale sales, customer experience, marketing and back-office operations with dedicated global teams. BPO, CX, Telesales, lead generation and digital marketing.",
   },
   "/about": {
-    title: "About Apex Global Outsourcing",
+    title: "About Us",
     description:
       "Apex is a global outsourcing partner built for outcomes — not headcount. Learn how we combine people, process and technology to deliver managed business operations.",
   },
   "/services": {
-    title: "Services — Apex Global Outsourcing",
+    title: "Services",
     description:
       "Eight service divisions covering BPO, customer experience, Telesales, sales development, digital marketing, back-office operations, dedicated remote teams and staffing.",
   },
   "/industries": {
-    title: "Industries — Apex Global Outsourcing",
+    title: "Industries",
     description:
       "Outsourcing solutions for technology, e-commerce, healthcare, financial services, real estate, logistics, retail, hospitality and more.",
   },
   "/case-studies": {
-    title: "Case Studies — Apex Global Outsourcing",
+    title: "Case Studies",
     description:
       "Real outsourcing engagements. Anonymized case studies available on request so we never compromise client confidentiality.",
   },
   "/careers": {
-    title: "Careers — Apex Global Outsourcing",
+    title: "Careers",
     description:
       "Build your career at Apex. Open roles across customer experience, sales, marketing, operations and quality.",
   },
   "/insights": {
-    title: "Insights — Apex Global Outsourcing",
+    title: "Insights",
     description:
       "Practical perspectives from operators running global sales, CX and marketing engagements at scale.",
   },
   "/contact": {
-    title: "Contact Apex Global Outsourcing",
+    title: "Contact",
     description:
       "Tell us what you need to scale. We'll come back within one business day with a tailored proposal.",
   },

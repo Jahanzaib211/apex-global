@@ -35,7 +35,11 @@ const nextConfig = {
   // Workspace packages ship TypeScript source, not a build artifact, so Next
   // has to compile them alongside the app.
   transpilePackages: ["@apex/motion"],
-  images: { unoptimized: true },
+  images: {
+    // Was `unoptimized: true`, which meant no srcset and no AVIF/WebP. sharp is
+    // now a workspace dependency, so the optimizer runs on the deploy host.
+    formats: ["image/avif", "image/webp"],
+  },
   poweredByHeader: false,
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

@@ -49,7 +49,12 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   compress: true,
   images: {
-    unoptimized: true,
+    // `unoptimized: true` was set to "avoid a runtime dependency on sharp on
+    // the deploy host". The cost was no srcset, no AVIF/WebP and full-size
+    // originals on mobile: tours served a 1367x1289, 56 KB logo.png for a 44px
+    // header mark, which Lighthouse scored `uses-responsive-images` 0.5 on
+    // every page. sharp is now a workspace dependency, so the optimizer runs.
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "plus.unsplash.com" },
