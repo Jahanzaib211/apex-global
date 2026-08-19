@@ -120,6 +120,7 @@ export default async function AboutPage() {
               // Plain img rather than next/image: the URL comes from a console
               // setting and could be any host, which next/image would reject
               // without a remotePatterns entry per domain.
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={settings["leadership.ceo.photo"]}
                 alt={`${ceoName}, ${ceoTitle}`}

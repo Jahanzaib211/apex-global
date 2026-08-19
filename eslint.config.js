@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
+import nextPlugin from "@next/eslint-plugin-next";
 
 export default tseslint.config(
   {
@@ -48,6 +49,25 @@ export default tseslint.config(
       eqeqeq: ["error", "always", { null: "ignore" }],
       "prefer-const": "error",
       "no-var": "error",
+    },
+  },
+
+  // Next's own rules, applied to every app.
+  //
+  // apps/tours, group, holdings and outsourcing pick these up through their
+  // .eslintrc.json ("extends": "next/core-web-vitals") because they lint with
+  // `next lint`. apps/web and apps/console lint with `eslint src` against this
+  // flat config, which carried no Next plugin at all — so `next lint` reported
+  // "The Next.js plugin was not detected" and no-img-element, no-sync-scripts,
+  // no-html-link-for-pages and the rest had never run against the public site,
+  // the client portal or the admin console. Their clean output was an unplugged
+  // alarm, not cleanliness.
+  {
+    files: ["apps/**/*.{ts,tsx}"],
+    plugins: { "@next/next": nextPlugin },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
     },
   },
 

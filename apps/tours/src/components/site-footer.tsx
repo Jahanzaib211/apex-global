@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, MessageCircle, MapPin, Camera } from "lucide-react";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
 
@@ -14,7 +15,14 @@ export function SiteFooter() {
       <div className="container-page py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <img src="/logo.png" alt={BRAND.name} className="mb-4 h-12 w-auto" />
+            <Image
+              src="/logo.png"
+              alt={BRAND.name}
+              width={192}
+              height={48}
+              loading="lazy"
+              className="mb-4 h-12 w-auto"
+            />
             <p className="font-display mb-3 text-xl text-white">{BRAND.promise}</p>
             <p className="text-sm leading-relaxed text-white/70">
               Reliable car rental across Pakistan and Saudi Arabia, plus carefully organized Hajj

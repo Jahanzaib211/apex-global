@@ -64,7 +64,11 @@ async function forward(request: NextRequest, { path }: { path: string[] }) {
 
   const upstreamPath = "/" + path.join("/");
   const upstreamUrl = `http://127.0.0.1:8084${upstreamPath}${request.nextUrl.search}`;
-  console.log("[hs-api]", request.method, upstreamPath, "hasKey", !!apiKey);
+  // Dev-only: this fires on every payment API call, and the proxy is the
+  // first thing to suspect when checkout misbehaves.
+  if (process.env.NODE_ENV !== "production") {
+    console.warn("[hs-api]", request.method, upstreamPath, "hasKey", !!apiKey);
+  }
 
   const headers = new Headers();
   headers.set("api-key", apiKey);

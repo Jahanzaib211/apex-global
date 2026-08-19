@@ -177,7 +177,6 @@ function CheckoutForm({ returnUrl, amountLabel }: { returnUrl: string; amountLab
       <UnifiedCheckout
         id="apex-invoice-checkout"
         onReady={() => {
-          console.log("[hyperswitch] onReady fired");
           (window as unknown as { __hyperswitchReady?: boolean }).__hyperswitchReady = true;
           setReady(true);
         }}

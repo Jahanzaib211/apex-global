@@ -2,7 +2,7 @@
   "name": "apex-global",
   "version": "0.1.0",
   "private": true,
-  "description": "Apex Global Tech Solution \u2014 global SaaS and technology platform",
+  "description": "Apex Global Tech Solution — global SaaS and technology platform",
   "type": "module",
   "packageManager": "pnpm@9.15.9",
   "engines": {
@@ -48,6 +48,7 @@
   "devDependencies": {
     "@apex/db": "workspace:*",
     "@eslint/js": "^9.17.0",
+    "@next/eslint-plugin-next": "15.5.23",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^4.1.10",

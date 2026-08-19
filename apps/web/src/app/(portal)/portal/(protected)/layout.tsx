@@ -88,6 +88,9 @@ export default async function PortalLayout({ children }: { children: React.React
         >
           {[
             { label: "Home", href: "/portal/" },
+            // Services was absent here while the desktop nav listed it, so the
+            // page was unreachable on a phone.
+            { label: "Services", href: "/portal/services" },
             { label: "Invoices", href: "/portal/invoices" },
             { label: "Tickets", href: "/portal/tickets" },
             { label: "Projects", href: "/portal/projects" },

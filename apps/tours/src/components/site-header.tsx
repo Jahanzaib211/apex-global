@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, ChevronDown, Plane } from "lucide-react";
 import { NAV, BRAND, WHATSAPP_LINK } from "@/lib/brand";
@@ -16,7 +17,14 @@ export function SiteHeader() {
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
           <BrandMark>
-            <img src="/logo.png" alt={BRAND.name} className="h-9 w-auto lg:h-11" />
+            <Image
+              src="/logo.png"
+              alt={BRAND.name}
+              width={176}
+              height={44}
+              priority
+              className="h-9 w-auto lg:h-11"
+            />
           </BrandMark>
           <div className="hidden leading-tight sm:block">
             <div className="font-display text-navy-600 text-base font-bold lg:text-lg">

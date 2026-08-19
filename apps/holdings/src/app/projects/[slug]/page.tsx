@@ -50,19 +50,19 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
 
 const titleToIcon = (t: string): React.ComponentType<{ className?: string }> => {
   const lower = t.toLowerCase();
-  if (lower.includes("pool")) return amenityIcons.pool!!;
-  if (lower.includes("gym")) return amenityIcons.gym!!;
-  if (lower.includes("security") || lower.includes("cctv")) return amenityIcons.security!!;
-  if (lower.includes("kids") || lower.includes("children")) return amenityIcons.kids!!;
-  if (lower.includes("garden") || lower.includes("park")) return amenityIcons.garden!!;
-  if (lower.includes("retail") || lower.includes("shopping")) return amenityIcons.retail!!;
-  if (lower.includes("parking")) return amenityIcons.parking!!;
-  if (lower.includes("wifi")) return amenityIcons.wifi!!;
+  if (lower.includes("pool")) return amenityIcons.pool!;
+  if (lower.includes("gym")) return amenityIcons.gym!;
+  if (lower.includes("security") || lower.includes("cctv")) return amenityIcons.security!;
+  if (lower.includes("kids") || lower.includes("children")) return amenityIcons.kids!;
+  if (lower.includes("garden") || lower.includes("park")) return amenityIcons.garden!;
+  if (lower.includes("retail") || lower.includes("shopping")) return amenityIcons.retail!;
+  if (lower.includes("parking")) return amenityIcons.parking!;
+  if (lower.includes("wifi")) return amenityIcons.wifi!;
   if (lower.includes("food") || lower.includes("café") || lower.includes("cafe"))
-    return amenityIcons.food!!;
-  if (lower.includes("spa")) return amenityIcons.spa!!;
-  if (lower.includes("lounge")) return amenityIcons.lounge!!;
-  if (lower.includes("cinema")) return amenityIcons.cinema!!;
+    return amenityIcons.food!;
+  if (lower.includes("spa")) return amenityIcons.spa!;
+  if (lower.includes("lounge")) return amenityIcons.lounge!;
+  if (lower.includes("cinema")) return amenityIcons.cinema!;
   return Sparkles;
 };
 

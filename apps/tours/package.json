@@ -7,7 +7,7 @@
     "dev": "next dev -H 127.0.0.1 -p ${PORT:-4101}",
     "build": "dotenv -e ../../.env -- next build",
     "start": "next start -H 127.0.0.1 -p ${PORT:-3001}",
-    "lint": "next lint",
+    "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf .next .next/standalone/.next"
@@ -28,8 +28,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.0",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "15.5.23",
     "postcss": "^8.5.26",
     "tailwindcss": "^3.4.0",
     "typescript": "^5",
