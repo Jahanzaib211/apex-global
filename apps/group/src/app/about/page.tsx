@@ -12,7 +12,7 @@ import { APEX_SOCIALS } from "@apex/site-kit/social";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "About | Apex Group of Companies",
+  title: "About",
   description:
     "Learn about Apex Group of Companies — a diversified group operating specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
 };

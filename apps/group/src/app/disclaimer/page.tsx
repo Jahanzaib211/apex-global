@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   LegalCTA,
   LegalContent,
@@ -92,6 +93,12 @@ const sections: LegalSection[] = [
     ),
   },
 ];
+export const metadata: Metadata = {
+  title: "Disclaimer",
+  description:
+    "The limits of the information published on the Apex Group of Companies website, and what it is not intended to be.",
+};
+
 export default function DisclaimerPage() {
   return (
     <main>

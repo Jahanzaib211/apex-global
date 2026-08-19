@@ -3,7 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { GalleryGrid } from "./_components/gallery-grid";
 
 export const metadata = {
-  title: "Gallery — Apex Global Tours & Travels",
+  title: "Gallery",
   description:
     "Real travel imagery from Apex Global Tours & Travels — Pakistan and Saudi Arabia destinations, vehicles, hotels, and group journeys.",
 };

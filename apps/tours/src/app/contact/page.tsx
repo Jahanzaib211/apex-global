@@ -5,7 +5,7 @@ import { EnquireButton } from "@/components/enquire-button";
 import { FaqAccordion } from "./_components/faq-accordion";
 
 export const metadata = {
-  title: "Contact Us — Apex Global Tours & Travels",
+  title: "Contact Us",
   description:
     "Get in touch with Apex Global Tours & Travels for car rental, Hajj, Umrah, and group travel enquiries. WhatsApp is the fastest way to reach us.",
 };

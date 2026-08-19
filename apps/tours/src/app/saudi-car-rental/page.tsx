@@ -21,7 +21,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Saudi Arabia Car Rental — Makkah, Madinah, Jeddah, Riyadh",
+  title: "Saudi Car Rental — Makkah, Madinah, Jeddah",
   description:
     "Car rental across Saudi Arabia — Makkah, Madinah, Jeddah, Riyadh. Self-drive and chauffeur options for pilgrims, families, and business travellers, plus reliable Makkah ↔ Jeddah intercity transport.",
 };

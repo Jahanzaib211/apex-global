@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   LegalCTA,
   LegalContent,
@@ -95,6 +96,12 @@ const sections: LegalSection[] = [
     ),
   },
 ];
+export const metadata: Metadata = {
+  title: "Cookie Policy",
+  description:
+    "The cookies Apex Group of Companies uses, what each one does, and how to control them in your browser.",
+};
+
 export default function CookiesPage() {
   return (
     <main>

@@ -12,9 +12,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = getInsightBySlug(slug);
-  if (!article) return { title: "Insight | Apex Group" };
+  if (!article) return { title: "Article not found" };
   return {
-    title: `${article.title} | Apex Group Insights`,
+    title: { absolute: article.title },
     description: article.excerpt,
   };
 }

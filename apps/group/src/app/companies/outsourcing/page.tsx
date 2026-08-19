@@ -18,7 +18,7 @@ import { SITE_URL } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
-  title: "Apex Global Outsourcing | People. Process. Performance. Global Scale.",
+  title: "Apex Global Outsourcing",
   description:
     "Apex Global Outsourcing delivers BPO, customer experience, telesales, lead generation, digital marketing and dedicated offshore teams built around your business.",
 };

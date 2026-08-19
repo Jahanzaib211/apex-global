@@ -20,7 +20,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Pakistan Car Rental — With Driver or Self-Drive",
+  title: "Pakistan Car Rental — Driver or Self-Drive",
   description:
     "Apex Global Tours & Travels offers car rental across Pakistan — airport transfers, intercity, corporate and family travel with driver or self-drive. Cities and fleet confirmed at enquiry.",
 };

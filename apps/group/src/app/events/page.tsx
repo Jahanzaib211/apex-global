@@ -4,7 +4,7 @@ import EventsGallery from "@/components/events/EventsGallery";
 import EventsCTA from "@/components/events/EventsCTA";
 
 export const metadata = {
-  title: "Events | Apex Group of Companies",
+  title: "Events",
   description:
     "Apex Group events calendar — group events, product launches, pilgrimages, real estate project launches, webinars and conferences.",
 };

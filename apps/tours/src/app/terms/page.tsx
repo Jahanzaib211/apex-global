@@ -3,7 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Terms of Use — Apex Global Tours & Travels",
+  title: "Terms of Use",
   description:
     "Terms of Use for the Apex Global Tours & Travels website and services. The final verified text will be published by Apex.",
 };

@@ -12,7 +12,7 @@ import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Partnerships | Apex Group of Companies",
+  title: "Partnerships",
   description:
     "Partner with Apex Group. We work with technology partners, real estate developers, travel & hospitality partners, outsourcing clients, strategic advisors and professional service firms.",
 };

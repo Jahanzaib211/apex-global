@@ -10,7 +10,7 @@ import { DEFAULT_BRANDS } from "@apex/site-kit/brand";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Contact | Apex Group of Companies",
+  title: "Contact",
   description:
     "Get in touch with Apex Group of Companies. Reach our headquarters, regional offices, or contact a specific company across the Group for enquiries, partnerships, media, or careers.",
 };

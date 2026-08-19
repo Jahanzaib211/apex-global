@@ -4,7 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Hajj Packages — Apex Global Tours & Travels",
+  title: "Hajj Packages",
   description:
     "Carefully organized Hajj packages with visa support, accommodation, and on-ground coordination for the days of Hajj.",
 };

@@ -9,7 +9,7 @@ import { SITE_URL } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Careers | Apex Group of Companies",
+  title: "Careers",
   description:
     "Build a career with Apex Group of Companies. Explore roles across technology, outsourcing, travel, real estate and financial consultancy.",
 };

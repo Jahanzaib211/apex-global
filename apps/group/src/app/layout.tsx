@@ -42,7 +42,12 @@ const body = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Apex Group of Companies | One Group. Multiple Businesses. One Vision.",
+  // A string title here is 68 characters — Google truncates around 60 — and
+  // declares no template, so every child page rendered with no brand suffix.
+  title: {
+    default: "Apex Group of Companies — One Group. One Vision.",
+    template: "%s · Apex Group",
+  },
   description:
     "Apex Group of Companies brings together specialized businesses across technology, outsourcing, travel, real estate and financial consultancy.",
   icons: { icon: "/logo.png" },

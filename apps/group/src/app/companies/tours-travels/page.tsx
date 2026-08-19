@@ -16,7 +16,7 @@ import { url } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Apex Global Tours & Travels | Car Rentals, Hajj & Umrah | Apex Group",
+  title: "Apex Global Tours & Travels",
   description:
     "Apex Global Tours & Travels provides car rentals in Pakistan and Saudi Arabia, Hajj and Umrah packages, and customized group travel delivered with care, safety and operational discipline.",
 };

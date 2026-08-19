@@ -5,7 +5,7 @@ import { EnquireButton } from "@/components/enquire-button";
 import { DestinationTabs } from "./_components/destination-tabs";
 
 export const metadata = {
-  title: "Destinations — Apex Global Tours & Travels",
+  title: "Destinations",
   description:
     "Cities and routes served by Apex Global Tours & Travels across Pakistan and Saudi Arabia — car rental, transfers, and pilgrimage travel.",
 };

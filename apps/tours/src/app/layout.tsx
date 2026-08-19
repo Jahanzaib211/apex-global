@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   alternates: { canonical: new URL(SITE_URL) },
   title: {
     default: "Apex Global Tours & Travels — Travel. Mobility. Pilgrimage.",
-    template: "%s | Apex Global Tours & Travels",
+    template: "%s | Apex Tours & Travels",
   },
   description:
     "Apex Global Tours & Travels — premium car rental in Pakistan & Saudi Arabia plus carefully organized Hajj and Umrah packages. Your Journey. Our Responsibility.",

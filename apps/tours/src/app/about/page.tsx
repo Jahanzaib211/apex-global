@@ -13,7 +13,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "About Us — Apex Global Tours & Travels",
+  title: "About Us",
   description:
     "Apex Global Tours & Travels (Pvt) Ltd provides reliable car rental services in Pakistan and Saudi Arabia, alongside carefully organized Hajj and Umrah packages.",
 };

@@ -3,7 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Travel Guides — Apex Global Tours & Travels",
+  title: "Travel Guides",
   description:
     "Helpful preparation guides for Hajj, Umrah, and travel in Pakistan and Saudi Arabia. Verify government, visa, and religious information with the relevant authority.",
 };

@@ -16,7 +16,7 @@ import { ServiceCard } from "@/components/service-card";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Hajj & Umrah Packages — Apex Global Tours & Travels",
+  title: "Hajj & Umrah Packages",
   description:
     "Carefully organized Hajj and Umrah packages — group, custom, and family journeys with transparent inclusions and on-ground support.",
 };

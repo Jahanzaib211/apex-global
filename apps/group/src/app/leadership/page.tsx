@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Leadership | Apex Group of Companies",
+  title: "Leadership",
   description:
     "A message from Shaikh Ahmed, Group CEO of Apex Group of Companies — read about the leadership philosophy, focus areas and direction of the Group.",
 };

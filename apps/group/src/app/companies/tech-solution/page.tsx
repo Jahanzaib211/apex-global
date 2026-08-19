@@ -17,7 +17,7 @@ import { SITE_URL } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata: Metadata = {
-  title: "Apex Global Tech Solution | Technology That Moves Businesses Forward",
+  title: "Apex Global Tech Solution",
   description:
     "Apex Global Tech Solution delivers SaaS, IT services, software development, AI, cloud, cybersecurity and digital solutions for the modern enterprise.",
 };

@@ -22,9 +22,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const event = getEventBySlug(slug);
-  if (!event) return { title: "Event | Apex Group" };
+  if (!event) return { title: "Event not found" };
   return {
-    title: `${event.name} | Apex Group Events`,
+    title: { absolute: event.name },
     description: event.description,
   };
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import EcosystemHero from "@/components/ecosystem/EcosystemHero";
 import EcosystemDiagram from "@/components/ecosystem/EcosystemDiagram";
 import EcosystemPrinciples from "@/components/ecosystem/EcosystemPrinciples";
@@ -15,6 +16,12 @@ const subsidiaries = [
   "Apex Holdings",
   "Apex Financial Consultancy",
 ];
+export const metadata: Metadata = {
+  title: "How the Group Operates",
+  description:
+    "How the Apex ecosystem fits together: shared standards, shared infrastructure and independent businesses with one operating model.",
+};
+
 export default function EcosystemPage() {
   return (
     <main>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import CompaniesIndexHero from "@/components/companies-index/CompaniesIndexHero";
 import CompaniesIndexList from "@/components/companies-index/CompaniesIndexList";
 import CompaniesIndexWhy from "@/components/companies-index/CompaniesIndexWhy";
@@ -12,6 +13,12 @@ const names = [
   "Apex Holdings",
   "Apex Financial Consultancy",
 ];
+export const metadata: Metadata = {
+  title: "Our Companies",
+  description:
+    "Specialized businesses, unified vision — technology, outsourcing, travel, real estate and financial consultancy under Apex Group.",
+};
+
 export default function CompaniesPage() {
   return (
     <main>

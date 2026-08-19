@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   LegalCTA,
   LegalContent,
@@ -230,6 +231,12 @@ const sections: LegalSection[] = [
     ),
   },
 ];
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How Apex Group of Companies collects, uses, shares and protects personal information across its websites and businesses.",
+};
+
 export default function PrivacyPage() {
   return (
     <main>

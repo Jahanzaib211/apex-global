@@ -13,7 +13,7 @@ import { SITE_URL, url } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Financial Consultancy | Apex Group | Private & Considered",
+  title: "Financial Consultancy",
   description:
     "Apex Group provides strategic financial consultancy to High-Net-Worth Individuals, entrepreneurs, business owners and selected clients — offering a clearer view of financial position, assets, businesses, objectives and long-term opportunities.",
 };

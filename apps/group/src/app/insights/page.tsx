@@ -7,7 +7,7 @@ import { SITE_URL, url } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "News & Insights | Apex Group of Companies",
+  title: "News & Insights",
   description:
     "Group announcements, sector insights, and updates from across the Apex ecosystem — technology, outsourcing, travel, real estate and financial consultancy.",
 };

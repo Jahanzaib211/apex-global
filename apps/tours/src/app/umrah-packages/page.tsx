@@ -16,7 +16,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Umrah Packages — Apex Global Tours & Travels",
+  title: "Umrah Packages",
   description:
     "Flexible, transparent Umrah packages — group, custom, family, economy, and premium — plus a private airport-transfer option for travellers arranging their own stay.",
 };

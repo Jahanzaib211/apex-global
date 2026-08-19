@@ -3,7 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Privacy Policy — Apex Global Tours & Travels",
+  title: "Privacy Policy",
   description:
     "Privacy Policy for Apex Global Tours & Travels. The final verified text will be published by Apex.",
 };

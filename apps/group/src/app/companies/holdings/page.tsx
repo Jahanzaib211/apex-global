@@ -16,7 +16,7 @@ import { url } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 
 export const metadata = {
-  title: "Apex Holdings | Real Estate Marketing & Future Development | Apex Group",
+  title: "Apex Holdings",
   description:
     "Apex Holdings is the Group's real estate business — marketing a curated portfolio of projects across Pakistan, with a long-term direction toward self-owned development.",
 };

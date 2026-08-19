@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   LegalCTA,
   LegalContent,
@@ -203,6 +204,12 @@ const sections: LegalSection[] = [
     ),
   },
 ];
+export const metadata: Metadata = {
+  title: "Terms of Use",
+  description:
+    "The terms on which Apex Group of Companies makes this website and its content available to you.",
+};
+
 export default function TermsPage() {
   return (
     <main>

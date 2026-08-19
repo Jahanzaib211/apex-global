@@ -12,7 +12,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Custom Hajj & Umrah Package — Apex Global Tours & Travels",
+  title: "Custom Hajj & Umrah Package",
   description:
     "Build your pilgrimage around your travelers, dates, hotel preference, and budget — designed by the Apex team for you.",
 };

@@ -4,7 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { EnquireButton } from "@/components/enquire-button";
 
 export const metadata = {
-  title: "Careers — Apex Global Tours & Travels",
+  title: "Careers",
   description:
     "Build a career in travel, transportation, and pilgrimage services at Apex Global Tours & Travels.",
 };
