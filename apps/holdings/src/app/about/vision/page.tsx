@@ -1,8 +1,13 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Building2, Briefcase, Compass, Quote, Sparkles } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
+
+export const metadata: Metadata = {
+  title: "Our Vision",
+  description:
+    "Building toward development and ownership: how Apex Holdings plans to move from marketing projects to delivering its own.",
+};
 
 export default function VisionPage() {
   const horizons = [

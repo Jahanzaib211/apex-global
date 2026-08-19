@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+
+export const metadata: Metadata = {
+  title: "Mixed-Use Projects",
+  description:
+    "Vertical communities blending retail, residences, hospitality and offices in Pakistan's fastest-growing districts.",
+};
 
 export default function MixedUsePage() {
   const items = projects.filter((p) => p.category === "Mixed-Use");

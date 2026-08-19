@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -16,6 +15,12 @@ import {
 } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
+
+export const metadata: Metadata = {
+  title: "Development Vision",
+  description:
+    "The next chapter of Apex Holdings — a disciplined move into developing and holding property of our own.",
+};
 
 export default function DevelopmentVisionPage() {
   const pillars = [

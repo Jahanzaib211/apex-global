@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
@@ -51,6 +50,12 @@ const steps = [
     text: "We track what matters, share the signal and improve the next move.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Services",
+  description:
+    "How Apex Holdings brings real-estate projects to market: positioning, marketing, lead generation and sales execution.",
+};
 
 export default function ServicesPage() {
   return (

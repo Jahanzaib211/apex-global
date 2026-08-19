@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Quote } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { testimonials } from "@/data/content";
+
+export const metadata: Metadata = {
+  title: "Testimonials",
+  description:
+    "Words from the buyers, investors and partners who work with Apex Holdings on projects across Pakistan.",
+};
 
 export default function TestimonialsPage() {
   return (

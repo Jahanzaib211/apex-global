@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,6 +12,12 @@ import {
 } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
+
+export const metadata: Metadata = {
+  title: "Developments",
+  description:
+    "From marketing projects to building our own. The Apex Holdings development track, its current stage and what comes next.",
+};
 
 export default function DevelopmentsPage() {
   const horizons = [

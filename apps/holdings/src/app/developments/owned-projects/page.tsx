@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Bell, Building2, ShieldCheck } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
+
+export const metadata: Metadata = {
+  title: "Apex-Owned Projects",
+  description:
+    "Projects developed and owned by Apex Holdings, rather than marketed on behalf of a third-party developer.",
+};
 
 export default function OwnedProjectsPage() {
   return (

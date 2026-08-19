@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
@@ -24,6 +23,12 @@ function Monogram({ name, size = 96 }: { name: string; size?: number }) {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Leadership",
+  description:
+    "The team behind Apex Holdings — the people leading our real-estate marketing, sales and development work across Pakistan.",
+};
 
 export default function LeadershipPage() {
   return (

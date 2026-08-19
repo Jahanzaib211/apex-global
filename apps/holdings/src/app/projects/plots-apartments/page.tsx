@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+
+export const metadata: Metadata = {
+  title: "Plots & Apartments",
+  description:
+    "Plots and built-form apartments across Pakistan, from entry-level investment to ready-to-move residences.",
+};
 
 export default function PlotsApartmentsPage() {
   const items = projects.filter((p) => p.category === "Plots & Apartments");

@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+
+export const metadata: Metadata = {
+  title: "Residential Projects",
+  description:
+    "Homes designed for how Pakistan lives — residential projects marketed and promoted by Apex Holdings.",
+};
 
 export default function ResidentialPage() {
   const items = projects.filter((p) => p.category === "Residential");

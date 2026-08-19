@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import {
   Award,
   Briefcase,
@@ -12,6 +11,12 @@ import {
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { stats } from "@/data/content";
+
+export const metadata: Metadata = {
+  title: "Why Apex",
+  description:
+    "Six pillars that shape every project we market and every partnership we build — transparency, diligence and long-term value.",
+};
 
 export default function WhyApexPage() {
   const pillars = [

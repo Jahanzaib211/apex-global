@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, MapPin, Sparkles, ShieldCheck, Clock } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
@@ -66,6 +65,12 @@ const statusTone: Record<PipelineItem["status"], string> = {
   "Concept Design": "bg-gold-50 text-ink border border-gold-400",
   "Pre-feasibility": "bg-gold-50 text-ink border border-gold-400",
   Feasibility: "bg-gold-50 text-ink border border-gold-400",
+};
+
+export const metadata: Metadata = {
+  title: "Future Pipeline",
+  description:
+    "A selective pipeline of the developments Apex Holdings is preparing to bring to market in the coming cycles.",
 };
 
 export default function FuturePipelinePage() {

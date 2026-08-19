@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, MapPin, ArrowUpRight } from "lucide-react";
@@ -11,6 +10,12 @@ const formatDate = (date: string) =>
   new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(
     new Date(`${date}T00:00:00`),
   );
+
+export const metadata: Metadata = {
+  title: "Corporate Events",
+  description:
+    "The gatherings that define our journey: investor meets, partner dinners and industry networking hosted by Apex Holdings.",
+};
 
 export default function EventsPage() {
   const ordered = [...events].sort((a, b) => b.date.localeCompare(a.date));

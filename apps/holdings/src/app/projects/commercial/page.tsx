@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+
+export const metadata: Metadata = {
+  title: "Commercial Projects",
+  description:
+    "Grade-A commercial real estate in Pakistan's business corridors — offices, retail and investment-grade opportunities.",
+};
 
 export default function CommercialPage() {
   const items = projects.filter((p) => p.category === "Commercial");
