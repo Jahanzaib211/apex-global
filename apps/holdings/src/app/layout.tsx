@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -7,6 +8,37 @@ import { ApexChat } from "@/components/ApexChat";
 import { SITE_URL } from "@/lib/site-url";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
+
+/*
+ * Fonts are self-hosted rather than pulled from fonts.googleapis.com.
+ *
+ * This site injected a <link rel="stylesheet"> for three families in fifteen
+ * weights into <head>, which blocks the first paint on a third-party round
+ * trip — against the mobile LCP budget in README.md — and sent every visitor
+ * to a Google domain. apps/tours and apps/group already solved this with
+ * next/font/local; these are the same latin-subset files they use.
+ */
+const sans = localFont({
+  src: "../fonts/inter-100-900-latin.woff2",
+  weight: "100 900",
+  variable: "--font-sans",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+});
+const serif = localFont({
+  src: "../fonts/cormorant-garamond-400-700-latin.woff2",
+  weight: "400 700",
+  variable: "--font-serif",
+  display: "swap",
+  fallback: ["Georgia", "Times New Roman", "serif"],
+});
+const display = localFont({
+  src: "../fonts/playfair-display-400-900-latin.woff2",
+  weight: "400 900",
+  variable: "--font-display",
+  display: "swap",
+  fallback: ["Georgia", "Times New Roman", "serif"],
+});
 
 export const metadata: Metadata = {
   // Without metadataBase every relative OpenGraph and canonical URL resolved
@@ -55,14 +87,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${sans.variable} ${serif.variable} ${display.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
         {/* The site shipped no structured data. Organization and WebSite
             belong once at the root; per-page schemas sit with their route. */}
         <script type="application/ld+json" {...jsonLdProps(organizationSchema)} />

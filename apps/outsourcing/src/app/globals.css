@@ -34,7 +34,7 @@ html {
 }
 body {
   font-family:
-    "Inter",
+    var(--font-sans),
     system-ui,
     -apple-system,
     "Segoe UI",
@@ -51,7 +51,7 @@ body {
 }
 
 .font-display {
-  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 

@@ -47,9 +47,12 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
-        serif: ['"Cormorant Garamond"', "Georgia", "serif"],
-        display: ['"Playfair Display"', "Georgia", "serif"],
+        // next/font/local supplies these as CSS variables (see app/layout.tsx);
+        // the literal family names only resolved while the Google Fonts
+        // stylesheet was in <head>.
+        sans: ["var(--font-sans)", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
       },
       letterSpacing: {
         "wide-1": "0.08em",

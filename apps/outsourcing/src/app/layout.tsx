@@ -1,11 +1,36 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import localFont from "next/font/local";
 import "./globals.css";
 import { BRAND, absoluteUrl } from "@/lib/brand";
 import { AttributionCapture } from "@/lib/attribution";
 import { ApexChat } from "@/components/ApexChat";
 import { APEX_SOCIALS } from "@apex/site-kit/social";
 import { jsonLdProps } from "@apex/site-kit/json-ld";
+
+/*
+ * Fonts are self-hosted rather than pulled from fonts.googleapis.com.
+ *
+ * The three <link> tags this replaces sat in <head> and blocked first paint on
+ * a third-party round trip — against the mobile LCP budget in README.md — and
+ * sent every visitor to a Google domain. They each carried an eslint-disable
+ * for `no-page-custom-font`, which was the rule correctly reporting this.
+ * Same latin-subset files apps/tours and apps/group already commit.
+ */
+const sans = localFont({
+  src: "../fonts/inter-100-900-latin.woff2",
+  weight: "100 900",
+  variable: "--font-sans",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+});
+const display = localFont({
+  src: "../fonts/manrope-400-800-latin.woff2",
+  weight: "400 800",
+  variable: "--font-display",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
@@ -73,18 +98,7 @@ const ORG_JSONLD = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body className="text-navy bg-white">
         <a href="#main-content" className="skip-link">
           Skip to content
