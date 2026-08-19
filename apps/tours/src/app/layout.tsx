@@ -35,7 +35,13 @@ export const metadata: Metadata = {
   // Without metadataBase no canonical tag was emitted at all and every
   // relative OpenGraph URL resolved against nothing.
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
+  // A URL *instance* (not the string "/") is the fix: Next resolves an
+  // instance against the current pathname (`new URL(pathname, url)` in
+  // resolvers/resolve-basics.js), so every page canonicalises to itself.
+  // The string "/" resolved to the site root on all of them, telling Google
+  // every page was a duplicate of the homepage. Removing the key entirely is
+  // not the fix either — resolveAlternates returns null and no tag is emitted.
+  alternates: { canonical: new URL(SITE_URL) },
   title: {
     default: "Apex Global Tours & Travels — Travel. Mobility. Pilgrimage.",
     template: "%s | Apex Global Tours & Travels",

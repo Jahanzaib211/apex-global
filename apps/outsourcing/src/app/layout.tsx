@@ -19,7 +19,9 @@ export const metadata: Metadata = {
   authors: [{ name: BRAND.legalName }],
   creator: BRAND.legalName,
   publisher: BRAND.legalName,
-  alternates: { canonical: "/" },
+  // See the note in the sibling sites: a URL instance canonicalises each page
+  // to itself, the string "/" pointed every page at the site root.
+  alternates: { canonical: new URL(BRAND.siteUrl) },
   icons: { icon: "/favicon.ico", apple: "/logo.png" },
   openGraph: {
     type: "website",
