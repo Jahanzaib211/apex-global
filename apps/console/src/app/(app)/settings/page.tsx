@@ -25,7 +25,9 @@ export default async function SettingsPage({ searchParams }: Props) {
   /** Save a provider credential. The plaintext never leaves this function. */
   async function saveIntegration(formData: FormData) {
     "use server";
-    const actor = await requirePermission("ai:admin");
+    // The page is core:admin; the AI section is part of that surface. Test
+    // connection is the same.
+    const actor = await requirePermission("core:admin");
 
     const provider = String(formData.get("provider") ?? "");
     const apiKey = String(formData.get("apiKey") ?? "").trim();
@@ -95,7 +97,7 @@ export default async function SettingsPage({ searchParams }: Props) {
   /** Cheapest possible round trip to prove the credential works. */
   async function testIntegration(formData: FormData) {
     "use server";
-    await requirePermission("ai:admin");
+    const actor = await requirePermission("core:admin");
 
     const provider = String(formData.get("provider") ?? "");
     const { open } = await import("@apex/ai");
@@ -123,6 +125,14 @@ export default async function SettingsPage({ searchParams }: Props) {
     await prisma.integration.update({
       where: { provider },
       data: { lastTestedAt: new Date(), lastTestOk: result.ok, lastTestNote: result.detail },
+    });
+
+    await audit({
+      actor,
+      action: result.ok ? "integration.tested" : "integration.test_failed",
+      entityType: "Integration",
+      entityId: provider,
+      summary: `${definition.label}: ${result.ok ? "OK" : "failed"} — ${result.detail}`,
     });
 
     redirect(`/settings?tested=${encodeURIComponent(result.detail)}`);

@@ -41,7 +41,12 @@ const ROUTER_URL = (process.env.HYPERSWITCH_ROUTER_URL ?? "http://127.0.0.1:8084
 );
 const ORG_ID = process.env.HS_ORG_ID;
 const MERCHANT_ID = process.env.HS_MERCHANT_ID;
-const MERCHANT_NAME = process.argv[2] ?? "Apex Global Revenue";
+
+// Subcommand dispatch. With no subcommand the script keeps its original
+// behaviour (provision org + merchant), so existing docs and muscle memory
+// still work; `connector` attaches a payment processor to an existing profile.
+const SUBCOMMAND = process.argv[2] === "connector" ? "connector" : "merchant";
+const MERCHANT_NAME = (SUBCOMMAND === "merchant" ? process.argv[2] : null) ?? "Apex Global Revenue";
 
 if (!ADMIN_KEY) {
   console.error("HYPERSWITCH_ADMIN_API_KEY is required (router admin API key).");
@@ -75,7 +80,103 @@ function safeJson(s) {
   }
 }
 
+/**
+ * Attach a payment processor to an existing profile.
+ *
+ * Hyperswitch is a router: without a connector it has nothing to route to and
+ * every payment fails regardless of how the app is configured. This is the step
+ * that makes the gateway able to actually move money.
+ *
+ * Idempotent: pass HS_CONNECTOR_ID to update an existing connector in place
+ * rather than creating a duplicate.
+ *
+ *   HYPERSWITCH_ADMIN_API_KEY=… \
+ *   HS_MERCHANT_ID=apex_revenue_1786220515 \
+ *   HS_PROFILE_ID=pro_NdMxeMPvwA7fL4iC5fL1 \
+ *   STRIPE_SECRET_KEY=sk_test_… \
+ *     node scripts/provision-hyperswitch.mjs connector
+ */
+async function provisionConnector() {
+  const merchantId = MERCHANT_ID;
+  const profileId = process.env.HS_PROFILE_ID;
+  const connectorName = process.env.HS_CONNECTOR_NAME ?? "stripe";
+  const connectorId = process.env.HS_CONNECTOR_ID;
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  // Default to test mode. Going live must be a deliberate act, never a default.
+  const testMode = process.env.HS_TEST_MODE !== "false";
+
+  if (!merchantId) throw new Error("HS_MERCHANT_ID is required (the Hyperswitch merchant).");
+  if (!profileId) throw new Error("HS_PROFILE_ID is required (the business profile).");
+  if (!secretKey) throw new Error("STRIPE_SECRET_KEY is required (sk_test_… or sk_live_…).");
+
+  // The Stripe CLI stores a *restricted* key (rk_…) that expires after 90 days.
+  // It is scoped for CLI use and will not carry the full payment lifecycle, so
+  // refuse it here rather than let it fail confusingly at charge time.
+  if (secretKey.startsWith("rk_")) {
+    throw new Error(
+      "STRIPE_SECRET_KEY looks like a restricted key (rk_…). The connector needs a\n" +
+        "full secret key from Stripe Dashboard → Developers → API keys (sk_test_… / sk_live_…).",
+    );
+  }
+  if (testMode && secretKey.startsWith("sk_live_")) {
+    throw new Error("Refusing to attach a LIVE Stripe key in test mode. Set HS_TEST_MODE=false.");
+  }
+
+  const body = {
+    connector_type: "payment_processor",
+    connector_name: connectorName,
+    connector_account_details: { auth_type: "HeaderKey", api_key: secretKey },
+    profile_id: profileId,
+    test_mode: testMode,
+    disabled: false,
+    payment_methods_enabled: [
+      {
+        payment_method: "card",
+        payment_method_types: [
+          {
+            payment_method_type: "credit",
+            card_networks: ["Visa", "Mastercard", "AmericanExpress"],
+            minimum_amount: 1,
+            maximum_amount: 68607706,
+            recurring_enabled: true,
+            installment_payment_enabled: false,
+          },
+          {
+            payment_method_type: "debit",
+            card_networks: ["Visa", "Mastercard"],
+            minimum_amount: 1,
+            maximum_amount: 68607706,
+            recurring_enabled: true,
+            installment_payment_enabled: false,
+          },
+        ],
+      },
+    ],
+  };
+
+  const base = `/account/${encodeURIComponent(merchantId)}/connectors`;
+  const result = connectorId
+    ? await api(`${base}/${encodeURIComponent(connectorId)}`, "POST", body)
+    : await api(base, "POST", body);
+
+  const id = result.merchant_connector_id ?? connectorId;
+
+  console.log("\n────────────────────────────────────────────────────────────");
+  console.log(`Connector ${connectorId ? "updated" : "created"}: ${connectorName}`);
+  console.log("────────────────────────────────────────────────────────────");
+  console.log(`merchant_connector_id: ${id}`);
+  console.log(`profile_id:            ${profileId}`);
+  console.log(`test_mode:             ${testMode}`);
+  console.log(`\nRe-run with HS_CONNECTOR_ID=${id} to update this connector in place.`);
+  console.log("\nNext: point Stripe's webhooks at");
+  console.log(`  <public router>/webhooks/${merchantId}/${connectorName}`);
+  console.log("For local testing, bridge them with the Stripe CLI:");
+  console.log(`  stripe listen --forward-to ${ROUTER_URL}/webhooks/${merchantId}/${connectorName}`);
+}
+
 async function main() {
+  if (SUBCOMMAND === "connector") return provisionConnector();
+
   let orgId = ORG_ID;
   if (!orgId) {
     // Hyperswitch assigns the org id server-side; the admin API only takes a name.

@@ -121,6 +121,25 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.SequenceScalarFieldEnum = {
+  key: 'key',
+  value: 'value'
+};
+
+exports.Prisma.PricingItemScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  slug: 'slug',
+  name: 'name',
+  description: 'description',
+  defaultUnitAmount: 'defaultUnitAmount',
+  defaultCurrency: 'defaultCurrency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.QuoteScalarFieldEnum = {
   id: 'id',
   number: 'number',
@@ -163,8 +182,11 @@ exports.Prisma.InvoiceScalarFieldEnum = {
   paymentProvider: 'paymentProvider',
   paymentRef: 'paymentRef',
   paidAt: 'paidAt',
+  paymentLinkUrl: 'paymentLinkUrl',
+  paymentLinkExpiresAt: 'paymentLinkExpiresAt',
   dueDate: 'dueDate',
   sentAt: 'sentAt',
+  lastReminderAt: 'lastReminderAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1067,16 +1089,22 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
+exports.PricingItemKind = exports.$Enums.PricingItemKind = {
+  SERVICE: 'SERVICE',
+  PRODUCT: 'PRODUCT',
+  CUSTOM: 'CUSTOM'
 };
+
 exports.QuoteStatus = exports.$Enums.QuoteStatus = {
   DRAFT: 'DRAFT',
   SENT: 'SENT',
@@ -1092,7 +1120,8 @@ exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
   PAID: 'PAID',
   FAILED: 'FAILED',
   CANCELLED: 'CANCELLED',
-  OVERDUE: 'OVERDUE'
+  OVERDUE: 'OVERDUE',
+  WRITE_OFF: 'WRITE_OFF'
 };
 
 exports.PublishStatus = exports.$Enums.PublishStatus = {
@@ -1123,7 +1152,8 @@ exports.LeadSourceType = exports.$Enums.LeadSourceType = {
   EMAIL_CLICK: 'EMAIL_CLICK',
   DEMO_REQUEST: 'DEMO_REQUEST',
   REFERRAL: 'REFERRAL',
-  MANUAL: 'MANUAL'
+  MANUAL: 'MANUAL',
+  SIGNUP: 'SIGNUP'
 };
 
 exports.PortalAccountStatus = exports.$Enums.PortalAccountStatus = {
@@ -1169,6 +1199,8 @@ exports.TicketPriority = exports.$Enums.TicketPriority = {
 };
 
 exports.Prisma.ModelName = {
+  Sequence: 'Sequence',
+  PricingItem: 'PricingItem',
   Quote: 'Quote',
   Invoice: 'Invoice',
   Solution: 'Solution',

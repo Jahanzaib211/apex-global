@@ -3,6 +3,7 @@ import type { TaskStatus } from "@apex/db";
 import { SectionHeading, Button } from "@apex/ui";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { audit } from "@/lib/audit";
 import { requirePermission } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -22,21 +23,40 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   async function createTask(formData: FormData) {
     "use server";
-    await requirePermission("projects:write");
+    const actor = await requirePermission("projects:write");
     const title = String(formData.get("title") ?? "").trim();
     if (!title) return;
     const order = project!.tasks.length;
-    await prisma.task.create({ data: { projectId: id, title, status: "TODO", order } });
+    const task = await prisma.task.create({
+      data: { projectId: id, title, status: "TODO", order },
+    });
+    await audit({
+      actor,
+      action: "task.created",
+      entityType: "Task",
+      entityId: task.id,
+      summary: `Created task "${title}" on project ${project!.name}`,
+    });
     redirect(`/projects/${id}`);
   }
 
   async function setTaskStatus(formData: FormData) {
     "use server";
-    await requirePermission("projects:write");
+    const actor = await requirePermission("projects:write");
     const taskId = String(formData.get("taskId") ?? "");
     const status = String(formData.get("status") ?? "") as TaskStatus;
     if (!TASK_STATUSES.includes(status)) return;
+    const before = await prisma.task.findUnique({ where: { id: taskId } });
+    if (!before) return;
     await prisma.task.update({ where: { id: taskId }, data: { status } });
+    await audit({
+      actor,
+      action: "task.status_changed",
+      entityType: "Task",
+      entityId: taskId,
+      summary: `Task "${before.title}" ${before.status} → ${status}`,
+      changes: { status: { from: before.status, to: status } },
+    });
     redirect(`/projects/${id}`);
   }
 

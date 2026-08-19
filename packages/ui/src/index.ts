@@ -1,5 +1,8 @@
 export { cn } from "./lib/cn";
 
+export { renderInvoiceHtml } from "./lib/invoice-pdf";
+export type { InvoicePdfData } from "./lib/invoice-pdf";
+
 export { Mark, Logo } from "./brand/mark";
 export type { MarkProps, MarkVariant, LogoProps } from "./brand/mark";
 

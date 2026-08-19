@@ -88,11 +88,23 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       data: { paymentProvider: "hyperswitch", paymentRef: payment.id },
     });
 
+    // The invoice page submits a plain <form>, so anything returned here is
+    // rendered directly by the browser. Both success paths must therefore be
+    // redirects — returning JSON would show the customer a page of raw text.
     if (payment.nextAction?.redirectUrl) {
       return NextResponse.redirect(payment.nextAction.redirectUrl, { status: 303 });
     }
     if (payment.clientSecret) {
-      return NextResponse.json({ clientSecret: payment.clientSecret, paymentId: payment.id });
+      // Hand off to the branded checkout. Only the payment id travels in the
+      // URL; the checkout page re-fetches the client secret server-side so it
+      // never reaches browser history or referrer headers.
+      const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+        "https://tech.apexgroupcompanies.com";
+      return NextResponse.redirect(
+        `${siteUrl}/portal/invoices/${invoice.id}/pay/checkout?payment=${encodeURIComponent(payment.id)}`,
+        { status: 303 },
+      );
     }
     return NextResponse.json(
       { error: "The gateway did not return a payment target. Please try again." },

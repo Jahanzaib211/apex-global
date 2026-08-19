@@ -1,4 +1,5 @@
 import { prisma } from "@apex/db";
+import { issueCsrfToken, signCsrf } from "@apex/auth";
 import { Card, SectionHeading } from "@apex/ui";
 import Link from "next/link";
 import { requirePortalUserAccount } from "@/lib/portal/auth";
@@ -7,6 +8,13 @@ export const dynamic = "force-dynamic";
 
 export default async function PortalAccountPage() {
   const { user } = await requirePortalUserAccount();
+
+  // CSRF pair for the OAuth unlink form below. Each request issues a fresh
+  // pair; verifyCsrf() on the receiving end compares in constant time. The
+  // sign-out form in the layout gets its own pair from the layout; this one
+  // is for the per-provider unlink forms on this page.
+  const oauthCsrf = issueCsrfToken();
+  const oauthCsrfSignature = signCsrf(oauthCsrf);
 
   const [sessions, oauthAccounts] = await Promise.all([
     prisma.portalSession.findMany({
@@ -93,6 +101,8 @@ export default async function PortalAccountPage() {
                 </span>
                 {linked ? (
                   <form action={`/api/portal/auth/oauth/unlink/${p}`} method="post">
+                    <input type="hidden" name="csrf" value={oauthCsrf} />
+                    <input type="hidden" name="csrfSignature" value={oauthCsrfSignature} />
                     <button
                       type="submit"
                       className="text-sm font-medium text-[var(--color-danger-500)] underline-offset-4 hover:underline"

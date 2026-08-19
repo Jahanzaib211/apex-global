@@ -18,6 +18,7 @@ const SITES: Record<string, string> = {
   "apex-holdings": "Holdings",
   "apex-outsourcing": "Outsourcing",
   "apex-tours": "Tours",
+  portal: "Portal",
 };
 
 type Props = { searchParams: Promise<{ stage?: string; q?: string; site?: string }> };

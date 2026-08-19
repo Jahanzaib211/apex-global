@@ -1,4 +1,5 @@
 import { prisma } from "@apex/db";
+import { verifyCsrf } from "@apex/auth";
 import { NextResponse } from "next/server";
 import { currentPortalUser } from "@/lib/portal/auth";
 
@@ -14,9 +15,13 @@ const PROVIDERS = ["google", "microsoft"] as const;
  * session user id — never the `[provider]` fixture used by the form's
  * dynamic route). A user with no password and no remaining OAuth link
  * would be unable to sign in, so that case is refused loudly.
+ *
+ * CSRF: form posts must carry a signed `csrf`/`csrfSignature` pair (same
+ * scheme as the sign-out route). A missing or tampered pair is refused
+ * with 403 rather than unlinking anything.
  */
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ provider: string }> },
 ) {
   const { provider } = await params;
@@ -25,6 +30,21 @@ export async function POST(
     return NextResponse.json({ error: "Unknown sign-in provider." }, { status: 400 });
   }
   const providerName = provider as (typeof PROVIDERS)[number];
+
+  // Verify CSRF before any DB read. Form posts from the portal account page
+  // carry the pair; cross-origin form posts cannot forge the signature.
+  const contentType = request.headers.get("content-type") ?? "";
+  const isForm =
+    contentType.includes("application/x-www-form-urlencoded") ||
+    contentType.includes("multipart/form-data");
+  if (isForm) {
+    const form = await request.formData().catch(() => null);
+    const token = String(form?.get("csrf") ?? "");
+    const signature = String(form?.get("csrfSignature") ?? "");
+    if (!token || !signature || !verifyCsrf(token, signature)) {
+      return NextResponse.json({ error: "Invalid request." }, { status: 403 });
+    }
+  }
 
   const user = await currentPortalUser();
   if (!user) {

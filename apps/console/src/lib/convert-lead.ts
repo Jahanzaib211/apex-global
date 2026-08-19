@@ -8,8 +8,8 @@ import { sendInvitation } from "@apex/auth";
  *
  * Idempotent:
  *  - if the lead already has a linked account, it is returned unchanged;
- *  - otherwise, a self-serve holding account whose slug matches the lead email
- *    is adopted (set `leadId`) instead of creating a duplicate;
+ *  - otherwise, an unlinked account already belonging to a user with the lead's
+ *    email is adopted (set `leadId`) instead of creating a duplicate;
  *  - otherwise a fresh account is created and the lead's contact is invited as
  *    OWNER. The lead's `convertedAt` is stamped and a `LeadActivity` + audit row
  *    record the conversion.
@@ -39,8 +39,19 @@ export async function convertLeadToCustomer(
     return { portalAccountId: lead.portalAccounts[0]!.id, created: false, invited: false };
   }
 
+  // Adopt the account this lead's contact already made for themselves, if any.
+  //
+  // Matched by the user's email rather than by a reconstructed slug: the slug
+  // form is decided by the signup route (`self-<local>-<random>`), so any string
+  // rebuilt here drifts out of sync the moment that changes — and it had, which
+  // meant this lookup never matched and conversion silently created a duplicate
+  // account beside the customer's real one.
   const existing = await prisma.portalAccount.findFirst({
-    where: { slug: leadEmailSlug(lead.email) },
+    where: {
+      leadId: null,
+      users: { some: { email: { equals: lead.email, mode: "insensitive" } } },
+    },
+    orderBy: { createdAt: "asc" },
   });
 
   const account = existing
@@ -115,11 +126,6 @@ function siteUrl(): string {
     /\/$/,
     "",
   );
-}
-
-function leadEmailSlug(email: string): string {
-  const local = email.split("@")[0] ?? "lead";
-  return `self-${local.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
 }
 
 async function uniqueSlug(base: string): Promise<string> {

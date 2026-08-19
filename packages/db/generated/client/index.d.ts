@@ -14,6 +14,16 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model Sequence
+ * 
+ */
+export type Sequence = $Result.DefaultSelection<Prisma.$SequencePayload>
+/**
+ * Model PricingItem
+ * 
+ */
+export type PricingItem = $Result.DefaultSelection<Prisma.$PricingItemPayload>
+/**
  * Model Quote
  * 
  */
@@ -341,10 +351,20 @@ export const InvoiceStatus: {
   PAID: 'PAID',
   FAILED: 'FAILED',
   CANCELLED: 'CANCELLED',
-  OVERDUE: 'OVERDUE'
+  OVERDUE: 'OVERDUE',
+  WRITE_OFF: 'WRITE_OFF'
 };
 
 export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+
+export const PricingItemKind: {
+  SERVICE: 'SERVICE',
+  PRODUCT: 'PRODUCT',
+  CUSTOM: 'CUSTOM'
+};
+
+export type PricingItemKind = (typeof PricingItemKind)[keyof typeof PricingItemKind]
 
 
 export const PublishStatus: {
@@ -384,7 +404,8 @@ export const LeadSourceType: {
   EMAIL_CLICK: 'EMAIL_CLICK',
   DEMO_REQUEST: 'DEMO_REQUEST',
   REFERRAL: 'REFERRAL',
-  MANUAL: 'MANUAL'
+  MANUAL: 'MANUAL',
+  SIGNUP: 'SIGNUP'
 };
 
 export type LeadSourceType = (typeof LeadSourceType)[keyof typeof LeadSourceType]
@@ -459,6 +480,10 @@ export type InvoiceStatus = $Enums.InvoiceStatus
 
 export const InvoiceStatus: typeof $Enums.InvoiceStatus
 
+export type PricingItemKind = $Enums.PricingItemKind
+
+export const PricingItemKind: typeof $Enums.PricingItemKind
+
 export type PublishStatus = $Enums.PublishStatus
 
 export const PublishStatus: typeof $Enums.PublishStatus
@@ -506,8 +531,8 @@ export const TicketPriority: typeof $Enums.TicketPriority
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Quotes
- * const quotes = await prisma.quote.findMany()
+ * // Fetch zero or more Sequences
+ * const sequences = await prisma.sequence.findMany()
  * ```
  *
  *
@@ -527,8 +552,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Quotes
-   * const quotes = await prisma.quote.findMany()
+   * // Fetch zero or more Sequences
+   * const sequences = await prisma.sequence.findMany()
    * ```
    *
    *
@@ -618,6 +643,26 @@ export class PrismaClient<
   }>>
 
       /**
+   * `prisma.sequence`: Exposes CRUD operations for the **Sequence** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Sequences
+    * const sequences = await prisma.sequence.findMany()
+    * ```
+    */
+  get sequence(): Prisma.SequenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pricingItem`: Exposes CRUD operations for the **PricingItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PricingItems
+    * const pricingItems = await prisma.pricingItem.findMany()
+    * ```
+    */
+  get pricingItem(): Prisma.PricingItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.quote`: Exposes CRUD operations for the **Quote** model.
     * Example usage:
     * ```ts
@@ -1667,6 +1712,8 @@ export namespace Prisma {
 
 
   export const ModelName: {
+    Sequence: 'Sequence',
+    PricingItem: 'PricingItem',
     Quote: 'Quote',
     Invoice: 'Invoice',
     Solution: 'Solution',
@@ -1746,10 +1793,158 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "quote" | "invoice" | "solution" | "industry" | "caseStudy" | "caseStudyMetric" | "techProofEntry" | "techProofEvidence" | "insight" | "testimonial" | "jobPosting" | "faq" | "landingPage" | "page" | "service" | "serviceBundle" | "liveEndpoint" | "seo" | "user" | "role" | "userRole" | "permission" | "rolePermission" | "session" | "auditLog" | "setting" | "integration" | "partnerIntegration" | "featureFlag" | "mediaAsset" | "lead" | "attribution" | "leadActivity" | "campaignSpend" | "campaign" | "attributionReport" | "webhookEvent" | "portalAccount" | "portalUser" | "portalSession" | "portalMagicLink" | "portalPasswordReset" | "portalOAuthAccount" | "portalInvitation" | "clientDocument" | "portalAuditLog" | "project" | "task" | "timesheet" | "clientApproval" | "saasProduct" | "productFeature" | "productScreenshot" | "pricingPlan" | "planFeature" | "productIntegration" | "docPage" | "demoRequest" | "ticket" | "ticketComment" | "kbArticle"
+      modelProps: "sequence" | "pricingItem" | "quote" | "invoice" | "solution" | "industry" | "caseStudy" | "caseStudyMetric" | "techProofEntry" | "techProofEvidence" | "insight" | "testimonial" | "jobPosting" | "faq" | "landingPage" | "page" | "service" | "serviceBundle" | "liveEndpoint" | "seo" | "user" | "role" | "userRole" | "permission" | "rolePermission" | "session" | "auditLog" | "setting" | "integration" | "partnerIntegration" | "featureFlag" | "mediaAsset" | "lead" | "attribution" | "leadActivity" | "campaignSpend" | "campaign" | "attributionReport" | "webhookEvent" | "portalAccount" | "portalUser" | "portalSession" | "portalMagicLink" | "portalPasswordReset" | "portalOAuthAccount" | "portalInvitation" | "clientDocument" | "portalAuditLog" | "project" | "task" | "timesheet" | "clientApproval" | "saasProduct" | "productFeature" | "productScreenshot" | "pricingPlan" | "planFeature" | "productIntegration" | "docPage" | "demoRequest" | "ticket" | "ticketComment" | "kbArticle"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
+      Sequence: {
+        payload: Prisma.$SequencePayload<ExtArgs>
+        fields: Prisma.SequenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SequenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SequenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          findFirst: {
+            args: Prisma.SequenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SequenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          findMany: {
+            args: Prisma.SequenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>[]
+          }
+          create: {
+            args: Prisma.SequenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          createMany: {
+            args: Prisma.SequenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SequenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>[]
+          }
+          delete: {
+            args: Prisma.SequenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          update: {
+            args: Prisma.SequenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          deleteMany: {
+            args: Prisma.SequenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SequenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SequenceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>[]
+          }
+          upsert: {
+            args: Prisma.SequenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SequencePayload>
+          }
+          aggregate: {
+            args: Prisma.SequenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSequence>
+          }
+          groupBy: {
+            args: Prisma.SequenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SequenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SequenceCountArgs<ExtArgs>
+            result: $Utils.Optional<SequenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      PricingItem: {
+        payload: Prisma.$PricingItemPayload<ExtArgs>
+        fields: Prisma.PricingItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PricingItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PricingItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          findFirst: {
+            args: Prisma.PricingItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PricingItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          findMany: {
+            args: Prisma.PricingItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>[]
+          }
+          create: {
+            args: Prisma.PricingItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          createMany: {
+            args: Prisma.PricingItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PricingItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>[]
+          }
+          delete: {
+            args: Prisma.PricingItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          update: {
+            args: Prisma.PricingItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.PricingItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PricingItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PricingItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.PricingItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PricingItemPayload>
+          }
+          aggregate: {
+            args: Prisma.PricingItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePricingItem>
+          }
+          groupBy: {
+            args: Prisma.PricingItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PricingItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PricingItemCountArgs<ExtArgs>
+            result: $Utils.Optional<PricingItemCountAggregateOutputType> | number
+          }
+        }
+      }
       Quote: {
         payload: Prisma.$QuotePayload<ExtArgs>
         fields: Prisma.QuoteFieldRefs
@@ -6360,6 +6555,8 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
+    sequence?: SequenceOmit
+    pricingItem?: PricingItemOmit
     quote?: QuoteOmit
     invoice?: InvoiceOmit
     solution?: SolutionOmit
@@ -7247,6 +7444,2107 @@ export namespace Prisma {
   /**
    * Models
    */
+
+  /**
+   * Model Sequence
+   */
+
+  export type AggregateSequence = {
+    _count: SequenceCountAggregateOutputType | null
+    _avg: SequenceAvgAggregateOutputType | null
+    _sum: SequenceSumAggregateOutputType | null
+    _min: SequenceMinAggregateOutputType | null
+    _max: SequenceMaxAggregateOutputType | null
+  }
+
+  export type SequenceAvgAggregateOutputType = {
+    value: number | null
+  }
+
+  export type SequenceSumAggregateOutputType = {
+    value: number | null
+  }
+
+  export type SequenceMinAggregateOutputType = {
+    key: string | null
+    value: number | null
+  }
+
+  export type SequenceMaxAggregateOutputType = {
+    key: string | null
+    value: number | null
+  }
+
+  export type SequenceCountAggregateOutputType = {
+    key: number
+    value: number
+    _all: number
+  }
+
+
+  export type SequenceAvgAggregateInputType = {
+    value?: true
+  }
+
+  export type SequenceSumAggregateInputType = {
+    value?: true
+  }
+
+  export type SequenceMinAggregateInputType = {
+    key?: true
+    value?: true
+  }
+
+  export type SequenceMaxAggregateInputType = {
+    key?: true
+    value?: true
+  }
+
+  export type SequenceCountAggregateInputType = {
+    key?: true
+    value?: true
+    _all?: true
+  }
+
+  export type SequenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Sequence to aggregate.
+     */
+    where?: SequenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sequences to fetch.
+     */
+    orderBy?: SequenceOrderByWithRelationInput | SequenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SequenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sequences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sequences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Sequences
+    **/
+    _count?: true | SequenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SequenceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SequenceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SequenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SequenceMaxAggregateInputType
+  }
+
+  export type GetSequenceAggregateType<T extends SequenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateSequence]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSequence[P]>
+      : GetScalarType<T[P], AggregateSequence[P]>
+  }
+
+
+
+
+  export type SequenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SequenceWhereInput
+    orderBy?: SequenceOrderByWithAggregationInput | SequenceOrderByWithAggregationInput[]
+    by: SequenceScalarFieldEnum[] | SequenceScalarFieldEnum
+    having?: SequenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SequenceCountAggregateInputType | true
+    _avg?: SequenceAvgAggregateInputType
+    _sum?: SequenceSumAggregateInputType
+    _min?: SequenceMinAggregateInputType
+    _max?: SequenceMaxAggregateInputType
+  }
+
+  export type SequenceGroupByOutputType = {
+    key: string
+    value: number
+    _count: SequenceCountAggregateOutputType | null
+    _avg: SequenceAvgAggregateOutputType | null
+    _sum: SequenceSumAggregateOutputType | null
+    _min: SequenceMinAggregateOutputType | null
+    _max: SequenceMaxAggregateOutputType | null
+  }
+
+  type GetSequenceGroupByPayload<T extends SequenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SequenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SequenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SequenceGroupByOutputType[P]>
+            : GetScalarType<T[P], SequenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SequenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    key?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["sequence"]>
+
+  export type SequenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    key?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["sequence"]>
+
+  export type SequenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    key?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["sequence"]>
+
+  export type SequenceSelectScalar = {
+    key?: boolean
+    value?: boolean
+  }
+
+  export type SequenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"key" | "value", ExtArgs["result"]["sequence"]>
+
+  export type $SequencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Sequence"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      key: string
+      value: number
+    }, ExtArgs["result"]["sequence"]>
+    composites: {}
+  }
+
+  type SequenceGetPayload<S extends boolean | null | undefined | SequenceDefaultArgs> = $Result.GetResult<Prisma.$SequencePayload, S>
+
+  type SequenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SequenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SequenceCountAggregateInputType | true
+    }
+
+  export interface SequenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Sequence'], meta: { name: 'Sequence' } }
+    /**
+     * Find zero or one Sequence that matches the filter.
+     * @param {SequenceFindUniqueArgs} args - Arguments to find a Sequence
+     * @example
+     * // Get one Sequence
+     * const sequence = await prisma.sequence.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SequenceFindUniqueArgs>(args: SelectSubset<T, SequenceFindUniqueArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Sequence that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SequenceFindUniqueOrThrowArgs} args - Arguments to find a Sequence
+     * @example
+     * // Get one Sequence
+     * const sequence = await prisma.sequence.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SequenceFindUniqueOrThrowArgs>(args: SelectSubset<T, SequenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Sequence that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceFindFirstArgs} args - Arguments to find a Sequence
+     * @example
+     * // Get one Sequence
+     * const sequence = await prisma.sequence.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SequenceFindFirstArgs>(args?: SelectSubset<T, SequenceFindFirstArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Sequence that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceFindFirstOrThrowArgs} args - Arguments to find a Sequence
+     * @example
+     * // Get one Sequence
+     * const sequence = await prisma.sequence.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SequenceFindFirstOrThrowArgs>(args?: SelectSubset<T, SequenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Sequences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Sequences
+     * const sequences = await prisma.sequence.findMany()
+     * 
+     * // Get first 10 Sequences
+     * const sequences = await prisma.sequence.findMany({ take: 10 })
+     * 
+     * // Only select the `key`
+     * const sequenceWithKeyOnly = await prisma.sequence.findMany({ select: { key: true } })
+     * 
+     */
+    findMany<T extends SequenceFindManyArgs>(args?: SelectSubset<T, SequenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Sequence.
+     * @param {SequenceCreateArgs} args - Arguments to create a Sequence.
+     * @example
+     * // Create one Sequence
+     * const Sequence = await prisma.sequence.create({
+     *   data: {
+     *     // ... data to create a Sequence
+     *   }
+     * })
+     * 
+     */
+    create<T extends SequenceCreateArgs>(args: SelectSubset<T, SequenceCreateArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Sequences.
+     * @param {SequenceCreateManyArgs} args - Arguments to create many Sequences.
+     * @example
+     * // Create many Sequences
+     * const sequence = await prisma.sequence.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SequenceCreateManyArgs>(args?: SelectSubset<T, SequenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Sequences and returns the data saved in the database.
+     * @param {SequenceCreateManyAndReturnArgs} args - Arguments to create many Sequences.
+     * @example
+     * // Create many Sequences
+     * const sequence = await prisma.sequence.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Sequences and only return the `key`
+     * const sequenceWithKeyOnly = await prisma.sequence.createManyAndReturn({
+     *   select: { key: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SequenceCreateManyAndReturnArgs>(args?: SelectSubset<T, SequenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Sequence.
+     * @param {SequenceDeleteArgs} args - Arguments to delete one Sequence.
+     * @example
+     * // Delete one Sequence
+     * const Sequence = await prisma.sequence.delete({
+     *   where: {
+     *     // ... filter to delete one Sequence
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SequenceDeleteArgs>(args: SelectSubset<T, SequenceDeleteArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Sequence.
+     * @param {SequenceUpdateArgs} args - Arguments to update one Sequence.
+     * @example
+     * // Update one Sequence
+     * const sequence = await prisma.sequence.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SequenceUpdateArgs>(args: SelectSubset<T, SequenceUpdateArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Sequences.
+     * @param {SequenceDeleteManyArgs} args - Arguments to filter Sequences to delete.
+     * @example
+     * // Delete a few Sequences
+     * const { count } = await prisma.sequence.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SequenceDeleteManyArgs>(args?: SelectSubset<T, SequenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Sequences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Sequences
+     * const sequence = await prisma.sequence.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SequenceUpdateManyArgs>(args: SelectSubset<T, SequenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Sequences and returns the data updated in the database.
+     * @param {SequenceUpdateManyAndReturnArgs} args - Arguments to update many Sequences.
+     * @example
+     * // Update many Sequences
+     * const sequence = await prisma.sequence.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Sequences and only return the `key`
+     * const sequenceWithKeyOnly = await prisma.sequence.updateManyAndReturn({
+     *   select: { key: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SequenceUpdateManyAndReturnArgs>(args: SelectSubset<T, SequenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Sequence.
+     * @param {SequenceUpsertArgs} args - Arguments to update or create a Sequence.
+     * @example
+     * // Update or create a Sequence
+     * const sequence = await prisma.sequence.upsert({
+     *   create: {
+     *     // ... data to create a Sequence
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Sequence we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SequenceUpsertArgs>(args: SelectSubset<T, SequenceUpsertArgs<ExtArgs>>): Prisma__SequenceClient<$Result.GetResult<Prisma.$SequencePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Sequences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceCountArgs} args - Arguments to filter Sequences to count.
+     * @example
+     * // Count the number of Sequences
+     * const count = await prisma.sequence.count({
+     *   where: {
+     *     // ... the filter for the Sequences we want to count
+     *   }
+     * })
+    **/
+    count<T extends SequenceCountArgs>(
+      args?: Subset<T, SequenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SequenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Sequence.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SequenceAggregateArgs>(args: Subset<T, SequenceAggregateArgs>): Prisma.PrismaPromise<GetSequenceAggregateType<T>>
+
+    /**
+     * Group by Sequence.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SequenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SequenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SequenceGroupByArgs['orderBy'] }
+        : { orderBy?: SequenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SequenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSequenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Sequence model
+   */
+  readonly fields: SequenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Sequence.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SequenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Sequence model
+   */
+  interface SequenceFieldRefs {
+    readonly key: FieldRef<"Sequence", 'String'>
+    readonly value: FieldRef<"Sequence", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Sequence findUnique
+   */
+  export type SequenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter, which Sequence to fetch.
+     */
+    where: SequenceWhereUniqueInput
+  }
+
+  /**
+   * Sequence findUniqueOrThrow
+   */
+  export type SequenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter, which Sequence to fetch.
+     */
+    where: SequenceWhereUniqueInput
+  }
+
+  /**
+   * Sequence findFirst
+   */
+  export type SequenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter, which Sequence to fetch.
+     */
+    where?: SequenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sequences to fetch.
+     */
+    orderBy?: SequenceOrderByWithRelationInput | SequenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Sequences.
+     */
+    cursor?: SequenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sequences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sequences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Sequences.
+     */
+    distinct?: SequenceScalarFieldEnum | SequenceScalarFieldEnum[]
+  }
+
+  /**
+   * Sequence findFirstOrThrow
+   */
+  export type SequenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter, which Sequence to fetch.
+     */
+    where?: SequenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sequences to fetch.
+     */
+    orderBy?: SequenceOrderByWithRelationInput | SequenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Sequences.
+     */
+    cursor?: SequenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sequences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sequences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Sequences.
+     */
+    distinct?: SequenceScalarFieldEnum | SequenceScalarFieldEnum[]
+  }
+
+  /**
+   * Sequence findMany
+   */
+  export type SequenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter, which Sequences to fetch.
+     */
+    where?: SequenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sequences to fetch.
+     */
+    orderBy?: SequenceOrderByWithRelationInput | SequenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Sequences.
+     */
+    cursor?: SequenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sequences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sequences.
+     */
+    skip?: number
+    distinct?: SequenceScalarFieldEnum | SequenceScalarFieldEnum[]
+  }
+
+  /**
+   * Sequence create
+   */
+  export type SequenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Sequence.
+     */
+    data: XOR<SequenceCreateInput, SequenceUncheckedCreateInput>
+  }
+
+  /**
+   * Sequence createMany
+   */
+  export type SequenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Sequences.
+     */
+    data: SequenceCreateManyInput | SequenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Sequence createManyAndReturn
+   */
+  export type SequenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * The data used to create many Sequences.
+     */
+    data: SequenceCreateManyInput | SequenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Sequence update
+   */
+  export type SequenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Sequence.
+     */
+    data: XOR<SequenceUpdateInput, SequenceUncheckedUpdateInput>
+    /**
+     * Choose, which Sequence to update.
+     */
+    where: SequenceWhereUniqueInput
+  }
+
+  /**
+   * Sequence updateMany
+   */
+  export type SequenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Sequences.
+     */
+    data: XOR<SequenceUpdateManyMutationInput, SequenceUncheckedUpdateManyInput>
+    /**
+     * Filter which Sequences to update
+     */
+    where?: SequenceWhereInput
+    /**
+     * Limit how many Sequences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Sequence updateManyAndReturn
+   */
+  export type SequenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * The data used to update Sequences.
+     */
+    data: XOR<SequenceUpdateManyMutationInput, SequenceUncheckedUpdateManyInput>
+    /**
+     * Filter which Sequences to update
+     */
+    where?: SequenceWhereInput
+    /**
+     * Limit how many Sequences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Sequence upsert
+   */
+  export type SequenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Sequence to update in case it exists.
+     */
+    where: SequenceWhereUniqueInput
+    /**
+     * In case the Sequence found by the `where` argument doesn't exist, create a new Sequence with this data.
+     */
+    create: XOR<SequenceCreateInput, SequenceUncheckedCreateInput>
+    /**
+     * In case the Sequence was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SequenceUpdateInput, SequenceUncheckedUpdateInput>
+  }
+
+  /**
+   * Sequence delete
+   */
+  export type SequenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+    /**
+     * Filter which Sequence to delete.
+     */
+    where: SequenceWhereUniqueInput
+  }
+
+  /**
+   * Sequence deleteMany
+   */
+  export type SequenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Sequences to delete
+     */
+    where?: SequenceWhereInput
+    /**
+     * Limit how many Sequences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Sequence without action
+   */
+  export type SequenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sequence
+     */
+    select?: SequenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sequence
+     */
+    omit?: SequenceOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PricingItem
+   */
+
+  export type AggregatePricingItem = {
+    _count: PricingItemCountAggregateOutputType | null
+    _avg: PricingItemAvgAggregateOutputType | null
+    _sum: PricingItemSumAggregateOutputType | null
+    _min: PricingItemMinAggregateOutputType | null
+    _max: PricingItemMaxAggregateOutputType | null
+  }
+
+  export type PricingItemAvgAggregateOutputType = {
+    defaultUnitAmount: number | null
+    sortOrder: number | null
+  }
+
+  export type PricingItemSumAggregateOutputType = {
+    defaultUnitAmount: number | null
+    sortOrder: number | null
+  }
+
+  export type PricingItemMinAggregateOutputType = {
+    id: string | null
+    kind: $Enums.PricingItemKind | null
+    slug: string | null
+    name: string | null
+    description: string | null
+    defaultUnitAmount: number | null
+    defaultCurrency: string | null
+    isActive: boolean | null
+    sortOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PricingItemMaxAggregateOutputType = {
+    id: string | null
+    kind: $Enums.PricingItemKind | null
+    slug: string | null
+    name: string | null
+    description: string | null
+    defaultUnitAmount: number | null
+    defaultCurrency: string | null
+    isActive: boolean | null
+    sortOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PricingItemCountAggregateOutputType = {
+    id: number
+    kind: number
+    slug: number
+    name: number
+    description: number
+    defaultUnitAmount: number
+    defaultCurrency: number
+    isActive: number
+    sortOrder: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PricingItemAvgAggregateInputType = {
+    defaultUnitAmount?: true
+    sortOrder?: true
+  }
+
+  export type PricingItemSumAggregateInputType = {
+    defaultUnitAmount?: true
+    sortOrder?: true
+  }
+
+  export type PricingItemMinAggregateInputType = {
+    id?: true
+    kind?: true
+    slug?: true
+    name?: true
+    description?: true
+    defaultUnitAmount?: true
+    defaultCurrency?: true
+    isActive?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PricingItemMaxAggregateInputType = {
+    id?: true
+    kind?: true
+    slug?: true
+    name?: true
+    description?: true
+    defaultUnitAmount?: true
+    defaultCurrency?: true
+    isActive?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PricingItemCountAggregateInputType = {
+    id?: true
+    kind?: true
+    slug?: true
+    name?: true
+    description?: true
+    defaultUnitAmount?: true
+    defaultCurrency?: true
+    isActive?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PricingItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PricingItem to aggregate.
+     */
+    where?: PricingItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PricingItems to fetch.
+     */
+    orderBy?: PricingItemOrderByWithRelationInput | PricingItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PricingItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PricingItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PricingItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PricingItems
+    **/
+    _count?: true | PricingItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PricingItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PricingItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PricingItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PricingItemMaxAggregateInputType
+  }
+
+  export type GetPricingItemAggregateType<T extends PricingItemAggregateArgs> = {
+        [P in keyof T & keyof AggregatePricingItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePricingItem[P]>
+      : GetScalarType<T[P], AggregatePricingItem[P]>
+  }
+
+
+
+
+  export type PricingItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PricingItemWhereInput
+    orderBy?: PricingItemOrderByWithAggregationInput | PricingItemOrderByWithAggregationInput[]
+    by: PricingItemScalarFieldEnum[] | PricingItemScalarFieldEnum
+    having?: PricingItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PricingItemCountAggregateInputType | true
+    _avg?: PricingItemAvgAggregateInputType
+    _sum?: PricingItemSumAggregateInputType
+    _min?: PricingItemMinAggregateInputType
+    _max?: PricingItemMaxAggregateInputType
+  }
+
+  export type PricingItemGroupByOutputType = {
+    id: string
+    kind: $Enums.PricingItemKind
+    slug: string
+    name: string
+    description: string | null
+    defaultUnitAmount: number | null
+    defaultCurrency: string
+    isActive: boolean
+    sortOrder: number
+    createdAt: Date
+    updatedAt: Date
+    _count: PricingItemCountAggregateOutputType | null
+    _avg: PricingItemAvgAggregateOutputType | null
+    _sum: PricingItemSumAggregateOutputType | null
+    _min: PricingItemMinAggregateOutputType | null
+    _max: PricingItemMaxAggregateOutputType | null
+  }
+
+  type GetPricingItemGroupByPayload<T extends PricingItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PricingItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PricingItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PricingItemGroupByOutputType[P]>
+            : GetScalarType<T[P], PricingItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PricingItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    kind?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    defaultUnitAmount?: boolean
+    defaultCurrency?: boolean
+    isActive?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["pricingItem"]>
+
+  export type PricingItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    kind?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    defaultUnitAmount?: boolean
+    defaultCurrency?: boolean
+    isActive?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["pricingItem"]>
+
+  export type PricingItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    kind?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    defaultUnitAmount?: boolean
+    defaultCurrency?: boolean
+    isActive?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["pricingItem"]>
+
+  export type PricingItemSelectScalar = {
+    id?: boolean
+    kind?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    defaultUnitAmount?: boolean
+    defaultCurrency?: boolean
+    isActive?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PricingItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "slug" | "name" | "description" | "defaultUnitAmount" | "defaultCurrency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["pricingItem"]>
+
+  export type $PricingItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PricingItem"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      kind: $Enums.PricingItemKind
+      slug: string
+      name: string
+      description: string | null
+      defaultUnitAmount: number | null
+      defaultCurrency: string
+      isActive: boolean
+      sortOrder: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["pricingItem"]>
+    composites: {}
+  }
+
+  type PricingItemGetPayload<S extends boolean | null | undefined | PricingItemDefaultArgs> = $Result.GetResult<Prisma.$PricingItemPayload, S>
+
+  type PricingItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PricingItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PricingItemCountAggregateInputType | true
+    }
+
+  export interface PricingItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PricingItem'], meta: { name: 'PricingItem' } }
+    /**
+     * Find zero or one PricingItem that matches the filter.
+     * @param {PricingItemFindUniqueArgs} args - Arguments to find a PricingItem
+     * @example
+     * // Get one PricingItem
+     * const pricingItem = await prisma.pricingItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PricingItemFindUniqueArgs>(args: SelectSubset<T, PricingItemFindUniqueArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PricingItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PricingItemFindUniqueOrThrowArgs} args - Arguments to find a PricingItem
+     * @example
+     * // Get one PricingItem
+     * const pricingItem = await prisma.pricingItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PricingItemFindUniqueOrThrowArgs>(args: SelectSubset<T, PricingItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PricingItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemFindFirstArgs} args - Arguments to find a PricingItem
+     * @example
+     * // Get one PricingItem
+     * const pricingItem = await prisma.pricingItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PricingItemFindFirstArgs>(args?: SelectSubset<T, PricingItemFindFirstArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PricingItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemFindFirstOrThrowArgs} args - Arguments to find a PricingItem
+     * @example
+     * // Get one PricingItem
+     * const pricingItem = await prisma.pricingItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PricingItemFindFirstOrThrowArgs>(args?: SelectSubset<T, PricingItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PricingItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PricingItems
+     * const pricingItems = await prisma.pricingItem.findMany()
+     * 
+     * // Get first 10 PricingItems
+     * const pricingItems = await prisma.pricingItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pricingItemWithIdOnly = await prisma.pricingItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PricingItemFindManyArgs>(args?: SelectSubset<T, PricingItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PricingItem.
+     * @param {PricingItemCreateArgs} args - Arguments to create a PricingItem.
+     * @example
+     * // Create one PricingItem
+     * const PricingItem = await prisma.pricingItem.create({
+     *   data: {
+     *     // ... data to create a PricingItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends PricingItemCreateArgs>(args: SelectSubset<T, PricingItemCreateArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PricingItems.
+     * @param {PricingItemCreateManyArgs} args - Arguments to create many PricingItems.
+     * @example
+     * // Create many PricingItems
+     * const pricingItem = await prisma.pricingItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PricingItemCreateManyArgs>(args?: SelectSubset<T, PricingItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PricingItems and returns the data saved in the database.
+     * @param {PricingItemCreateManyAndReturnArgs} args - Arguments to create many PricingItems.
+     * @example
+     * // Create many PricingItems
+     * const pricingItem = await prisma.pricingItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PricingItems and only return the `id`
+     * const pricingItemWithIdOnly = await prisma.pricingItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PricingItemCreateManyAndReturnArgs>(args?: SelectSubset<T, PricingItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PricingItem.
+     * @param {PricingItemDeleteArgs} args - Arguments to delete one PricingItem.
+     * @example
+     * // Delete one PricingItem
+     * const PricingItem = await prisma.pricingItem.delete({
+     *   where: {
+     *     // ... filter to delete one PricingItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PricingItemDeleteArgs>(args: SelectSubset<T, PricingItemDeleteArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PricingItem.
+     * @param {PricingItemUpdateArgs} args - Arguments to update one PricingItem.
+     * @example
+     * // Update one PricingItem
+     * const pricingItem = await prisma.pricingItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PricingItemUpdateArgs>(args: SelectSubset<T, PricingItemUpdateArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PricingItems.
+     * @param {PricingItemDeleteManyArgs} args - Arguments to filter PricingItems to delete.
+     * @example
+     * // Delete a few PricingItems
+     * const { count } = await prisma.pricingItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PricingItemDeleteManyArgs>(args?: SelectSubset<T, PricingItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PricingItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PricingItems
+     * const pricingItem = await prisma.pricingItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PricingItemUpdateManyArgs>(args: SelectSubset<T, PricingItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PricingItems and returns the data updated in the database.
+     * @param {PricingItemUpdateManyAndReturnArgs} args - Arguments to update many PricingItems.
+     * @example
+     * // Update many PricingItems
+     * const pricingItem = await prisma.pricingItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PricingItems and only return the `id`
+     * const pricingItemWithIdOnly = await prisma.pricingItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PricingItemUpdateManyAndReturnArgs>(args: SelectSubset<T, PricingItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PricingItem.
+     * @param {PricingItemUpsertArgs} args - Arguments to update or create a PricingItem.
+     * @example
+     * // Update or create a PricingItem
+     * const pricingItem = await prisma.pricingItem.upsert({
+     *   create: {
+     *     // ... data to create a PricingItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PricingItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PricingItemUpsertArgs>(args: SelectSubset<T, PricingItemUpsertArgs<ExtArgs>>): Prisma__PricingItemClient<$Result.GetResult<Prisma.$PricingItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PricingItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemCountArgs} args - Arguments to filter PricingItems to count.
+     * @example
+     * // Count the number of PricingItems
+     * const count = await prisma.pricingItem.count({
+     *   where: {
+     *     // ... the filter for the PricingItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends PricingItemCountArgs>(
+      args?: Subset<T, PricingItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PricingItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PricingItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PricingItemAggregateArgs>(args: Subset<T, PricingItemAggregateArgs>): Prisma.PrismaPromise<GetPricingItemAggregateType<T>>
+
+    /**
+     * Group by PricingItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PricingItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PricingItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PricingItemGroupByArgs['orderBy'] }
+        : { orderBy?: PricingItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PricingItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPricingItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PricingItem model
+   */
+  readonly fields: PricingItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PricingItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PricingItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PricingItem model
+   */
+  interface PricingItemFieldRefs {
+    readonly id: FieldRef<"PricingItem", 'String'>
+    readonly kind: FieldRef<"PricingItem", 'PricingItemKind'>
+    readonly slug: FieldRef<"PricingItem", 'String'>
+    readonly name: FieldRef<"PricingItem", 'String'>
+    readonly description: FieldRef<"PricingItem", 'String'>
+    readonly defaultUnitAmount: FieldRef<"PricingItem", 'Int'>
+    readonly defaultCurrency: FieldRef<"PricingItem", 'String'>
+    readonly isActive: FieldRef<"PricingItem", 'Boolean'>
+    readonly sortOrder: FieldRef<"PricingItem", 'Int'>
+    readonly createdAt: FieldRef<"PricingItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"PricingItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PricingItem findUnique
+   */
+  export type PricingItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PricingItem to fetch.
+     */
+    where: PricingItemWhereUniqueInput
+  }
+
+  /**
+   * PricingItem findUniqueOrThrow
+   */
+  export type PricingItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PricingItem to fetch.
+     */
+    where: PricingItemWhereUniqueInput
+  }
+
+  /**
+   * PricingItem findFirst
+   */
+  export type PricingItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PricingItem to fetch.
+     */
+    where?: PricingItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PricingItems to fetch.
+     */
+    orderBy?: PricingItemOrderByWithRelationInput | PricingItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PricingItems.
+     */
+    cursor?: PricingItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PricingItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PricingItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PricingItems.
+     */
+    distinct?: PricingItemScalarFieldEnum | PricingItemScalarFieldEnum[]
+  }
+
+  /**
+   * PricingItem findFirstOrThrow
+   */
+  export type PricingItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PricingItem to fetch.
+     */
+    where?: PricingItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PricingItems to fetch.
+     */
+    orderBy?: PricingItemOrderByWithRelationInput | PricingItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PricingItems.
+     */
+    cursor?: PricingItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PricingItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PricingItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PricingItems.
+     */
+    distinct?: PricingItemScalarFieldEnum | PricingItemScalarFieldEnum[]
+  }
+
+  /**
+   * PricingItem findMany
+   */
+  export type PricingItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PricingItems to fetch.
+     */
+    where?: PricingItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PricingItems to fetch.
+     */
+    orderBy?: PricingItemOrderByWithRelationInput | PricingItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PricingItems.
+     */
+    cursor?: PricingItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PricingItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PricingItems.
+     */
+    skip?: number
+    distinct?: PricingItemScalarFieldEnum | PricingItemScalarFieldEnum[]
+  }
+
+  /**
+   * PricingItem create
+   */
+  export type PricingItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PricingItem.
+     */
+    data: XOR<PricingItemCreateInput, PricingItemUncheckedCreateInput>
+  }
+
+  /**
+   * PricingItem createMany
+   */
+  export type PricingItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PricingItems.
+     */
+    data: PricingItemCreateManyInput | PricingItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PricingItem createManyAndReturn
+   */
+  export type PricingItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many PricingItems.
+     */
+    data: PricingItemCreateManyInput | PricingItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PricingItem update
+   */
+  export type PricingItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PricingItem.
+     */
+    data: XOR<PricingItemUpdateInput, PricingItemUncheckedUpdateInput>
+    /**
+     * Choose, which PricingItem to update.
+     */
+    where: PricingItemWhereUniqueInput
+  }
+
+  /**
+   * PricingItem updateMany
+   */
+  export type PricingItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PricingItems.
+     */
+    data: XOR<PricingItemUpdateManyMutationInput, PricingItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PricingItems to update
+     */
+    where?: PricingItemWhereInput
+    /**
+     * Limit how many PricingItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PricingItem updateManyAndReturn
+   */
+  export type PricingItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * The data used to update PricingItems.
+     */
+    data: XOR<PricingItemUpdateManyMutationInput, PricingItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PricingItems to update
+     */
+    where?: PricingItemWhereInput
+    /**
+     * Limit how many PricingItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PricingItem upsert
+   */
+  export type PricingItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PricingItem to update in case it exists.
+     */
+    where: PricingItemWhereUniqueInput
+    /**
+     * In case the PricingItem found by the `where` argument doesn't exist, create a new PricingItem with this data.
+     */
+    create: XOR<PricingItemCreateInput, PricingItemUncheckedCreateInput>
+    /**
+     * In case the PricingItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PricingItemUpdateInput, PricingItemUncheckedUpdateInput>
+  }
+
+  /**
+   * PricingItem delete
+   */
+  export type PricingItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+    /**
+     * Filter which PricingItem to delete.
+     */
+    where: PricingItemWhereUniqueInput
+  }
+
+  /**
+   * PricingItem deleteMany
+   */
+  export type PricingItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PricingItems to delete
+     */
+    where?: PricingItemWhereInput
+    /**
+     * Limit how many PricingItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PricingItem without action
+   */
+  export type PricingItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PricingItem
+     */
+    select?: PricingItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PricingItem
+     */
+    omit?: PricingItemOmit<ExtArgs> | null
+  }
+
 
   /**
    * Model Quote
@@ -8618,8 +10916,11 @@ export namespace Prisma {
     paymentProvider: string | null
     paymentRef: string | null
     paidAt: Date | null
+    paymentLinkUrl: string | null
+    paymentLinkExpiresAt: Date | null
     dueDate: Date | null
     sentAt: Date | null
+    lastReminderAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8643,8 +10944,11 @@ export namespace Prisma {
     paymentProvider: string | null
     paymentRef: string | null
     paidAt: Date | null
+    paymentLinkUrl: string | null
+    paymentLinkExpiresAt: Date | null
     dueDate: Date | null
     sentAt: Date | null
+    lastReminderAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8669,8 +10973,11 @@ export namespace Prisma {
     paymentProvider: number
     paymentRef: number
     paidAt: number
+    paymentLinkUrl: number
+    paymentLinkExpiresAt: number
     dueDate: number
     sentAt: number
+    lastReminderAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8708,8 +11015,11 @@ export namespace Prisma {
     paymentProvider?: true
     paymentRef?: true
     paidAt?: true
+    paymentLinkUrl?: true
+    paymentLinkExpiresAt?: true
     dueDate?: true
     sentAt?: true
+    lastReminderAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8733,8 +11043,11 @@ export namespace Prisma {
     paymentProvider?: true
     paymentRef?: true
     paidAt?: true
+    paymentLinkUrl?: true
+    paymentLinkExpiresAt?: true
     dueDate?: true
     sentAt?: true
+    lastReminderAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8759,8 +11072,11 @@ export namespace Prisma {
     paymentProvider?: true
     paymentRef?: true
     paidAt?: true
+    paymentLinkUrl?: true
+    paymentLinkExpiresAt?: true
     dueDate?: true
     sentAt?: true
+    lastReminderAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8872,8 +11188,11 @@ export namespace Prisma {
     paymentProvider: string | null
     paymentRef: string | null
     paidAt: Date | null
+    paymentLinkUrl: string | null
+    paymentLinkExpiresAt: Date | null
     dueDate: Date | null
     sentAt: Date | null
+    lastReminderAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: InvoiceCountAggregateOutputType | null
@@ -8917,8 +11236,11 @@ export namespace Prisma {
     paymentProvider?: boolean
     paymentRef?: boolean
     paidAt?: boolean
+    paymentLinkUrl?: boolean
+    paymentLinkExpiresAt?: boolean
     dueDate?: boolean
     sentAt?: boolean
+    lastReminderAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quote?: boolean | Invoice$quoteArgs<ExtArgs>
@@ -8945,8 +11267,11 @@ export namespace Prisma {
     paymentProvider?: boolean
     paymentRef?: boolean
     paidAt?: boolean
+    paymentLinkUrl?: boolean
+    paymentLinkExpiresAt?: boolean
     dueDate?: boolean
     sentAt?: boolean
+    lastReminderAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quote?: boolean | Invoice$quoteArgs<ExtArgs>
@@ -8973,8 +11298,11 @@ export namespace Prisma {
     paymentProvider?: boolean
     paymentRef?: boolean
     paidAt?: boolean
+    paymentLinkUrl?: boolean
+    paymentLinkExpiresAt?: boolean
     dueDate?: boolean
     sentAt?: boolean
+    lastReminderAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quote?: boolean | Invoice$quoteArgs<ExtArgs>
@@ -9001,13 +11329,16 @@ export namespace Prisma {
     paymentProvider?: boolean
     paymentRef?: boolean
     paidAt?: boolean
+    paymentLinkUrl?: boolean
+    paymentLinkExpiresAt?: boolean
     dueDate?: boolean
     sentAt?: boolean
+    lastReminderAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "status" | "customerName" | "customerEmail" | "companyName" | "subtotalAmount" | "taxAmount" | "totalAmount" | "currency" | "notes" | "lineItems" | "quoteId" | "leadId" | "serviceSlug" | "productSlug" | "paymentProvider" | "paymentRef" | "paidAt" | "dueDate" | "sentAt" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+  export type InvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number" | "status" | "customerName" | "customerEmail" | "companyName" | "subtotalAmount" | "taxAmount" | "totalAmount" | "currency" | "notes" | "lineItems" | "quoteId" | "leadId" | "serviceSlug" | "productSlug" | "paymentProvider" | "paymentRef" | "paidAt" | "paymentLinkUrl" | "paymentLinkExpiresAt" | "dueDate" | "sentAt" | "lastReminderAt" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
   export type InvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quote?: boolean | Invoice$quoteArgs<ExtArgs>
     lead?: boolean | Invoice$leadArgs<ExtArgs>
@@ -9047,8 +11378,11 @@ export namespace Prisma {
       paymentProvider: string | null
       paymentRef: string | null
       paidAt: Date | null
+      paymentLinkUrl: string | null
+      paymentLinkExpiresAt: Date | null
       dueDate: Date | null
       sentAt: Date | null
+      lastReminderAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["invoice"]>
@@ -9495,8 +11829,11 @@ export namespace Prisma {
     readonly paymentProvider: FieldRef<"Invoice", 'String'>
     readonly paymentRef: FieldRef<"Invoice", 'String'>
     readonly paidAt: FieldRef<"Invoice", 'DateTime'>
+    readonly paymentLinkUrl: FieldRef<"Invoice", 'String'>
+    readonly paymentLinkExpiresAt: FieldRef<"Invoice", 'DateTime'>
     readonly dueDate: FieldRef<"Invoice", 'DateTime'>
     readonly sentAt: FieldRef<"Invoice", 'DateTime'>
+    readonly lastReminderAt: FieldRef<"Invoice", 'DateTime'>
     readonly createdAt: FieldRef<"Invoice", 'DateTime'>
     readonly updatedAt: FieldRef<"Invoice", 'DateTime'>
   }
@@ -79643,6 +81980,31 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+  export const SequenceScalarFieldEnum: {
+    key: 'key',
+    value: 'value'
+  };
+
+  export type SequenceScalarFieldEnum = (typeof SequenceScalarFieldEnum)[keyof typeof SequenceScalarFieldEnum]
+
+
+  export const PricingItemScalarFieldEnum: {
+    id: 'id',
+    kind: 'kind',
+    slug: 'slug',
+    name: 'name',
+    description: 'description',
+    defaultUnitAmount: 'defaultUnitAmount',
+    defaultCurrency: 'defaultCurrency',
+    isActive: 'isActive',
+    sortOrder: 'sortOrder',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PricingItemScalarFieldEnum = (typeof PricingItemScalarFieldEnum)[keyof typeof PricingItemScalarFieldEnum]
+
+
   export const QuoteScalarFieldEnum: {
     id: 'id',
     number: 'number',
@@ -79688,8 +82050,11 @@ export namespace Prisma {
     paymentProvider: 'paymentProvider',
     paymentRef: 'paymentRef',
     paidAt: 'paidAt',
+    paymentLinkUrl: 'paymentLinkUrl',
+    paymentLinkExpiresAt: 'paymentLinkExpiresAt',
     dueDate: 'dueDate',
     sentAt: 'sentAt',
+    lastReminderAt: 'lastReminderAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -80784,6 +83149,14 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   export const JsonNullValueFilter: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull,
@@ -80791,14 +83164,6 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -80817,6 +83182,55 @@ export namespace Prisma {
    * Reference to a field of type 'String[]'
    */
   export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PricingItemKind'
+   */
+  export type EnumPricingItemKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PricingItemKind'>
+    
+
+
+  /**
+   * Reference to a field of type 'PricingItemKind[]'
+   */
+  export type ListEnumPricingItemKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PricingItemKind[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -80849,34 +83263,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
    * Reference to a field of type 'InvoiceStatus'
    */
   export type EnumInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceStatus'>
@@ -80901,13 +83287,6 @@ export namespace Prisma {
    * Reference to a field of type 'PublishStatus[]'
    */
   export type ListEnumPublishStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PublishStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -81068,6 +83447,129 @@ export namespace Prisma {
    */
 
 
+  export type SequenceWhereInput = {
+    AND?: SequenceWhereInput | SequenceWhereInput[]
+    OR?: SequenceWhereInput[]
+    NOT?: SequenceWhereInput | SequenceWhereInput[]
+    key?: StringFilter<"Sequence"> | string
+    value?: IntFilter<"Sequence"> | number
+  }
+
+  export type SequenceOrderByWithRelationInput = {
+    key?: SortOrder
+    value?: SortOrder
+  }
+
+  export type SequenceWhereUniqueInput = Prisma.AtLeast<{
+    key?: string
+    AND?: SequenceWhereInput | SequenceWhereInput[]
+    OR?: SequenceWhereInput[]
+    NOT?: SequenceWhereInput | SequenceWhereInput[]
+    value?: IntFilter<"Sequence"> | number
+  }, "key">
+
+  export type SequenceOrderByWithAggregationInput = {
+    key?: SortOrder
+    value?: SortOrder
+    _count?: SequenceCountOrderByAggregateInput
+    _avg?: SequenceAvgOrderByAggregateInput
+    _max?: SequenceMaxOrderByAggregateInput
+    _min?: SequenceMinOrderByAggregateInput
+    _sum?: SequenceSumOrderByAggregateInput
+  }
+
+  export type SequenceScalarWhereWithAggregatesInput = {
+    AND?: SequenceScalarWhereWithAggregatesInput | SequenceScalarWhereWithAggregatesInput[]
+    OR?: SequenceScalarWhereWithAggregatesInput[]
+    NOT?: SequenceScalarWhereWithAggregatesInput | SequenceScalarWhereWithAggregatesInput[]
+    key?: StringWithAggregatesFilter<"Sequence"> | string
+    value?: IntWithAggregatesFilter<"Sequence"> | number
+  }
+
+  export type PricingItemWhereInput = {
+    AND?: PricingItemWhereInput | PricingItemWhereInput[]
+    OR?: PricingItemWhereInput[]
+    NOT?: PricingItemWhereInput | PricingItemWhereInput[]
+    id?: StringFilter<"PricingItem"> | string
+    kind?: EnumPricingItemKindFilter<"PricingItem"> | $Enums.PricingItemKind
+    slug?: StringFilter<"PricingItem"> | string
+    name?: StringFilter<"PricingItem"> | string
+    description?: StringNullableFilter<"PricingItem"> | string | null
+    defaultUnitAmount?: IntNullableFilter<"PricingItem"> | number | null
+    defaultCurrency?: StringFilter<"PricingItem"> | string
+    isActive?: BoolFilter<"PricingItem"> | boolean
+    sortOrder?: IntFilter<"PricingItem"> | number
+    createdAt?: DateTimeFilter<"PricingItem"> | Date | string
+    updatedAt?: DateTimeFilter<"PricingItem"> | Date | string
+  }
+
+  export type PricingItemOrderByWithRelationInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    defaultUnitAmount?: SortOrderInput | SortOrder
+    defaultCurrency?: SortOrder
+    isActive?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PricingItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: PricingItemWhereInput | PricingItemWhereInput[]
+    OR?: PricingItemWhereInput[]
+    NOT?: PricingItemWhereInput | PricingItemWhereInput[]
+    kind?: EnumPricingItemKindFilter<"PricingItem"> | $Enums.PricingItemKind
+    name?: StringFilter<"PricingItem"> | string
+    description?: StringNullableFilter<"PricingItem"> | string | null
+    defaultUnitAmount?: IntNullableFilter<"PricingItem"> | number | null
+    defaultCurrency?: StringFilter<"PricingItem"> | string
+    isActive?: BoolFilter<"PricingItem"> | boolean
+    sortOrder?: IntFilter<"PricingItem"> | number
+    createdAt?: DateTimeFilter<"PricingItem"> | Date | string
+    updatedAt?: DateTimeFilter<"PricingItem"> | Date | string
+  }, "id" | "slug">
+
+  export type PricingItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    defaultUnitAmount?: SortOrderInput | SortOrder
+    defaultCurrency?: SortOrder
+    isActive?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PricingItemCountOrderByAggregateInput
+    _avg?: PricingItemAvgOrderByAggregateInput
+    _max?: PricingItemMaxOrderByAggregateInput
+    _min?: PricingItemMinOrderByAggregateInput
+    _sum?: PricingItemSumOrderByAggregateInput
+  }
+
+  export type PricingItemScalarWhereWithAggregatesInput = {
+    AND?: PricingItemScalarWhereWithAggregatesInput | PricingItemScalarWhereWithAggregatesInput[]
+    OR?: PricingItemScalarWhereWithAggregatesInput[]
+    NOT?: PricingItemScalarWhereWithAggregatesInput | PricingItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PricingItem"> | string
+    kind?: EnumPricingItemKindWithAggregatesFilter<"PricingItem"> | $Enums.PricingItemKind
+    slug?: StringWithAggregatesFilter<"PricingItem"> | string
+    name?: StringWithAggregatesFilter<"PricingItem"> | string
+    description?: StringNullableWithAggregatesFilter<"PricingItem"> | string | null
+    defaultUnitAmount?: IntNullableWithAggregatesFilter<"PricingItem"> | number | null
+    defaultCurrency?: StringWithAggregatesFilter<"PricingItem"> | string
+    isActive?: BoolWithAggregatesFilter<"PricingItem"> | boolean
+    sortOrder?: IntWithAggregatesFilter<"PricingItem"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PricingItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PricingItem"> | Date | string
+  }
+
   export type QuoteWhereInput = {
     AND?: QuoteWhereInput | QuoteWhereInput[]
     OR?: QuoteWhereInput[]
@@ -81221,8 +83723,11 @@ export namespace Prisma {
     paymentProvider?: StringNullableFilter<"Invoice"> | string | null
     paymentRef?: StringNullableFilter<"Invoice"> | string | null
     paidAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    paymentLinkUrl?: StringNullableFilter<"Invoice"> | string | null
+    paymentLinkExpiresAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     sentAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    lastReminderAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     quote?: XOR<QuoteNullableScalarRelationFilter, QuoteWhereInput> | null
@@ -81249,8 +83754,11 @@ export namespace Prisma {
     paymentProvider?: SortOrderInput | SortOrder
     paymentRef?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
+    paymentLinkUrl?: SortOrderInput | SortOrder
+    paymentLinkExpiresAt?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     sentAt?: SortOrderInput | SortOrder
+    lastReminderAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quote?: QuoteOrderByWithRelationInput
@@ -81280,8 +83788,11 @@ export namespace Prisma {
     paymentProvider?: StringNullableFilter<"Invoice"> | string | null
     paymentRef?: StringNullableFilter<"Invoice"> | string | null
     paidAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    paymentLinkUrl?: StringNullableFilter<"Invoice"> | string | null
+    paymentLinkExpiresAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     sentAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    lastReminderAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     quote?: XOR<QuoteNullableScalarRelationFilter, QuoteWhereInput> | null
@@ -81308,8 +83819,11 @@ export namespace Prisma {
     paymentProvider?: SortOrderInput | SortOrder
     paymentRef?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
+    paymentLinkUrl?: SortOrderInput | SortOrder
+    paymentLinkExpiresAt?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     sentAt?: SortOrderInput | SortOrder
+    lastReminderAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: InvoiceCountOrderByAggregateInput
@@ -81342,8 +83856,11 @@ export namespace Prisma {
     paymentProvider?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
     paymentRef?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
     paidAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
+    paymentLinkUrl?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    paymentLinkExpiresAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
     dueDate?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
     sentAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
+    lastReminderAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
   }
@@ -86819,6 +89336,139 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"KbArticle"> | Date | string
   }
 
+  export type SequenceCreateInput = {
+    key: string
+    value?: number
+  }
+
+  export type SequenceUncheckedCreateInput = {
+    key: string
+    value?: number
+  }
+
+  export type SequenceUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    value?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type SequenceUncheckedUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    value?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type SequenceCreateManyInput = {
+    key: string
+    value?: number
+  }
+
+  export type SequenceUpdateManyMutationInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    value?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type SequenceUncheckedUpdateManyInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    value?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PricingItemCreateInput = {
+    id?: string
+    kind?: $Enums.PricingItemKind
+    slug: string
+    name: string
+    description?: string | null
+    defaultUnitAmount?: number | null
+    defaultCurrency?: string
+    isActive?: boolean
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PricingItemUncheckedCreateInput = {
+    id?: string
+    kind?: $Enums.PricingItemKind
+    slug: string
+    name: string
+    description?: string | null
+    defaultUnitAmount?: number | null
+    defaultCurrency?: string
+    isActive?: boolean
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PricingItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumPricingItemKindFieldUpdateOperationsInput | $Enums.PricingItemKind
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultUnitAmount?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultCurrency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PricingItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumPricingItemKindFieldUpdateOperationsInput | $Enums.PricingItemKind
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultUnitAmount?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultCurrency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PricingItemCreateManyInput = {
+    id?: string
+    kind?: $Enums.PricingItemKind
+    slug: string
+    name: string
+    description?: string | null
+    defaultUnitAmount?: number | null
+    defaultCurrency?: string
+    isActive?: boolean
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PricingItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumPricingItemKindFieldUpdateOperationsInput | $Enums.PricingItemKind
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultUnitAmount?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultCurrency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PricingItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumPricingItemKindFieldUpdateOperationsInput | $Enums.PricingItemKind
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultUnitAmount?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultCurrency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type QuoteCreateInput = {
     id?: string
     number: string
@@ -86994,8 +89644,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quote?: QuoteCreateNestedOneWithoutInvoicesInput
@@ -87022,8 +89675,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -87046,8 +89702,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quote?: QuoteUpdateOneWithoutInvoicesNestedInput
@@ -87074,8 +89733,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -87100,8 +89762,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -87124,8 +89789,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -87150,8 +89818,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -93495,11 +96166,79 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type EnumQuoteStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type SequenceCountOrderByAggregateInput = {
+    key?: SortOrder
+    value?: SortOrder
+  }
+
+  export type SequenceAvgOrderByAggregateInput = {
+    value?: SortOrder
+  }
+
+  export type SequenceMaxOrderByAggregateInput = {
+    key?: SortOrder
+    value?: SortOrder
+  }
+
+  export type SequenceMinOrderByAggregateInput = {
+    key?: SortOrder
+    value?: SortOrder
+  }
+
+  export type SequenceSumOrderByAggregateInput = {
+    value?: SortOrder
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type EnumPricingItemKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.PricingItemKind | EnumPricingItemKindFieldRefInput<$PrismaModel>
+    in?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumPricingItemKindFilter<$PrismaModel> | $Enums.PricingItemKind
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -93515,6 +96254,163 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type PricingItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    defaultUnitAmount?: SortOrder
+    defaultCurrency?: SortOrder
+    isActive?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PricingItemAvgOrderByAggregateInput = {
+    defaultUnitAmount?: SortOrder
+    sortOrder?: SortOrder
+  }
+
+  export type PricingItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    defaultUnitAmount?: SortOrder
+    defaultCurrency?: SortOrder
+    isActive?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PricingItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    defaultUnitAmount?: SortOrder
+    defaultCurrency?: SortOrder
+    isActive?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PricingItemSumOrderByAggregateInput = {
+    defaultUnitAmount?: SortOrder
+    sortOrder?: SortOrder
+  }
+
+  export type EnumPricingItemKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PricingItemKind | EnumPricingItemKindFieldRefInput<$PrismaModel>
+    in?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumPricingItemKindWithAggregatesFilter<$PrismaModel> | $Enums.PricingItemKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPricingItemKindFilter<$PrismaModel>
+    _max?: NestedEnumPricingItemKindFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type EnumQuoteStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -93540,17 +96436,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -93562,17 +96447,6 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
   export type LeadNullableScalarRelationFilter = {
     is?: LeadWhereInput | null
     isNot?: LeadWhereInput | null
@@ -93582,11 +96456,6 @@ export namespace Prisma {
     every?: InvoiceWhereInput
     some?: InvoiceWhereInput
     none?: InvoiceWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type InvoiceOrderByRelationAggregateInput = {
@@ -93669,24 +96538,6 @@ export namespace Prisma {
     totalAmount?: SortOrder
   }
 
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
   export type EnumQuoteStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
     in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
@@ -93695,24 +96546,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumQuoteStatusFilter<$PrismaModel>
     _max?: NestedEnumQuoteStatusFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -93741,22 +96574,6 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -93769,20 +96586,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type EnumInvoiceStatusFilter<$PrismaModel = never> = {
@@ -93840,8 +96643,11 @@ export namespace Prisma {
     paymentProvider?: SortOrder
     paymentRef?: SortOrder
     paidAt?: SortOrder
+    paymentLinkUrl?: SortOrder
+    paymentLinkExpiresAt?: SortOrder
     dueDate?: SortOrder
     sentAt?: SortOrder
+    lastReminderAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -93871,8 +96677,11 @@ export namespace Prisma {
     paymentProvider?: SortOrder
     paymentRef?: SortOrder
     paidAt?: SortOrder
+    paymentLinkUrl?: SortOrder
+    paymentLinkExpiresAt?: SortOrder
     dueDate?: SortOrder
     sentAt?: SortOrder
+    lastReminderAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -93896,8 +96705,11 @@ export namespace Prisma {
     paymentProvider?: SortOrder
     paymentRef?: SortOrder
     paidAt?: SortOrder
+    paymentLinkUrl?: SortOrder
+    paymentLinkExpiresAt?: SortOrder
     dueDate?: SortOrder
     sentAt?: SortOrder
+    lastReminderAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -94128,11 +96940,6 @@ export namespace Prisma {
     order?: SortOrder
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type CaseStudyMetricListRelationFilter = {
     every?: CaseStudyMetricWhereInput
     some?: CaseStudyMetricWhereInput
@@ -94219,14 +97026,6 @@ export namespace Prisma {
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type CaseStudyScalarRelationFilter = {
@@ -95500,17 +98299,6 @@ export namespace Prisma {
     rollout?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type MediaAssetCountOrderByAggregateInput = {
     id?: SortOrder
     key?: SortOrder
@@ -95563,22 +98351,6 @@ export namespace Prisma {
     bytes?: SortOrder
     width?: SortOrder
     height?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumLeadStageFilter<$PrismaModel = never> = {
@@ -97621,6 +100393,42 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumPricingItemKindFieldUpdateOperationsInput = {
+    set?: $Enums.PricingItemKind
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
   export type LeadCreateNestedOneWithoutQuotesInput = {
     create?: XOR<LeadCreateWithoutQuotesInput, LeadUncheckedCreateWithoutQuotesInput>
     connectOrCreate?: LeadCreateOrConnectWithoutQuotesInput
@@ -97641,32 +100449,12 @@ export namespace Prisma {
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
-  }
-
   export type EnumQuoteStatusFieldUpdateOperationsInput = {
     set?: $Enums.QuoteStatus
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
   }
 
   export type LeadUpdateOneWithoutQuotesNestedInput = {
@@ -98035,10 +100823,6 @@ export namespace Prisma {
     create?: XOR<SolutionCreateWithoutCaseStudiesInput, SolutionUncheckedCreateWithoutCaseStudiesInput> | SolutionCreateWithoutCaseStudiesInput[] | SolutionUncheckedCreateWithoutCaseStudiesInput[]
     connectOrCreate?: SolutionCreateOrConnectWithoutCaseStudiesInput | SolutionCreateOrConnectWithoutCaseStudiesInput[]
     connect?: SolutionWhereUniqueInput | SolutionWhereUniqueInput[]
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type CaseStudyUpdatetechnologiesInput = {
@@ -99166,14 +101950,6 @@ export namespace Prisma {
 
   export type NullableBoolFieldUpdateOperationsInput = {
     set?: boolean | null
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type UserCreateNestedOneWithoutAssignedLeadsInput = {
@@ -100788,27 +103564,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedEnumQuoteStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -100818,28 +103573,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -100857,67 +103590,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuoteStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumQuoteStatusFilter<$PrismaModel>
-    _max?: NestedEnumQuoteStatusFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -100947,18 +103619,114 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+  export type NestedEnumPricingItemKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.PricingItemKind | EnumPricingItemKindFieldRefInput<$PrismaModel>
+    in?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumPricingItemKindFilter<$PrismaModel> | $Enums.PricingItemKind
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedEnumPricingItemKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PricingItemKind | EnumPricingItemKindFieldRefInput<$PrismaModel>
+    in?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PricingItemKind[] | ListEnumPricingItemKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumPricingItemKindWithAggregatesFilter<$PrismaModel> | $Enums.PricingItemKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPricingItemKindFilter<$PrismaModel>
+    _max?: NestedEnumPricingItemKindFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -100973,6 +103741,71 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumQuoteStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuoteStatus | EnumQuoteStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuoteStatus[] | ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuoteStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuoteStatusFilter<$PrismaModel>
+    _max?: NestedEnumQuoteStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumInvoiceStatusFilter<$PrismaModel = never> = {
@@ -101032,19 +103865,6 @@ export namespace Prisma {
     _max?: NestedEnumPublishStatusFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedEnumOriginFilter<$PrismaModel = never> = {
     equals?: $Enums.Origin | EnumOriginFieldRefInput<$PrismaModel>
     in?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
@@ -101073,33 +103893,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedBoolNullableFilter<$PrismaModel>
     _max?: NestedBoolNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumLeadStageFilter<$PrismaModel = never> = {
@@ -101398,8 +104191,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     lead?: LeadCreateNestedOneWithoutInvoicesInput
@@ -101424,8 +104220,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -101578,8 +104377,11 @@ export namespace Prisma {
     paymentProvider?: StringNullableFilter<"Invoice"> | string | null
     paymentRef?: StringNullableFilter<"Invoice"> | string | null
     paidAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    paymentLinkUrl?: StringNullableFilter<"Invoice"> | string | null
+    paymentLinkExpiresAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     sentAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    lastReminderAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
   }
@@ -105981,8 +108783,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quote?: QuoteCreateNestedOneWithoutInvoicesInput
@@ -106007,8 +108812,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -111000,8 +113808,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -111024,8 +113835,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lead?: LeadUpdateOneWithoutInvoicesNestedInput
@@ -111050,8 +113864,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -111075,8 +113892,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -111986,8 +114806,11 @@ export namespace Prisma {
     paymentProvider?: string | null
     paymentRef?: string | null
     paidAt?: Date | string | null
+    paymentLinkUrl?: string | null
+    paymentLinkExpiresAt?: Date | string | null
     dueDate?: Date | string | null
     sentAt?: Date | string | null
+    lastReminderAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -112133,8 +114956,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quote?: QuoteUpdateOneWithoutInvoicesNestedInput
@@ -112159,8 +114985,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -112184,8 +115013,11 @@ export namespace Prisma {
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentRef?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentLinkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentLinkExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastReminderAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

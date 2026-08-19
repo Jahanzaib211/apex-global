@@ -19,6 +19,7 @@ enum LeadSourceType {
   DEMO_REQUEST
   REFERRAL
   MANUAL
+  SIGNUP
 }
 
 model Lead {

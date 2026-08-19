@@ -1,32 +1,38 @@
 import { prisma } from "@apex/db";
 
 /**
- * Generate the next sequential reference for a record, e.g. `QT-0007`.
+ * Allocate the next sequential reference for a record, e.g. `INV-0007`.
  *
- * Reads the latest record of the given model, parses the trailing number from its
- * `number` field, and returns the next one, zero-padded to `pad`. Wrapped in a
- * short retry loop: if two operators save at the same instant the unique
- * constraint on `number` rejects the collision and we recompute. Never loops
- * forever — after a handful of attempts it throws so the caller can surface a
- * clear error rather than hanging.
+ * A `sequences` row per (model, prefix) is the single counter, locked with
+ * SELECT FOR UPDATE inside the transaction — two operators saving at the same
+ * instant queue behind each other instead of racing to the same number.
+ * First use of a key seeds the counter from the highest number already in the
+ * table, so pre-existing invoices/quotes are never collided with.
  */
 export async function nextSequential(
   model: "quote" | "invoice",
   prefix: string,
   pad = 4,
 ): Promise<string> {
-  const delegate = (
-    prisma as unknown as Record<
-      string,
-      { findFirst: (args: unknown) => Promise<{ number: string } | null> }
-    >
-  )[model];
-  if (!delegate) throw new Error(`Unknown sequential model: ${model}`);
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const latest = await delegate.findFirst({ orderBy: { createdAt: "desc" } });
-    const seq = latest ? (parseInt(latest.number.replace(/\D/g, ""), 10) || 0) + 1 : 1;
-    const candidate = `${prefix}-${String(seq).padStart(pad, "0")}`;
-    return candidate;
-  }
-  throw new Error(`Could not allocate a ${prefix} number`);
+  const key = `${model}:${prefix}`;
+  return prisma.$transaction(async (tx) => {
+    const rows = await tx.$queryRaw<{ value: number }[]>`
+      SELECT value FROM sequences WHERE key = ${key} FOR UPDATE`;
+    let value = rows[0]?.value ?? 0;
+
+    if (rows.length === 0) {
+      const delegate = (tx as unknown as Record<
+        string,
+        { findFirst: (args: unknown) => Promise<{ number: string } | null> }
+      >)[model];
+      if (!delegate) throw new Error(`Unknown sequential model: ${model}`);
+      const latest = await delegate.findFirst({ orderBy: { createdAt: "desc" } });
+      value = latest ? parseInt(latest.number.replace(/\D/g, ""), 10) || 0 : 0;
+      await tx.sequence.create({ data: { key, value } });
+    }
+
+    value += 1;
+    await tx.sequence.update({ where: { key }, data: { value } });
+    return `${prefix}-${String(value).padStart(pad, "0")}`;
+  });
 }

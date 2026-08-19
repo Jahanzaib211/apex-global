@@ -138,6 +138,16 @@ export const settings = [
   { key: "ops.public_status", group: "operations", label: "Public status", value: "operational" },
   { key: "ops.readonly_mode", group: "operations", label: "Read-only mode", value: false },
   { key: "ops.status_banner", group: "operations", label: "Status banner text", value: "" },
+
+  // ── Email routing (edited from the console /integrations page) ──
+  // Recipient for new-lead notifications. Seeded to the sales inbox; the
+  // console UI overrides it without a redeploy.
+  {
+    key: "notify.lead_to",
+    group: "notifications",
+    label: "New-lead notification email",
+    value: "sales@apexgroupcompanies.com",
+  },
 ] as const;
 
 export const roles = [

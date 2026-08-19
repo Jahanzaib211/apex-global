@@ -2,6 +2,7 @@ import { prisma } from "@apex/db";
 import { SectionHeading } from "@apex/ui";
 import Link from "next/link";
 import { requirePortalUserAccount } from "@/lib/portal/auth";
+import { invoiceHeading, invoiceSortRank } from "@/lib/portal/billing";
 
 export const dynamic = "force-dynamic";
 
@@ -10,9 +11,13 @@ export default async function PortalInvoicesPage() {
 
   const invoices = await prisma.invoice.findMany({
     where: { lead: { portalAccounts: { some: { id: user.portalAccountId } } } },
-    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-    include: { quote: { select: { serviceSlug: true, productSlug: true } } },
+    include: {
+      quote: { select: { serviceSlug: true, productSlug: true } },
+      lead: { select: { interestSlug: true } },
+    },
   });
+  invoices.sort((a, b) => invoiceSortRank(a.status) - invoiceSortRank(b.status) ||
+    b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <div className="flex flex-col gap-8">
@@ -39,9 +44,7 @@ export default async function PortalInvoicesPage() {
                 <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--ink-muted)] uppercase">
                   {inv.number}
                 </p>
-                <p className="mt-1 text-lg font-semibold">
-                  {inv.quote?.serviceSlug ?? inv.quote?.productSlug ?? "Custom engagement"}
-                </p>
+                <p className="mt-1 text-lg font-semibold">{invoiceHeading(inv)}</p>
                 <p className="text-sm text-[var(--ink-secondary)]">
                   Issued {inv.createdAt.toLocaleDateString("en-GB")}
                   {inv.dueDate ? ` · Due ${inv.dueDate.toLocaleDateString("en-GB")}` : ""}

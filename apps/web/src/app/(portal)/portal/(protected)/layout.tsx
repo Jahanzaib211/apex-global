@@ -4,6 +4,8 @@ import Link from "next/link";
 import { issueCsrfToken, signCsrf } from "@apex/auth";
 import { requirePortalUser } from "@/lib/portal/auth";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Portal chrome.
  *

@@ -12,6 +12,14 @@ const nextConfig = {
 
   // Self-contained server bundle for the PM2 deploy.
 
+  async rewrites() {
+    return [
+      // The /hyperswitch-api/* paths are handled by the route handler at
+      // apps/web/src/app/hyperswitch-api/[...path]/route.ts, which adds the
+      // API key and wallets-field shims the self-hosted router requires.
+    ];
+  },
+
   async headers() {
     return [
       {
@@ -19,7 +27,6 @@ const nextConfig = {
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "DENY" },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",

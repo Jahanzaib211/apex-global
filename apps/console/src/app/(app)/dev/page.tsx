@@ -132,6 +132,9 @@ export default async function DevHealthPage() {
 
   async function refresh() {
     "use server";
+    // Re-runs the ping checks. Not a state change — revalidation only — so
+    // no audit row is written. The permission check keeps the button safe to
+    // expose to anyone who can reach this page.
     await requirePermission("core:admin");
     redirect("/dev");
   }

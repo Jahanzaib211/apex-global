@@ -144,7 +144,18 @@ services:
     image: juspaydotin/hyperswitch-control-center:latest
     container_name: hyperswitch-control-center
     environment:
-      API_BASE_URL: http://hyperswitch-router:8080
+      # The CC image does NOT read API_BASE_URL. Its server overrides
+      # dist/server/config/config.toml through env vars named
+      # "<domain>__<section>__<key>", and serves the result at /config/feature;
+      # the SPA reads that into window._env_. "default" is the fallback domain.
+      #
+      # These URLs are fetched by the *browser*, not by this container, so they
+      # must be host-reachable — a docker-network hostname (the old
+      # "http://hyperswitch-router:8080") is unresolvable from the browser and
+      # every API call, login included, fails. The image's stock defaults point
+      # at :9000/:9050, which are not the ports we publish either.
+      default__endpoints__api_url: http://127.0.0.1:8084
+      default__endpoints__sdk_url: http://127.0.0.1:9056/HyperLoader.js
       CONTROL_CENTER_ENV: docker
       CONTROL_CENTER_PORT: "9000"
     ports:

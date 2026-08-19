@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Props {
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export function LoginForm({ next, initialError, sent, oauthError }: Props) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [message, setMessage] = useState<string | null>(
     sent ? "We sent you a magic sign-in link. Check your inbox." : null,
@@ -38,7 +36,13 @@ export function LoginForm({ next, initialError, sent, oauthError }: Props) {
       });
       const body = (await res.json()) as { ok?: boolean; next?: string; error?: string };
       if (res.ok && body.ok) {
-        startTransition(() => router.push(body.next ?? "/portal/"));
+        // Hard navigation so the (protected) layout is re-rendered with the
+        // new session cookie. A soft `router.push` would be served from the
+        // App Router's client-side cache and the previous user's name would
+        // briefly appear in the header on the destination page.
+        startTransition(() => {
+          window.location.assign(body.next ?? "/portal/");
+        });
         return;
       }
       setError(body.error ?? "Sign-in failed.");

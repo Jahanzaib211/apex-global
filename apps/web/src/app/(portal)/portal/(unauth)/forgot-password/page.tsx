@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ForgotForm } from "@/app/(portal)/portal/(unauth)/forgot-password/forgot-form";
+import { redirectIfSignedIn } from "@/lib/portal/auth";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -13,6 +14,10 @@ export default async function ForgotPasswordPage({
 }: {
   searchParams: Promise<{ sent?: string; error?: string }>;
 }) {
+  // A signed-in user who lands here gets bounced — same as login, signup
+  // and reset-password. The form is harmless either way, but the UX
+  // diverges from the rest of the unauth surface without this.
+  await redirectIfSignedIn("/portal/");
   const { sent, error } = await searchParams;
 
   return (

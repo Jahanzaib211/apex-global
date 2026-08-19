@@ -32,12 +32,15 @@ interface SmtpConfig {
   user?: string;
   password?: string;
   from: string;
+  /** Optional default Reply-To applied to every outbound message. */
+  replyTo?: string;
 }
 
 function loadSmtpConfig(): SmtpConfig | null {
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT ?? 587);
-  const from = process.env.SMTP_FROM ?? "Apex Global Tech Solution <no-reply@apexglobal.example>";
+  const from =
+    process.env.SMTP_FROM ?? "Apex Global Tech Solution <no-reply@apexgroupcompanies.com>";
   if (!host) return null;
   return {
     host,
@@ -45,6 +48,7 @@ function loadSmtpConfig(): SmtpConfig | null {
     user: process.env.SMTP_USER || undefined,
     password: process.env.SMTP_PASSWORD || undefined,
     from,
+    replyTo: process.env.SMTP_REPLY_TO || undefined,
   };
 }
 
@@ -52,6 +56,7 @@ class SmtpMailer implements Mailer {
   constructor(
     private readonly transporter: Transporter,
     private readonly from: string,
+    private readonly replyTo?: string,
   ) {}
 
   async send(input: SendInput): Promise<void> {
@@ -61,7 +66,7 @@ class SmtpMailer implements Mailer {
       subject: input.subject,
       text: input.text,
       html: input.html ?? input.text,
-      replyTo: input.replyTo,
+      replyTo: input.replyTo ?? this.replyTo,
     });
   }
 }
@@ -110,7 +115,7 @@ function getMailer(cfg: SmtpConfig | null): Mailer {
     // nosemgrep: problem-based-packs.insecure-transport.js-node.bypass-tls-verification.bypass-tls-verification
     tls: insecure ? { rejectUnauthorized: false } : undefined,
   });
-  return new SmtpMailer(transporter, cfg.from);
+  return new SmtpMailer(transporter, cfg.from, cfg.replyTo);
 }
 
 export async function sendEmail(input: SendInput): Promise<void> {
@@ -125,13 +130,21 @@ export async function sendEmail(input: SendInput): Promise<void> {
  * than throwing — email must never crash the caller.
  */
 async function resolveSmtpConfig(): Promise<SmtpConfig | null> {
+  const env = loadSmtpConfig();
+  // A loopback relay (127.0.0.1/localhost/::1) is always an explicit
+  // override — Mailcow on the test host — so it beats any console-managed
+  // integration. Remote env relays do not: the operator controls the real
+  // relay from the console, and .env is the fallback, not the source of truth.
+  if (env && (env.host === "127.0.0.1" || env.host === "localhost" || env.host === "::1")) {
+    return env;
+  }
   try {
     const db = await readSmtpConfigFromDb();
     if (db) return db;
   } catch {
     // fall through to env
   }
-  return loadSmtpConfig();
+  return env;
 }
 
 async function readSmtpConfigFromDb(): Promise<SmtpConfig | null> {
@@ -144,6 +157,7 @@ async function readSmtpConfigFromDb(): Promise<SmtpConfig | null> {
     port?: number | string;
     user?: string;
     from?: string;
+    replyTo?: string;
   };
   if (!cfg.host) return null;
   let password: string | undefined;
@@ -171,7 +185,8 @@ async function readSmtpConfigFromDb(): Promise<SmtpConfig | null> {
     from:
       cfg.from ||
       process.env.SMTP_FROM ||
-      "Apex Global Tech Solution <no-reply@apexglobal.example>",
+      "Apex Global Tech Solution <no-reply@apexgroupcompanies.com>",
+    replyTo: cfg.replyTo || process.env.SMTP_REPLY_TO || undefined,
   };
 }
 
@@ -254,6 +269,11 @@ export async function sendInvitation(input: {
 /**
  * Notify the ops/lead-routing address when a new lead is captured.
  *
+ * The recipient is resolved in three steps, most specific first:
+ *   1. the console-managed `notify.lead_to` Setting (edited on /integrations),
+ *   2. the `LEAD_NOTIFY_TO` env var,
+ *   3. the hard-coded sales inbox as a last resort.
+ *
  * The brand goes in the subject line. Five Apex sites now feed one inbox, and
  * the first routing decision — which team picks this up — is answerable from
  * the notification list without opening anything.
@@ -269,7 +289,18 @@ export async function notifyNewLead(input: {
   interest?: string | null;
   consoleUrl?: string | null;
 }): Promise<void> {
-  const to = process.env.LEAD_NOTIFY_TO ?? "sales@apexgroupcompanies.com";
+  let to = process.env.LEAD_NOTIFY_TO ?? "sales@apexgroupcompanies.com";
+  if (!process.env.LEAD_NOTIFY_TO) {
+    try {
+      const { prisma } = await import("@apex/db");
+      const setting = await prisma.setting.findUnique({ where: { key: "notify.lead_to" } });
+      if (setting && typeof setting.value === "string" && setting.value.trim()) {
+        to = setting.value.trim();
+      }
+    } catch {
+      // DB unavailable — the env/fallback value already set above stands.
+    }
+  }
   const who = input.companyName ? `${input.name} (${input.companyName})` : input.name;
   const brand = input.siteLabel ? `[${input.siteLabel}] ` : "";
   await sendEmail({

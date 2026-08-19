@@ -405,6 +405,12 @@ importers:
       '@apex/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@juspay-tech/hyper-js':
+        specifier: ^2.1.0
+        version: 2.1.0(rescript@11.1.4)
+      '@juspay-tech/react-hyper-js':
+        specifier: ^2.3.0
+        version: 2.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rescript@11.1.4)
       '@types/pg':
         specifier: ^8.21.0
         version: 8.21.0
@@ -1225,6 +1231,15 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@juspay-tech/hyper-js@2.1.0':
+    resolution: {integrity: sha512-q+Inmyd7fl9SpDHatI8nbcOafl/oIa6Wdl1cioyjWVZDifxLLsQvL6EB6DCLW+OE+kVmpWbIk23WjZXqTW3U6A==}
+
+  '@juspay-tech/react-hyper-js@2.3.0':
+    resolution: {integrity: sha512-EILXJqhlqjkY5P6VwOY84ngUD+rzBA70W2APTIZmPrHIp0NT6os9GRw8mjzihOZqN9fJCU5gfP0K0TWCVCEL6w==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     resolution: {integrity: sha512-LCkGo6JDfaBhgST7UpPWgNgLINpcpabaHfyz5OBx75nUYxBsaEPxjnyNjWpeb/xBup/682QnBfRBy2/LvPutZQ==}
     cpu: [arm64]
@@ -1407,6 +1422,17 @@ packages:
       '@types/react':
         optional: true
 
+  '@rescript/core@0.7.0':
+    resolution: {integrity: sha512-5arTnw1EVPvssqq4v+XHkigROoWXYm/3pD+ZyOSeJgnbzMccRibGWb4L6Ss3QBoEkpuCodX06RnLx8Vqa3kECQ==}
+    peerDependencies:
+      rescript: ^10.1.0 || ^11.0.0
+
+  '@rescript/react@0.12.2':
+    resolution: {integrity: sha512-EOF19dLTG4Y9K59JqMjG5yfvIsrMZqfxGC2J/oe9gGgrMiUrzZh3KH9khTcR1Z3Ih0lRViSh0/iYnJz20gGoag==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
   '@rolldown/binding-android-arm64@1.2.4':
     resolution: {integrity: sha512-jHC2cnyKz5xU2fhECtFl8OZ83cYNt13GZQD+0uMJ/X3o+ijmd56okHhTUwxVSHPx1IRVIJEZ1/1pPzeLCU6XKA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1502,6 +1528,9 @@ packages:
 
   '@rushstack/eslint-patch@1.16.1':
     resolution: {integrity: sha512-TvZbIpeKqGQQ7X0zSCvPH9riMSFQFSggnfBjFZ1mEoILW+UuXCKwOoPcgjMwiUtRqFZ8jWhPJc4um14vC6I4ag==}
+
+  '@ryyppy/rescript-promise@2.1.0':
+    resolution: {integrity: sha512-+dW6msBrj2Lr2hbEMX+HoWCvN89qVjl94RwbYWJgHQuj8jm/izdPC0YzxgpGoEFdeAEW2sOozoLcYHxT6o5WXQ==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -3703,6 +3732,11 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
+  rescript@11.1.4:
+    resolution: {integrity: sha512-0bGU0bocihjSC6MsE3TMjHjY0EUpchyrREquLS8VsZ3ohSMD+VHUEwimEfB3kpBI1vYkw3UFZ3WD8R28guz/Vw==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
@@ -4712,6 +4746,22 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@juspay-tech/hyper-js@2.1.0(rescript@11.1.4)':
+    dependencies:
+      '@rescript/core': 0.7.0(rescript@11.1.4)
+    transitivePeerDependencies:
+      - rescript
+
+  '@juspay-tech/react-hyper-js@2.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rescript@11.1.4)':
+    dependencies:
+      '@rescript/core': 0.7.0(rescript@11.1.4)
+      '@rescript/react': 0.12.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@ryyppy/rescript-promise': 2.1.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    transitivePeerDependencies:
+      - rescript
+
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     optional: true
 
@@ -4858,6 +4908,15 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.18
 
+  '@rescript/core@0.7.0(rescript@11.1.4)':
+    dependencies:
+      rescript: 11.1.4
+
+  '@rescript/react@0.12.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
   '@rolldown/binding-android-arm64@1.2.4':
     optional: true
 
@@ -4907,6 +4966,8 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@rushstack/eslint-patch@1.16.1': {}
+
+  '@ryyppy/rescript-promise@2.1.0': {}
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -7452,6 +7513,8 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       set-function-name: 2.0.2
+
+  rescript@11.1.4: {}
 
   resolve-from@4.0.0: {}
 

@@ -60,6 +60,19 @@ export default async function MagicLinkPage({ searchParams }: Props) {
     );
   }
 
+  // Purpose separation: only "sign-in" links land here. A verify-email token
+  // pasted into the magic URL must not mint a session — the two token kinds
+  // share the portal_magic_links table, and a consumer must not accept a
+  // token issued for a different flow.
+  if (link.purpose !== "sign-in") {
+    return (
+      <Shell
+        title="Invalid link"
+        error="This link is not a sign-in link. Request a new one from the sign-in page."
+      />
+    );
+  }
+
   if (!verifyMagicLinkToken(token, link.tokenHash, link.expiresAt)) {
     return (
       <Shell

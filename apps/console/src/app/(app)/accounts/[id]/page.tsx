@@ -6,27 +6,56 @@ import { requirePermission } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { s3Config, presignedPutUrl } from "@apex/integrations";
 import { randomBytes, createHash } from "node:crypto";
-import { sendInvitation } from "@apex/auth";
+import { sendInvitation, approveSignupAccount } from "@apex/auth";
+import { ImpersonateButton } from "@/components/billing/impersonate-button";
 
 export const dynamic = "force-dynamic";
 
 const ROLES: PortalRole[] = ["OWNER", "ADMIN", "MEMBER"];
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ approved?: string; error?: string }> };
 
-export default async function AccountDetailPage({ params }: Props) {
+export default async function AccountDetailPage({ params, searchParams }: Props) {
   await requirePermission("portal:read");
   const { id } = await params;
+  const { approved, error } = await searchParams;
   const account = await prisma.portalAccount.findUnique({
     where: { id },
     include: {
       documents: { orderBy: { createdAt: "desc" } },
       invitations: { where: { acceptedAt: null }, orderBy: { createdAt: "desc" } },
       lead: { select: { id: true, name: true, email: true } },
-      users: { select: { id: true, name: true, email: true } },
+      users: { select: { id: true, name: true, email: true, emailVerifiedAt: true } },
     },
   });
   if (!account) notFound();
+
+  const isSignup = account.slug.startsWith("self-");
+  const needsApproval = isSignup && !account.leadId;
+
+  async function approveAccount() {
+    "use server";
+    const actor = await requirePermission("portal:admin");
+    let created = false;
+    try {
+      const result = await approveSignupAccount(id, {
+        actor,
+        requiresSelfSignup: true,
+      });
+      created = result.created;
+      await audit({
+        actor,
+        action: "portal.account_approved",
+        entityType: "PortalAccount",
+        entityId: id,
+        summary: `Approved self-serve signup → ${created ? "created" : "linked"} lead ${result.leadId}`,
+      });
+    } catch (err) {
+      console.error("[account] approval failed", err);
+      redirect(`/accounts/${id}?error=approve-failed`);
+    }
+    redirect(`/accounts/${id}?approved=1`);
+  }
 
   async function uploadDocument(formData: FormData) {
     "use server";
@@ -143,6 +172,30 @@ export default async function AccountDetailPage({ params }: Props) {
         </Link>
       </div>
 
+      {needsApproval ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-[var(--color-amber-500)] bg-[var(--color-amber-100)] px-4 py-3">
+          <p className="text-sm text-[var(--color-amber-700)]">
+            Self-serve signup waiting for approval. Approving creates a lead in the
+            Leads pipeline and links this account to it.
+          </p>
+          <form action={approveAccount}>
+            <Button type="submit" size="sm">
+              Approve signup
+            </Button>
+          </form>
+        </div>
+      ) : null}
+      {approved ? (
+        <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--color-success-500)] bg-[var(--color-success-100)] px-4 py-3 text-sm text-[var(--color-success-700)]">
+          Signup approved — the account now appears in Leads.
+        </div>
+      ) : null}
+      {error === "approve-failed" ? (
+        <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--color-danger-500)] bg-[var(--color-danger-100)] px-4 py-3 text-sm text-[var(--color-danger-700)]">
+          Could not approve that signup — it may already be linked to a lead.
+        </div>
+      ) : null}
+
       <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
         <h2 className="text-lg font-semibold">Documents</h2>
         <form action={uploadDocument} className="mt-3 flex flex-wrap items-end gap-3">
@@ -184,8 +237,20 @@ export default async function AccountDetailPage({ params }: Props) {
         <h2 className="text-lg font-semibold">Team & invitations</h2>
         <ul className="mt-3 space-y-1 text-sm">
           {account.users.map((u) => (
-            <li key={u.id}>
-              {u.name} — {u.email}
+            <li key={u.id} className="flex items-center justify-between gap-3">
+              <span>
+                {u.name} — {u.email}
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-2xs text-[var(--ink-muted)]">
+                  {u.emailVerifiedAt ? "verified" : "unverified"}
+                </span>
+                <ImpersonateButton
+                  userId={u.id}
+                  disabled={!u.emailVerifiedAt}
+                  aria-label={`Sign in as ${u.name}`}
+                />
+              </span>
             </li>
           ))}
         </ul>

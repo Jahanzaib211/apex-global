@@ -1,0 +1,1 @@
+{"name":"hsproxy","version":"1.0.0","dependencies":{"bcrypt":"^5.1.1","pg":"^8.23.0"}}

@@ -19,10 +19,19 @@ import { currentOAuthRedirectUri } from "@/lib/portal/oauth";
  * OAuth callback.
  *
  * The provider redirects the user here with `?code=...&state=...`. We verify
- * the signed state, exchange the code for tokens, fetch the profile, and
- * either link the OAuth identity to an existing portal user or create a new
- * portal user (only if the email matches an existing invitation — we do not
- * allow self-serve OAuth signup without an invite).
+ * the signed state and nonce, exchange the code for tokens, fetch the
+ * profile, and either link the OAuth identity to an existing portal user
+ * (matched by OAuth link, then by email) or fail closed.
+ *
+ * OAuth is explicitly **not** a signup path: a verified email with no
+ * existing portal user is refused, so the user must be invited by an
+ * operator before they can sign in with Google/Microsoft. Existing users
+ * (including self-serve signup users) can link OAuth to their account by
+ * signing in via email first and using the account page's "Link" button.
+ *
+ * Inactive accounts are refused in both lookup branches: a deactivated
+ * user with a previously-linked OAuth identity is not silently reactivated
+ * by a fresh sign-in attempt.
  */
 export async function GET(
   request: NextRequest,
@@ -89,6 +98,9 @@ export async function GET(
     },
     include: { portalAccount: true },
   });
+  if (user && !user.isActive) {
+    redirect("/portal/login?error=This+account+has+been+deactivated");
+  }
   if (!user) {
     user = await prisma.portalUser.findUnique({
       where: { email: profile.email },

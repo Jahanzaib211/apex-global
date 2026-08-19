@@ -96,11 +96,14 @@ export const billing = defineModule({
   nav: [
     { label: "Quotes", href: "/billing/quotes", permission: "billing:read", icon: "file" },
     { label: "Invoices", href: "/billing/invoices", permission: "billing:read", icon: "receipt" },
+    { label: "Pricing", href: "/pricing", permission: "pricing:read", icon: "tag" },
   ],
   permissions: [
     { key: "billing:read", label: "View invoices and payments" },
     { key: "billing:write", label: "Create and send invoices" },
     { key: "billing:admin", label: "Configure tax, currency and payment providers" },
+    { key: "pricing:read", label: "View the price module catalogue" },
+    { key: "pricing:write", label: "Manage the price module catalogue" },
   ],
 });
 
@@ -199,6 +202,14 @@ export const partner = defineModule({
     "Settings and integrations that describe the relationship between Apex and the engineering partner.",
   status: "active",
   dependsOn: ["core"],
+  nav: [
+    {
+      label: "Integrations",
+      href: "/integrations",
+      permission: "partner:read",
+      icon: "settings",
+    },
+  ],
   permissions: [
     { key: "partner:read", label: "View partner settings and integrations" },
     { key: "partner:write", label: "Manage partner settings and integrations" },

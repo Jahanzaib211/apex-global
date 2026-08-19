@@ -41,8 +41,7 @@ export default async function AcceptInvitationPage({ params, searchParams }: Pro
     include: { portalAccount: true },
   });
 
-  if (!invitation) return <Shell title="Invalid link" body="That invitation is not recognised." />;
-  if (invitation.acceptedAt) {
+  if (!invitation) return <Shell title="Invalid link" body="That invitation is not recognised." />;  if (invitation.acceptedAt) {
     return (
       <Shell
         title="Already accepted"
@@ -58,6 +57,15 @@ export default async function AcceptInvitationPage({ params, searchParams }: Pro
       />
     );
   }
+
+  // OAuth sign-in can only work for an invitee who already has a portal user
+  // (the callback matches by email and fails closed otherwise). A fresh
+  // invitee must accept with a password first; showing the provider buttons
+  // to them just dead-ends at "No portal account exists for that email".
+  const oauthUsable = await prisma.portalUser.findUnique({
+    where: { email: invitation.email },
+    select: { id: true },
+  });
 
   if (saved) {
     return (
@@ -161,18 +169,27 @@ export default async function AcceptInvitationPage({ params, searchParams }: Pro
         </div>
 
         <div className="flex flex-col gap-2">
-          <Link
-            href={`/portal/auth/google/start?next=${encodeURIComponent(invitationPath(token))}`}
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-4 text-sm font-medium transition-colors hover:border-[var(--color-amber-500)]"
-          >
-            Continue with Google
-          </Link>
-          <Link
-            href={`/portal/auth/microsoft/start?next=${encodeURIComponent(invitationPath(token))}`}
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-4 text-sm font-medium transition-colors hover:border-[var(--color-amber-500)]"
-          >
-            Continue with Microsoft
-          </Link>
+          {oauthUsable ? (
+            <>
+              <Link
+                href={`/portal/auth/google/start?next=${encodeURIComponent(invitationPath(token))}`}
+                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-4 text-sm font-medium transition-colors hover:border-[var(--color-amber-500)]"
+              >
+                Continue with Google
+              </Link>
+              <Link
+                href={`/portal/auth/microsoft/start?next=${encodeURIComponent(invitationPath(token))}`}
+                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-4 text-sm font-medium transition-colors hover:border-[var(--color-amber-500)]"
+              >
+                Continue with Microsoft
+              </Link>
+            </>
+          ) : (
+            <p className="text-2xs text-[var(--ink-muted)]">
+              Set a password above to create your account. You can link Google or Microsoft from the
+              account page after signing in.
+            </p>
+          )}
         </div>
       </div>
 

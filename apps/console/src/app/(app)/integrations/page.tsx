@@ -34,7 +34,7 @@ interface HyperswitchCfg {
 export default async function IntegrationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; tested?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; tested?: string; cleared?: string; error?: string }>;
 }) {
   await requirePermission("partner:write");
   const flash = await searchParams;
@@ -47,6 +47,7 @@ export default async function IntegrationsPage({
   const hyperswitch = byProvider.get("hyperswitch");
   const twenty = byProvider.get("twenty-crm");
   const smtp = await prisma.integration.findUnique({ where: { provider: "smtp" } });
+  const leadNotifySetting = await prisma.setting.findUnique({ where: { key: "notify.lead_to" } });
 
   const hsCfg = (hyperswitch?.config ?? {}) as HyperswitchCfg;
   const twCfg = (twenty?.config ?? {}) as TwentyCfg;
@@ -55,6 +56,7 @@ export default async function IntegrationsPage({
     port?: number;
     user?: string;
     from?: string;
+    replyTo?: string;
   };
 
   async function saveHyperswitch(formData: FormData) {
@@ -187,10 +189,15 @@ export default async function IntegrationsPage({
           tag: record.webhookTag,
         });
         const { createHmac } = await import("node:crypto");
-        const ts = String(Math.floor(Date.now() / 1000));
-        const sample = JSON.stringify({ type: "test", data: { id: "test" } });
-        const sig = createHmac("sha256", webhookSecret).update(`${ts}.${sample}`).digest("hex");
-        const ok = client.verifyWebhookSignature(sample, `t=${ts},v1=${sig}`);
+        // Mirror the real scheme exactly: HMAC-SHA512 over the raw body, sent
+        // bare in `x-webhook-signature-512`. Signing the sample any other way
+        // would make this check pass while production webhooks still failed.
+        const sample = JSON.stringify({
+          event_type: "payment_succeeded",
+          content: { object: { payment_id: "test", status: "succeeded" } },
+        });
+        const sig = createHmac("sha512", webhookSecret).update(sample).digest("hex");
+        const ok = client.verifyWebhookSignature(sample, sig);
         webhookNote = ok ? " · webhook secret verifies" : " · webhook secret MISMATCH";
       } catch {
         webhookNote = " · webhook secret unreadable";
@@ -352,6 +359,7 @@ export default async function IntegrationsPage({
     const portRaw = String(formData.get("port") ?? "").trim();
     const user = String(formData.get("user") ?? "").trim();
     const from = String(formData.get("from") ?? "").trim();
+    const replyTo = String(formData.get("replyTo") ?? "").trim();
     const password = String(formData.get("password") ?? "").trim();
     const enabled = formData.get("isEnabled") === "on";
 
@@ -372,6 +380,7 @@ export default async function IntegrationsPage({
           port: Number(portRaw) || 587,
           user: user || undefined,
           from: from || undefined,
+          replyTo: replyTo || undefined,
         },
         ...(sealed
           ? {
@@ -389,6 +398,7 @@ export default async function IntegrationsPage({
           port: Number(portRaw) || 587,
           user: user || undefined,
           from: from || undefined,
+          replyTo: replyTo || undefined,
         },
         ...(sealed
           ? {
@@ -413,7 +423,8 @@ export default async function IntegrationsPage({
 
   async function verifySmtp(formData: FormData) {
     "use server";
-    await requirePermission("partner:write");
+    // Triggers a real outbound email — a side-effect, so write rather than read.
+    const actor = await requirePermission("partner:write");
 
     const record = await prisma.integration.findUnique({ where: { provider: "smtp" } });
     if (!record?.secretCiphertext || !record.secretIv || !record.secretTag) {
@@ -426,26 +437,153 @@ export default async function IntegrationsPage({
     // @apex/integrations re-exports sendEmail; use it instead of a new console
     // dependency on @apex/auth.
     const { sendEmail } = await import("@apex/auth");
+    let ok = false;
+    let detail = "";
     try {
       await sendEmail({
         to,
         subject: "Apex SMTP verification",
         text: "If you received this, the Apex console SMTP transport is working.",
       });
-      await prisma.integration.update({
-        where: { provider: "smtp" },
-        data: { lastTestedAt: new Date(), lastTestOk: true, lastTestNote: `Sent test to ${to}` },
-      });
-      redirect(`/integrations?tested=SMTP+test+sent+to+${encodeURIComponent(to)}`);
+      ok = true;
+      detail = `Sent test to ${to}`;
     } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      await prisma.integration.update({
-        where: { provider: "smtp" },
-        data: { lastTestedAt: new Date(), lastTestOk: false, lastTestNote: msg.slice(0, 180) },
-      });
-      redirect(`/integrations?error=SMTP+verify+failed:+${encodeURIComponent(msg.slice(0, 120))}`);
+      detail = (error instanceof Error ? error.message : String(error)).slice(0, 180);
     }
+    await prisma.integration.update({
+      where: { provider: "smtp" },
+      data: { lastTestedAt: new Date(), lastTestOk: ok, lastTestNote: detail },
+    });
+    await audit({
+      actor,
+      action: ok ? "integration.tested" : "integration.test_failed",
+      entityType: "Integration",
+      entityId: "smtp",
+      summary: ok ? `SMTP verify sent to ${to}` : `SMTP verify failed: ${detail}`,
+    });
+    if (ok) {
+      redirect(`/integrations?tested=SMTP+test+sent+to+${encodeURIComponent(to)}`);
+    }
+    redirect(`/integrations?error=SMTP+verify+failed:+${encodeURIComponent(detail.slice(0, 120))}`);
   }
+
+  async function saveLeadNotify(formData: FormData) {
+    "use server";
+    const actor = await requirePermission("partner:write");
+
+    const email = String(formData.get("leadNotifyTo") ?? "").trim().toLowerCase();
+
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      redirect("/integrations?error=Enter+a+valid+notification+email+address");
+    }
+
+    await prisma.setting.upsert({
+      where: { key: "notify.lead_to" },
+      create: {
+        key: "notify.lead_to",
+        group: "notifications",
+        label: "New-lead notification email",
+        value: email,
+      },
+      update: { value: email },
+    });
+
+    await audit({
+      actor,
+      action: "partner.lead_notify.updated",
+      entityType: "Setting",
+      entityId: "notify.lead_to",
+      summary: `New-lead notifications now go to ${email}`,
+    });
+    redirect("/integrations?saved=notify");
+  }
+
+  async function useEnvSmtp() {
+    "use server";
+    const actor = await requirePermission("partner:write");
+
+    // Delete the managed row entirely so the env-var transport is live again
+    // and nothing stale lingers to be re-enabled later.
+    const existing = await prisma.integration.findUnique({ where: { provider: "smtp" } });
+    if (existing) {
+      await prisma.integration.delete({ where: { provider: "smtp" } });
+      await audit({
+        actor,
+        action: "partner.smtp.cleared",
+        entityType: "Integration",
+        entityId: "smtp",
+        summary: "SMTP transport reset to environment variables",
+      });
+    }
+    redirect("/integrations?cleared=smtp");
+  }
+
+  async function setupSmtpFromEnv() {
+    "use server";
+    const actor = await requirePermission("partner:write");
+
+    // One-click import: copy the live environment transport into the
+    // console-managed row. No typing — the operator just clicks.
+    const host = process.env.SMTP_HOST;
+    if (!host) {
+      redirect("/integrations?error=No+SMTP_HOST+set+in+the+environment");
+    }
+    const port = Number(process.env.SMTP_PORT ?? 587);
+    const user = process.env.SMTP_USER?.trim() || undefined;
+    const from = process.env.SMTP_FROM?.trim() || undefined;
+    const replyTo = process.env.SMTP_REPLY_TO?.trim() || undefined;
+    const password = process.env.SMTP_PASSWORD ?? "";
+    const sealed = password ? seal(password) : null;
+
+    await prisma.integration.upsert({
+      where: { provider: "smtp" },
+      create: {
+        provider: "smtp",
+        label: "SMTP email transport",
+        isEnabled: true,
+        config: { host, port, user, from, replyTo },
+        ...(sealed
+          ? {
+              secretCiphertext: sealed.ciphertext,
+              secretIv: sealed.iv,
+              secretTag: sealed.tag,
+              lastFour: sealed.lastFour,
+            }
+          : {}),
+      },
+      update: {
+        isEnabled: true,
+        config: { host, port, user, from, replyTo },
+        ...(sealed
+          ? {
+              secretCiphertext: sealed.ciphertext,
+              secretIv: sealed.iv,
+              secretTag: sealed.tag,
+              lastFour: sealed.lastFour,
+            }
+          : {}),
+      },
+    });
+
+    await audit({
+      actor,
+      action: "partner.smtp.imported",
+      entityType: "Integration",
+      entityId: "smtp",
+      summary: `SMTP configured from environment variables (${host}:${port})`,
+    });
+    redirect("/integrations?saved=smtp-env");
+  }
+
+  // What is actually driving outbound email right now — the managed row wins
+  // whenever it exists and is enabled; otherwise env vars; otherwise nothing.
+  const envHost = process.env.SMTP_HOST;
+  const liveSource = smtp?.isEnabled && smtpCfg.host ? "console" : envHost ? "env" : "none";
+  const effectiveFrom =
+    smtpCfg.from || process.env.SMTP_FROM?.trim() || "ops@apexgroupcompanies.com";
+  // Test recipient = bare email of the effective From ("Name <a@b.c>" → "a@b.c"),
+  // so the operator can send the verification to their own address.
+  const effectiveFromEmail = effectiveFrom.match(/<([^>]+)>/)?.[1] ?? effectiveFrom;
 
   return (
     <div className="flex flex-col gap-9">
@@ -457,9 +595,18 @@ export default async function IntegrationsPage({
         </p>
       </div>
 
-      {flash.saved || flash.tested ? (
+      {flash.saved === "smtp-env" ? (
+        <p className="rounded-[var(--radius-md)] border border-[var(--color-success-200)] bg-[var(--color-success-100)] px-4 py-2 text-sm text-[var(--color-success-500)]">
+          SMTP configured from your environment variables. Send a test email below to confirm.
+        </p>
+      ) : flash.saved || flash.tested ? (
         <p className="rounded-[var(--radius-md)] border border-[var(--color-success-200)] bg-[var(--color-success-100)] px-4 py-2 text-sm text-[var(--color-success-500)]">
           Saved.
+        </p>
+      ) : null}
+      {flash.cleared ? (
+        <p className="rounded-[var(--radius-md)] border border-[var(--color-success-200)] bg-[var(--color-success-100)] px-4 py-2 text-sm text-[var(--color-success-500)]">
+          SMTP reset — outbound email now uses environment variables.
         </p>
       ) : null}
       {flash.error ? (
@@ -702,12 +849,39 @@ export default async function IntegrationsPage({
               rest; falls back to environment variables when left blank.
             </p>
           </div>
-          {smtp?.isEnabled ? (
+          {liveSource === "console" ? (
             <span className="text-2xs rounded-full bg-[var(--color-success-100)] px-2.5 py-0.5 font-medium text-[var(--color-success-500)]">
-              Enabled
+              Live: console config
             </span>
-          ) : null}
+          ) : liveSource === "env" ? (
+            <span className="text-2xs rounded-full bg-[var(--bg-sunken)] px-2.5 py-0.5 font-medium text-[var(--ink-secondary)]">
+              Live: env vars
+            </span>
+          ) : (
+            <span className="text-2xs rounded-full bg-[var(--color-danger-100)] px-2.5 py-0.5 font-medium text-[var(--color-danger-500)]">
+              No transport
+            </span>
+          )}
         </div>
+
+        {liveSource === "console" ? (
+          <p className="text-2xs mt-3 text-[var(--ink-muted)]">
+            Outbound email is sent through <strong>{smtpCfg.host}:{smtpCfg.port ?? 587}</strong>
+            {smtpCfg.from ? ` as ${smtpCfg.from}` : ""}. Toggle off and save to fall back to
+            environment variables.
+          </p>
+        ) : liveSource === "env" ? (
+          <p className="text-2xs mt-3 text-[var(--ink-muted)]">
+            Outbound email is sent using environment variables (
+            <code className="font-mono">SMTP_HOST={envHost}</code>). Fill in the form below and
+            toggle on to manage it from the console instead.
+          </p>
+        ) : (
+          <p className="text-2xs mt-3 text-[var(--color-danger-500)]">
+            No SMTP transport is configured — set <code className="font-mono">SMTP_HOST</code> in
+            the environment or configure one below.
+          </p>
+        )}
 
         <form action={saveSmtp} className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="flex flex-col gap-1.5 text-sm font-medium">
@@ -715,7 +889,7 @@ export default async function IntegrationsPage({
             <input
               name="host"
               defaultValue={smtpCfg.host ?? ""}
-              placeholder="127.0.0.1"
+              placeholder="smtp-relay.brevo.com"
               className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-3 text-sm font-normal"
             />
           </label>
@@ -745,6 +919,15 @@ export default async function IntegrationsPage({
               className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-3 text-sm font-normal"
             />
           </label>
+          <label className="flex flex-col gap-1.5 text-sm font-medium">
+            Reply-To
+            <input
+              name="replyTo"
+              defaultValue={smtpCfg.replyTo ?? ""}
+              placeholder="Leave blank for no reply-to header"
+              className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-3 text-sm font-normal"
+            />
+          </label>
           <label className="flex flex-col gap-1.5 text-sm font-medium md:col-span-2">
             Password
             <input
@@ -760,18 +943,32 @@ export default async function IntegrationsPage({
             />
           </label>
 
-          <label className="flex items-center gap-2 text-sm md:col-span-2">
-            <input
-              type="checkbox"
-              name="isEnabled"
-              defaultChecked={smtp?.isEnabled ?? false}
-              className="h-4 w-4 accent-[var(--accent)]"
+          <label className="flex cursor-pointer items-center gap-3 md:col-span-2">
+            <input type="checkbox" name="isEnabled" defaultChecked={smtp?.isEnabled ?? false} className="sr-only peer" />
+            <span
+              aria-hidden
+              className="relative h-6 w-11 shrink-0 rounded-full bg-[var(--bg-sunken)] transition-colors peer-checked:bg-[var(--color-success-500)] after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"
             />
-            Use this SMTP server for outbound email
+            <span className="text-sm font-medium">
+              Use this SMTP server for outbound email
+              <span className="text-2xs block font-normal text-[var(--ink-muted)]">
+                Off = environment variables drive outbound email
+              </span>
+            </span>
           </label>
 
-          <div className="flex gap-3 md:col-span-2">
+          <div className="flex flex-wrap gap-3 md:col-span-2">
             <Button type="submit">Save</Button>
+            {envHost && (!smtp || !smtp.isEnabled) ? (
+              <Button type="submit" formAction={setupSmtpFromEnv} variant="secondary" size="sm">
+                Set up from env vars (one click)
+              </Button>
+            ) : null}
+            {smtp ? (
+              <Button type="submit" formAction={useEnvSmtp} variant="secondary" size="sm">
+                Reset to env vars
+              </Button>
+            ) : null}
           </div>
         </form>
 
@@ -780,7 +977,7 @@ export default async function IntegrationsPage({
             Verify send to
             <input
               name="verifyTo"
-              placeholder={smtpCfg.from ?? "ops@apexgroupcompanies.com"}
+              defaultValue={effectiveFromEmail}
               className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-3 text-sm font-normal"
             />
           </label>
@@ -793,6 +990,46 @@ export default async function IntegrationsPage({
           <p className="text-2xs mt-3 text-[var(--ink-muted)]">
             Last tested {smtp.lastTestedAt.toLocaleString("en-GB")} —{" "}
             {smtp.lastTestOk ? "OK" : "failed"}: {smtp.lastTestNote}
+          </p>
+        ) : null}
+      </section>
+
+      {/* ── Lead notifications (console-managed recipient) ──────────────────── */}
+      <section className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
+        <div>
+          <p className="text-2xs font-semibold tracking-[0.16em] text-[var(--color-amber-700)] uppercase">
+            Email routing
+          </p>
+          <h2 className="mt-1 text-xl">New-lead notifications</h2>
+          <p className="mt-1 max-w-2xl text-sm text-[var(--ink-secondary)]">
+            Every enquiry captured on the five public sites notifies this inbox. Managed in the
+            database so a recipient change does not need a redeploy or an env edit.
+          </p>
+        </div>
+
+        <form action={saveLeadNotify} className="mt-6 grid gap-4 md:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-sm font-medium">
+            Notification recipient
+            <input
+              name="leadNotifyTo"
+              type="email"
+              required
+              defaultValue={
+                typeof leadNotifySetting?.value === "string" ? leadNotifySetting.value : ""
+              }
+              placeholder="sales@apexgroupcompanies.com"
+              className="h-11 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-page)] px-3 text-sm font-normal"
+            />
+          </label>
+          <div className="flex items-end">
+            <Button type="submit">Save</Button>
+          </div>
+        </form>
+
+        {!leadNotifySetting ? (
+          <p className="text-2xs mt-3 text-[var(--ink-muted)]">
+            Not saved in the database yet — notifications currently fall back to the
+            LEAD_NOTIFY_TO env var or the sales inbox.
           </p>
         ) : null}
       </section>

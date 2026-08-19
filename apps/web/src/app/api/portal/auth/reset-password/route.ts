@@ -2,7 +2,7 @@ import { prisma } from "@apex/db";
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { checkPasswordStrength, hashPassword, revokeAllPortalSessionsForUser } from "@apex/auth";
+import { checkPasswordStrength, hashPassword } from "@apex/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -67,9 +67,11 @@ export async function POST(request: Request) {
         summary: "Password reset via emailed link",
       },
     });
+    // Revoke every active session for this user inside the same transaction so
+    // a process crash between commit and revoke cannot leave the user's old
+    // sessions valid with the new password.
+    await tx.portalSession.deleteMany({ where: { userId: record.userId } });
   });
-
-  await revokeAllPortalSessionsForUser(record.userId);
 
   return NextResponse.json({ ok: true });
 }

@@ -25,6 +25,16 @@ const CONSOLE_TEST_PORT = 4891;
 const WEB_URL = process.env.E2E_WEB_URL ?? `http://localhost:${WEB_TEST_PORT}`;
 const CONSOLE_URL = process.env.E2E_CONSOLE_URL ?? `http://localhost:${CONSOLE_TEST_PORT}`;
 const isCI = !!process.env.CI;
+// The journey project sends real app mail (invoice emails, portal links) and
+// asserts it arrived by reading the local Mailcow capture mailbox. That only
+// works if the apps under test relay to 127.0.0.1:25 instead of the Brevo
+// relay from .env, so the webServer entries add the override only when the
+// journey run asks for it (E2E_SMTP_MAILCOW=1). All other projects keep the
+// .env relay untouched.
+const smtpMailcow = process.env.E2E_SMTP_MAILCOW === "1";
+const mailcowEnv = smtpMailcow
+  ? { SMTP_HOST: "127.0.0.1", SMTP_PORT: "25", LEAD_NOTIFY_TO: "capture@cloud.apexgroupcompanies.com" }
+  : undefined;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -66,6 +76,24 @@ export default defineConfig({
       testMatch: /console\/.*\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: CONSOLE_URL },
     },
+    // The end-to-end journey: one serial spec that walks a lead from the
+    // public contact form through the console (quote/invoice create, edit,
+    // send, payment) into the customer's portal (sign in, view, pay with a
+    // sandbox card) and back. It needs the local Mailcow, the local
+    // Hyperswitch router and the live Cloudflare tunnels, so it only runs on
+    // the deploy host, never in CI:
+    //   E2E_SMTP_MAILCOW=1 pnpm exec playwright test --project=journey
+    ...(isCI
+      ? []
+      : [
+          {
+            name: "journey",
+            testMatch: /journey\/.*\.spec\.ts/,
+            fullyParallel: false,
+            workers: 1,
+            use: { ...devices["Desktop Chrome"] },
+          },
+        ]),
     // Host audit, not a build gate: these probe the deploy host's loopback
     // services and the live Cloudflare tunnels. A CI runner has neither, so
     // the project is skipped there and run on the host instead.
@@ -125,12 +153,14 @@ export default defineConfig({
       url: WEB_URL,
       reuseExistingServer: false,
       timeout: 180_000,
+      env: mailcowEnv,
     },
     {
       command: `PORT=${CONSOLE_TEST_PORT} pnpm --filter @apex/console start`,
       url: CONSOLE_URL,
       reuseExistingServer: false,
       timeout: 180_000,
+      env: mailcowEnv,
     },
     // `reuseExistingServer: false` is load-bearing. These sites' production
     // ports are already bound by PM2 on the deploy host, so reusing whatever

@@ -1,5 +1,9 @@
 import { prisma } from "@apex/db";
-import { clientFromConfig, HyperswitchError } from "@apex/integrations/hyperswitch";
+import {
+  clientFromConfig,
+  HyperswitchError,
+  parseWebhookEvent,
+} from "@apex/integrations/hyperswitch";
 import type { HyperswitchClient } from "@apex/integrations/hyperswitch";
 import { open } from "@apex/integrations/vault";
 import { NextResponse } from "next/server";
@@ -19,7 +23,11 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request) {
   const rawBody = await request.text();
-  const signatureHeader = request.headers.get("x-webhook-signature");
+  // Hyperswitch sends `x-webhook-signature-512` (HMAC-SHA512 over the raw
+  // body). The unsuffixed `x-webhook-signature` is read as a fallback only so a
+  // future router build that renames it does not silently drop every event.
+  const signatureHeader =
+    request.headers.get("x-webhook-signature-512") ?? request.headers.get("x-webhook-signature");
 
   const integration = await prisma.partnerIntegration.findUnique({
     where: { provider: "hyperswitch" },
@@ -85,26 +93,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  let payload: {
-    type?: string;
-    data?: {
-      id?: string;
-      status?: string;
-      amount?: number;
-      currency?: string;
-      metadata?: Record<string, string>;
-    };
-  };
-  try {
-    payload = JSON.parse(rawBody);
-  } catch {
+  // The payload is a `{ event_type, content: { object: {...} } }` envelope, not
+  // a flat `{ type, data }` one — `parseWebhookEvent` owns that shape.
+  const event = parseWebhookEvent(rawBody);
+  if (!event) {
     return NextResponse.json({ error: "Malformed payload" }, { status: 400 });
   }
 
-  const eventType = payload.type;
-  const paymentId = payload.data?.id;
-  const status = payload.data?.status;
-  const invoiceId = payload.data?.metadata?.invoiceId;
+  const eventType = event.eventType;
+  const paymentId = event.paymentId;
+  const status = event.status;
+  const invoiceId = event.metadata?.invoiceId;
 
   await prisma.partnerIntegration.update({
     where: { provider: "hyperswitch" },

@@ -6,3 +6,4 @@ export * from "./sessions";
 export * from "./totp";
 export * from "./rate-limit";
 export * from "./email";
+export * from "./signup-approval";

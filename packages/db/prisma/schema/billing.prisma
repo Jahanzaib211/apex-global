@@ -3,6 +3,17 @@
 // small — the goal is the operational loop (issue invoice → customer pays →
 // webhook reconciles), not a full accounting system.
 
+// Locked counter rows for sequential references (INV-0001, QT-0001). One row
+// per (model, prefix); every allocation takes a SELECT FOR UPDATE inside a
+// transaction, so two operators saving at the same instant cannot mint the
+// same number.
+model Sequence {
+  key   String @id // "invoice:INV" | "quote:QT"
+  value Int    @default(0)
+
+  @@map("sequences")
+}
+
 enum QuoteStatus {
   DRAFT
   SENT
@@ -19,6 +30,42 @@ enum InvoiceStatus {
   FAILED
   CANCELLED
   OVERDUE
+  WRITE_OFF
+}
+
+enum PricingItemKind {
+  SERVICE
+  PRODUCT
+  CUSTOM
+}
+
+// Admin-managed price modules. The operator picks one from the invoice/quote
+// editor and its values pre-fill the line item (still editable per invoice).
+// `Service` and `SaasProduct` rows with a known price are unioned into the
+// same picker at query time — this table holds ad-hoc catalogue entries that
+// are not (or not yet) published services/products.
+model PricingItem {
+  id   String          @id @default(cuid())
+  kind PricingItemKind @default(CUSTOM)
+
+  slug String @unique
+  name String
+
+  // Shown as the line-item description when the operator picks this item.
+  description String?
+
+  // Minor units. Null means "contact us" — the operator types an amount.
+  defaultUnitAmount Int?
+  defaultCurrency   String @default("USD")
+
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("pricing_items")
 }
 
 model Quote {
@@ -95,8 +142,18 @@ model Invoice {
   paymentRef      String? // gateway payment id
   paidAt          DateTime?
 
+  // Hosted payment link, for invoices settled outside the portal (emailed to a
+  // customer who has no portal login). Generated on demand from the console;
+  // the webhook reconciles it through the same `metadata.invoiceId` path as a
+  // portal payment.
+  paymentLinkUrl       String?
+  paymentLinkExpiresAt DateTime?
+
   dueDate DateTime?
   sentAt DateTime?
+
+  // Last time a payment reminder was emailed — dunning is rate-limited on this.
+  lastReminderAt DateTime?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

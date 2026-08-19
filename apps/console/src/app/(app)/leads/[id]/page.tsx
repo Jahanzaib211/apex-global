@@ -27,6 +27,8 @@ export default async function LeadPage({ params }: Props) {
         orderBy: { createdAt: "desc" },
         include: { actor: { select: { name: true } } },
       },
+      quotes: { orderBy: { createdAt: "desc" }, take: 5, select: { id: true, number: true, status: true, totalAmount: true, currency: true, createdAt: true } },
+      invoices: { orderBy: { createdAt: "desc" }, take: 5, select: { id: true, number: true, status: true, totalAmount: true, currency: true, createdAt: true } },
     },
   });
   if (!lead) notFound();
@@ -260,6 +262,49 @@ export default async function LeadPage({ params }: Props) {
         </div>
 
         <aside className="flex flex-col gap-6">
+          <section className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Billing</h2>
+              <div className="flex gap-2">
+                <Link
+                  href={`/billing/quotes/new?leadId=${id}`}
+                  className="inline-flex h-8 items-center rounded-[var(--radius-md)] border border-[var(--border-strong)] px-3 text-xs font-medium hover:bg-[var(--bg-sunken)]"
+                >
+                  New quote
+                </Link>
+                <Link
+                  href={`/billing/invoices/new?leadId=${id}`}
+                  className="inline-flex h-8 items-center rounded-[var(--radius-md)] bg-[var(--accent)] px-3 text-xs font-medium text-[var(--ink-on-accent)]"
+                >
+                  New invoice
+                </Link>
+              </div>
+            </div>
+            {lead.invoices.length === 0 && lead.quotes.length === 0 ? (
+              <p className="mt-3 text-sm text-[var(--ink-secondary)]">
+                No quotes or invoices yet. Create one to start the billing loop — the customer
+                details are pre-filled from this lead.
+              </p>
+            ) : (
+              <div className="mt-3 space-y-3">
+                {[...lead.invoices, ...lead.quotes]
+                  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+                  .map((r) => (
+                    <Link
+                      key={`${r.number}`}
+                      href={`/billing/${"quotes" in r ? "quotes" : "invoices"}/${r.id}`}
+                      className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] px-3 py-2 text-sm hover:border-[var(--border-strong)]"
+                    >
+                      <span className="font-medium">{r.number}</span>
+                      <span className="text-[var(--ink-muted)]">
+                        {r.status} · {r.currency} {(r.totalAmount / 100).toLocaleString()}
+                      </span>
+                    </Link>
+                  ))}
+              </div>
+            )}
+          </section>
+
           <section className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-raised)] p-6">
             <h2 className="font-semibold">Attribution</h2>
             <p className="mt-1 text-xs text-[var(--ink-muted)]">

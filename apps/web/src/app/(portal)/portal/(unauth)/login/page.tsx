@@ -58,12 +58,16 @@ export default async function PortalLoginPage({ searchParams }: Props) {
       <p className="mt-6 text-center text-sm text-[var(--ink-secondary)]">
         No account?{" "}
         <Link
-          href="/contact"
+          href="/portal/signup"
           className="font-medium text-[var(--color-amber-700)] underline-offset-4 hover:underline"
         >
-          Talk to our team
+          Create one
         </Link>{" "}
-        to get one.
+        — or{" "}
+        <Link href="/contact" className="underline underline-offset-4">
+          talk to our team
+        </Link>
+        .
       </p>
     </div>
   );
