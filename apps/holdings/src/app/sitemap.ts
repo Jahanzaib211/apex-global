@@ -35,6 +35,11 @@ const STATIC_ROUTES = [
   "/services",
   "/site-visit",
   "/testimonials",
+  // The four legal routes exist as pages but were missing from the sitemap.
+  "/legal/privacy",
+  "/legal/terms",
+  "/legal/cookies",
+  "/legal/disclaimer",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -44,7 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: url(route),
     lastModified,
     changeFrequency: "weekly" as const,
-    priority: route === "/" ? 1 : 0.7,
+    priority: route === "/" ? 1 : route.startsWith("/legal/") ? 0.3 : 0.7,
   }));
 
   const dynamicEntries = [
