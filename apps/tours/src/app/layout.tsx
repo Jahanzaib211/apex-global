@@ -86,8 +86,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" {...jsonLdProps(websiteSchema)} />
       </head>
       <body className="flex min-h-screen flex-col">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow-lg focus:outline focus:outline-2"
+        >
+          Skip to content
+        </a>
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">{children}</main>
         <SiteFooter />
         {/* FloatingWhatsApp removed 2026-08-13 — it was `fixed bottom-5 right-5
             z-50`, sitting directly on top of Chatwoot's launcher (z-40) in the

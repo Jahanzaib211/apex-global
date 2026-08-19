@@ -80,8 +80,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${display.variable} ${editorial.variable} ${body.variable}`}>
       <body className="bg-cream text-charcoal font-body">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow-lg focus:outline focus:outline-2"
+        >
+          Skip to content
+        </a>
         <Header />
-        {children}
+        {/* Every page supplies its own <main>, so this wrapper is a plain
+            focusable div rather than a second, nested landmark. */}
+        <div id="main" tabIndex={-1}>
+          {children}
+        </div>
         <Footer />
         <CookieConsentBanner />
         <AttributionCapture />

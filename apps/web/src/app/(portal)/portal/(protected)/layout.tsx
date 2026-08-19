@@ -24,6 +24,12 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <div className="min-h-dvh bg-[var(--bg-page)] text-[var(--ink-primary)]">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-[var(--radius-md)] focus:bg-[var(--bg-raised)] focus:px-4 focus:py-2 focus:shadow-[var(--shadow-md)]"
+        >
+          Skip to content
+        </a>
       <header className="sticky top-0 z-40 border-b border-[var(--border-default)] bg-[var(--bg-raised)]/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5">
           <div className="flex items-center gap-8">
@@ -98,7 +104,7 @@ export default async function PortalLayout({ children }: { children: React.React
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-5 py-10">{children}</main>
+      <main id="main" className="mx-auto max-w-7xl px-5 py-10">{children}</main>
 
       <footer className="text-2xs border-t border-[var(--border-subtle)] py-6 text-center text-[var(--ink-muted)]">
         Apex Global Tech Solution · Client Portal ·{" "}

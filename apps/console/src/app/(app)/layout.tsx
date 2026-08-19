@@ -26,6 +26,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--bg-page)]">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-[var(--radius-md)] focus:bg-[var(--bg-raised)] focus:px-4 focus:py-2 focus:shadow-[var(--shadow-md)]"
+        >
+          Skip to content
+        </a>
       <header className="border-b border-[var(--border-default)] bg-[var(--bg-raised)]">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5">
           <div className="flex items-center gap-8">
@@ -76,7 +82,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-9">{children}</main>
+      <main id="main" className="mx-auto w-full max-w-7xl flex-1 px-5 py-9">{children}</main>
     </div>
   );
 }

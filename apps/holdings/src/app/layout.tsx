@@ -95,8 +95,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" {...jsonLdProps(websiteSchema)} />
       </head>
       <body className="bg-white font-sans text-slate-700 antialiased">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow-lg focus:outline focus:outline-2"
+        >
+          Skip to content
+        </a>
         <SiteHeader />
-        <main>{children}</main>
+        <main id="main">{children}</main>
         <SiteFooter />
         {/* WhatsAppFab removed 2026-08-13 — it was `fixed bottom-6 right-6`,
             the exact spot Chatwoot's launcher occupies, so the two bubbles
